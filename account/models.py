@@ -49,6 +49,7 @@ class User(AbstractBaseUser):
     password=models.CharField(max_length=100)
     account_created=models.DateField(auto_now_add=True,blank=True)
     is_active = models.BooleanField(default=True)
+    is_verified = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
 
@@ -71,3 +72,48 @@ class User(AbstractBaseUser):
     @property
     def is_staff(self):
         return self.is_admin
+
+class Otp(models.Model):
+    user=models.OneToOneField(User,on_delete=models.CASCADE)
+    otp=models.IntegerField()
+    issued_time=models.DateTimeField(auto_now_add=True)
+
+roles=[
+    ('Manager','manager'),
+    ('Developer','developer'),
+    ('Owner','owner'),
+    ('Consultant','consultant'),
+    ('Contractor','contractor'),
+    ('Vp/Director','vp/director'),
+]
+
+class Bussiness_Profile(models.Model):
+    user=models.OneToOneField(User,on_delete=models.CASCADE)
+    bussiness_name=models.CharField(max_length=100,blank=False,unique=True)
+    public_link=models.CharField(max_length=200)
+    category=models.CharField(max_length=100)
+    role=models.CharField(max_length=100,choices=roles,default='Manager')
+    open_now=models.BooleanField(default=True)
+
+
+
+
+class FieldList(models.Model):
+    user=models.OneToOneField(User,on_delete=models.CASCADE)
+    fields=models.JSONField()
+    fieldlist=ArrayField(models.CharField(max_length=100),default=list)
+    policy_status=models.BooleanField(default=False)
+    policy=models.TextField(default=None)
+
+
+class Fields(models.Model):
+    user=models.OneToOneField(User,on_delete=models.CASCADE)
+    phone_number=models.IntegerField(default=None)
+    dateofbirth=models.DateField(default=None)
+    email=models.EmailField(default=None)
+    party_size=models.IntegerField(default=None)
+    first_name=models.CharField(max_length=100,default=None)
+    last_name=models.CharField(max_length=100,default=None)
+    notes=models.CharField(max_length=100,default=None)
+    description=models.TextField(default=None)
+
