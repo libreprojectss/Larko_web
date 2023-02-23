@@ -106,5 +106,6 @@ class Bussiness_Profile_Seriaizer(serializers.ModelSerializer):
 class FieldlistSerializer(serializers.ModelSerializer):
     class Meta:
         model=FieldList
-        fields='__all__'
+        fields=['fields']
+
 
