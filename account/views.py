@@ -90,4 +90,14 @@ class RequiredFieldsViews(APIView):
         field_list=[i for i in user_fields.fields if i['field_name'] in fields]
         return Response(field_list)
 
+class AllFieldsView(APIView):
+    renderer_classes=[UserRenderer]
+    permission_classes=[IsAuthenticated]
+    def get(self,request):
+        fields=FieldList.objects.get(user=request.user)
+        serializeddata=FieldlistSerializer(fields)
+        return Response(serializeddata.data)
+
+
+
         

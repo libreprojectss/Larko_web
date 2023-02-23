@@ -102,4 +102,9 @@ class Bussiness_Profile_Seriaizer(serializers.ModelSerializer):
         profile=Bussiness_Profile(**validated_data)
         profile.save()
         return profile
+ 
+class FieldlistSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=FieldList
+        fields='__all__'
 
