@@ -119,7 +119,7 @@ class AllFieldsView(APIView):
         fields=FieldList.objects.get(user=request.user).fields
         # serializeddata=FieldlistSerializer(fields)
         fields=json.dumps(fields)
-        return Response(Fields)
+        return Response(fields)
     def put(self,request):
         serializeddata=FieldsSerializer(data=request.data)
         fields=FieldList.objects.get(user=request.user).fields
