@@ -89,6 +89,18 @@ class RequiredFieldsViews(APIView):
         print(user_fields.fieldlist)
         field_list=[i for i in user_fields.fields if i['field_name'] in fields]
         return Response(field_list)
+    
+    def post(self,request):
+            user_fields=FieldList.objects.get(user=request.user).fieldlist
+            for i in user_fields:
+                try:
+                    if not request.data[i]:
+                         return Response({"error":{i:"This field cannot be blank "}})
+                except:
+                        return Response({"error":{i:"This field is required "}})
+
+            return Response("done")
+
 
 class AllFieldsView(APIView):
     renderer_classes=[UserRenderer]
@@ -97,6 +109,26 @@ class AllFieldsView(APIView):
         fields=FieldList.objects.get(user=request.user)
         serializeddata=FieldlistSerializer(fields)
         return Response(serializeddata.data)
+    def put(self,request):
+        serializeddata=FieldsSerializer(data=request.data)
+        if serializeddata.is_valid(raise_exception=True):
+            fields=FieldList.objects.get(user=request.user).fields
+            print(fields)
+            for i in fields:
+                if i['field_name']==serializeddata.data["field_name"]:
+                    i['label']=serializeddata.data["label"]
+                    i['required']=serializeddata.data["required"]
+                    i['selected']=serializeddata.data["selected"]
+            obj=FieldList.objects.get(user=request.user)
+            obj.fields=fields
+            obj.field_list=[i for i in fields if i["selected"]==True]
+            obj.save()
+        fields=FieldList.objects.get(user=request.user).fields
+
+        
+            
+        
+        return Response(fields)
 
 
 
