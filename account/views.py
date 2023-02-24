@@ -116,9 +116,10 @@ class AllFieldsView(APIView):
         obj.field_list=[i for i in fields if i["selected"]==True]
         obj.save()
     def get(self,request):
-        fields=FieldList.objects.get(user=request.user)
-        serializeddata=FieldlistSerializer(fields)
-        return Response(serializeddata.data)
+        fields=FieldList.objects.get(user=request.user).fields
+        # serializeddata=FieldlistSerializer(fields)
+        fields=json.dumps(fields)
+        return Response(Fields)
     def put(self,request):
         serializeddata=FieldsSerializer(data=request.data)
         fields=FieldList.objects.get(user=request.user).fields
