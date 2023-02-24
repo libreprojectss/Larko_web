@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from rest_framework import status,serializers
 from rest_framework.permissions import BasePermission, IsAuthenticated
 import random,base64,json
-
+import threading
 
 
 
@@ -47,6 +47,11 @@ class LoginViews(APIView):
 class Bussiness_Profile_Views(APIView):
     renderer_classes=[UserRenderer]
     permission_classes=[IsAuthenticated]
+    def get(self,request):
+        obj=Bussiness_Profile.objects.get(user=request.user)
+        serializeddata=Bussiness_Profile_Seriaizer(obj)
+        return Response({"user":obj.user.first_name+" "+obj.user.last_name,"data":serializeddata.data})
+        
     def post(self,request):
         serializeddata=Bussiness_Profile_Seriaizer(data=request.data)
         if serializeddata.is_valid(raise_exception=True):
@@ -105,29 +110,31 @@ class RequiredFieldsViews(APIView):
 class AllFieldsView(APIView):
     renderer_classes=[UserRenderer]
     permission_classes=[IsAuthenticated]
+    def thread1(self,fields):
+        obj=FieldList.objects.get(user=request.user)
+        obj.fields=fields
+        obj.field_list=[i for i in fields if i["selected"]==True]
+        obj.save()
     def get(self,request):
         fields=FieldList.objects.get(user=request.user)
         serializeddata=FieldlistSerializer(fields)
         return Response(serializeddata.data)
     def put(self,request):
         serializeddata=FieldsSerializer(data=request.data)
+        fields=FieldList.objects.get(user=request.user).fields
         if serializeddata.is_valid(raise_exception=True):
-            fields=FieldList.objects.get(user=request.user).fields
-            print(fields)
+            
             for i in fields:
                 if i['field_name']==serializeddata.data["field_name"]:
                     i['label']=serializeddata.data["label"]
                     i['required']=serializeddata.data["required"]
                     i['selected']=serializeddata.data["selected"]
-            obj=FieldList.objects.get(user=request.user)
-            obj.fields=fields
-            obj.field_list=[i for i in fields if i["selected"]==True]
-            obj.save()
-        fields=FieldList.objects.get(user=request.user).fields
+            thread1=threading.Thread(target=self.thread1,args=(fields,))
+            
 
         
             
-        
+        fields=json.dumps(fields)
         return Response(fields)
 
 
