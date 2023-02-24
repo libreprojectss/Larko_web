@@ -110,8 +110,8 @@ class RequiredFieldsViews(APIView):
 class AllFieldsView(APIView):
     renderer_classes=[UserRenderer]
     permission_classes=[IsAuthenticated]
-    def thread1(self,fields):
-        obj=FieldList.objects.get(user=request.user)
+    def thread1(self,fields,user):
+        obj=FieldList.objects.get(user=user)
         obj.fields=fields
         obj.field_list=[i for i in fields if i["selected"]==True]
         obj.save()
@@ -129,7 +129,8 @@ class AllFieldsView(APIView):
                     i['label']=serializeddata.data["label"]
                     i['required']=serializeddata.data["required"]
                     i['selected']=serializeddata.data["selected"]
-            thread1=threading.Thread(target=self.thread1,args=(fields,))
+            thread1=threading.Thread(target=self.thread1,args=(fields,request.user))
+            thread1.start()
             
 
         
