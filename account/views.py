@@ -134,9 +134,9 @@ class AllFieldsView(APIView):
             
 
         
-            
+        fields={"fields":fields} 
         fields=json.dumps(fields)
-        return Response({"fields":fields})
+        return Response(fields)
 
 
 
