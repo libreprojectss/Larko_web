@@ -99,6 +99,8 @@ class Bussiness_Profile_Seriaizer(serializers.ModelSerializer):
 
         }
     def create(self,validated_data):
+        if Bussiness_Profile.objects.filter(user=validated_data["user"]).exists():
+            raise serializers.ValidationError("User already linked with this account")
         profile=Bussiness_Profile(**validated_data)
         profile.save()
         return profile

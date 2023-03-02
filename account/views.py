@@ -113,8 +113,10 @@ class AllFieldsView(APIView):
     def thread1(self,fields,user):
         obj=FieldList.objects.get(user=user)
         obj.fields=fields
-        obj.field_list=[i for i in fields if i["selected"]==True]
+        obj.fieldlist=[i["field_name"] for i in fields if i["selected"]==True]
         obj.save()
+        print(obj.fieldlist)
+
     def get(self,request):
         fields=FieldList.objects.get(user=request.user)
         serializeddata=FieldlistSerializer(fields)
