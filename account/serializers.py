@@ -120,8 +120,12 @@ class FieldsSerializer(serializers.Serializer):
 
 class WaitlistSerializer(serializers.ModelSerializer):
     class Meta:
-        model:Waitlist
+        model=Waitlist
         fields='__all__'
+    def create(self,validated_data):
+        waitlist=Waitlist(**validated_data)
+        waitlist.save()
+        return waitlist
         
 
       

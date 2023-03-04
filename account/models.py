@@ -3,6 +3,7 @@ from django.contrib.auth.models import BaseUserManager,AbstractBaseUser
 from django.contrib.postgres.fields import ArrayField
 import datetime,uuid
 from django.dispatch import receiver
+from phonenumber_field.modelfields import PhoneNumberField
 
 class UserManager(BaseUserManager):
     def create_user(self, email, first_name,last_name,password=None,password_confirm=None):
@@ -107,13 +108,13 @@ class FieldList(models.Model):
 
 
 class Waitlist(models.Model):
-    user=models.OneToOneField(User,on_delete=models.CASCADE)
-    phone_number=models.IntegerField(default=None)
-    dateofbirth=models.DateField(default=None)
-    email=models.EmailField(default=None)
-    party_size=models.IntegerField(default=None)
-    first_name=models.CharField(max_length=100,default=None)
-    last_name=models.CharField(max_length=100,default=None)
-    notes=models.CharField(max_length=100,default=None)
-    description=models.TextField(default=None)
+    user=models.ForeignKey(User,on_delete=models.CASCADE,related_name="waitlist_for")
+    phone_number=PhoneNumberField(null=True,default=None)
+    dateofbirth=models.DateField(null=True,default=None)
+    email=models.EmailField(null=True,default=None)
+    party_size=models.IntegerField(null=True,default=None)
+    first_name=models.CharField(null=True,max_length=100,default=None)
+    last_name=models.CharField(null=True,max_length=100,default=None)
+    notes=models.CharField(null=True,max_length=100,default=None)
+    description=models.TextField(null=True,default=None)
 

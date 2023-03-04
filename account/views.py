@@ -100,28 +100,35 @@ class RequiredFieldsViews(APIView):
 class WaitListView(APIView):
         renderer_classes=[UserRenderer]
         permission_classes=[IsAuthenticated]
+        def get(self,request):
+            user_objects=Waitlist.objects.filter(user=request.user)
+            serializeddata=WaitlistSerializer(user_objects,many=True)
+            return Response(serializeddata.data)
+
+
         def post(self,request):
             user_fields=FieldList.objects.filter(user=request.user).values("fieldlist","fields")[0]
-           
-            print(request.data)
+            updated_data=request.data.copy()
+            updated_data.update({"user":request.user.id})
+            required_fields=[i["field_name"] for i in  user_fields["fields"] if i["required"]==True]
             error_dict=dict()
             for i in user_fields["fieldlist"]:
                 if not request.data.get(i,False):
-                    error_dict.update({i:"This field cannot be blank "})
+                    if i in required_fields:
+                        error_dict.update({i:"This field cannot be blank "})
             if error_dict:
                 output={"errors":error_dict}
                 return Response(output,status=status.HTTP_400_BAD_REQUEST)
-            waitlistobj=Waitlist()
-            try:
-                for i in user_fields["fieldlist"]:
-                    waitlistobj.i=request.data[i]
-                waitlistobj.save()
-                print(waitlistobj)
-                serializeddata=WaitlistSerializer(Waitlist.objects.get(user=request.user),many=True)
+            
+            try: 
+                serializeddata=WaitlistSerializer(data=updated_data)
+                if serializeddata.is_valid(raise_exception=True):
+                    serializeddata.save(user=request.user)
+                serializeddata=WaitlistSerializer(Waitlist.objects.filter(user=request.user),many=True)
                 return Response(serializeddata.data)
             
             except:
-                return Response({"errors":"Failed to save the data"},status=status.HTTP_400_BAD_REQUEST)
+                 return Response({"errors":"Failed to save the data"},status=status.HTTP_400_BAD_REQUEST)
                 
 
             
