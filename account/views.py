@@ -120,15 +120,15 @@ class WaitListView(APIView):
                 output={"errors":error_dict}
                 return Response(output,status=status.HTTP_400_BAD_REQUEST)
             
-            try: 
-                serializeddata=WaitlistSerializer(data=updated_data)
-                if serializeddata.is_valid(raise_exception=True):
-                    serializeddata.save(user=request.user)
-                serializeddata=WaitlistSerializer(Waitlist.objects.filter(user=request.user),many=True)
-                return Response(serializeddata.data)
             
-            except:
-                 return Response({"errors":"Failed to save the data"},status=status.HTTP_400_BAD_REQUEST)
+            serializeddata=WaitlistSerializer(data=updated_data)
+            if serializeddata.is_valid(raise_exception=True):
+                    serializeddata.save(user=request.user)
+            serializeddata=WaitlistSerializer(Waitlist.objects.filter(user=request.user),many=True)
+            return Response(serializeddata.data)
+            
+            # except:
+            #      return Response({"errors":"Failed to save the data"},status=status.HTTP_400_BAD_REQUEST)
                 
 
             
