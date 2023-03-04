@@ -117,5 +117,12 @@ class FieldsSerializer(serializers.Serializer):
     selected=serializers.BooleanField(default=None)
     class Meta:
         fields=['field_name','label','required','selected']
+
+class WaitlistSerializer(serializers.ModelSerializer):
+    class Meta:
+        model:Waitlist
+        fields='__all__'
+        
+
       
 

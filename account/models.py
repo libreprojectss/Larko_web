@@ -106,7 +106,7 @@ class FieldList(models.Model):
     policy=models.TextField(default=None)
 
 
-class Fields(models.Model):
+class Waitlist(models.Model):
     user=models.OneToOneField(User,on_delete=models.CASCADE)
     phone_number=models.IntegerField(default=None)
     dateofbirth=models.DateField(default=None)

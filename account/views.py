@@ -95,16 +95,36 @@ class RequiredFieldsViews(APIView):
         field_list=[i for i in user_fields.fields if i['field_name'] in fields]
         return Response(field_list)
     
-    def post(self,request):
-            user_fields=FieldList.objects.get(user=request.user).fieldlist
-            for i in user_fields:
-                try:
-                    if not request.data[i]:
-                         return Response({"error":{i:"This field cannot be blank "}})
-                except:
-                        return Response({"error":{i:"This field is required "}})
 
-            return Response("done")
+
+class WaitListView(APIView):
+        renderer_classes=[UserRenderer]
+        permission_classes=[IsAuthenticated]
+        def post(self,request):
+            user_fields=FieldList.objects.filter(user=request.user).values("fieldlist","fields")[0]
+           
+            print(request.data)
+            error_dict=dict()
+            for i in user_fields["fieldlist"]:
+                if not request.data.get(i,False):
+                    error_dict.update({i:"This field cannot be blank "})
+            if error_dict:
+                output={"errors":error_dict}
+                return Response(output,status=status.HTTP_400_BAD_REQUEST)
+            waitlistobj=Waitlist()
+            try:
+                for i in user_fields["fieldlist"]:
+                    waitlistobj.i=request.data[i]
+                waitlistobj.save()
+                print(waitlistobj)
+                serializeddata=WaitlistSerializer(Waitlist.objects.get(user=request.user),many=True)
+                return Response(serializeddata.data)
+            
+            except:
+                return Response({"errors":"Failed to save the data"},status=status.HTTP_400_BAD_REQUEST)
+                
+
+            
 
 
 class AllFieldsView(APIView):
