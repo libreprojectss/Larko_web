@@ -2,6 +2,7 @@ from rest_framework import serializers
 from .models import *
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from .helpers import IdEncodeDecode
+import re
 
 class SignUpSerializer(serializers.ModelSerializer):
     password_confirm=serializers.CharField(style={'input_type':'password'}, write_only=True)
@@ -21,7 +22,34 @@ class SignUpSerializer(serializers.ModelSerializer):
     def validate_password(self,value):
             if len(value)<8:
                 raise serializers.ValidationError("password must be at least 8 characters long")
+            pattern=r"^(?=.*[A-Z])(?=.*[!@#$&*_\-])[A-Za-z0-9!@#$&*_\-]+$"
+            if !re.search(pattern,value):
+                raise serializers.ValidationError("password must contain at least one uppercase and one special character")
+
+
             return value
+    
+    def validate_email(self,value):
+        pattern=r"^[a-zA-Z0-9._%+-]+@gmail\.com$"
+        x = re.search(pattern,value)
+        if(x==None):
+            raise serializers.ValidationError("the provided email is not in gmail format")
+        return value
+
+
+
+    def validate_first_name(self,value):
+        if len(value)<3:
+                raise serializers.ValidationError("password must be at least 8 characters long")
+        
+        return value
+    
+    def validate_last_name(self,value):
+        if len(value)<3:
+                raise serializers.ValidationError("password must be at least 8 characters long")
+        
+        return value
+
             
     def create(self,validated_data):
             return User.objects.create_user(**validated_data)

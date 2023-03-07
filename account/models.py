@@ -43,9 +43,9 @@ class User(AbstractBaseUser):
         unique=True,
     )
     first_name=models.CharField(verbose_name='first name',
-        max_length=255)
+        max_length=20)
     last_name=models.CharField(verbose_name='last name',
-        max_length=255)
+        max_length=20)
     password=models.CharField(max_length=100)
     account_created=models.DateField(auto_now_add=True,blank=True)
     is_active = models.BooleanField(default=True)
