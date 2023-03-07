@@ -51,7 +51,7 @@ class ChangePasswordSerializer(serializers.Serializer):
             raise serializers.ValidationError("password must be 8 characters long")
         return value
     
-    def validate(self,data):
+    def validate(self,args):
         password=args.get('password')
         password_confirm=args.pop('password_confirm')
         if password!=password_confirm:
