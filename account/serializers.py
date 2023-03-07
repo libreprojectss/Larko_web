@@ -22,7 +22,7 @@ class SignUpSerializer(serializers.ModelSerializer):
     def validate_password(self,value):
             if len(value)<8:
                 raise serializers.ValidationError("password must be at least 8 characters long")
-            pattern=r"^(?=.*[A-Z])(?=.*[!@#$&*_\-])[A-Za-z0-9!@#$&*_\-]+$"
+            pattern=r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$" #Minimum eight characters, at least one uppercase letter, one lowercase letter, one number and one special character
             if not re.search(pattern,value):
                 raise serializers.ValidationError("password must contain at least one uppercase and one special character")
 
@@ -41,6 +41,7 @@ class SignUpSerializer(serializers.ModelSerializer):
     def validate_first_name(self,value):
         if len(value)<3:
                 raise serializers.ValidationError("First name length must be at 3 characters")
+        
         
         return value
     
