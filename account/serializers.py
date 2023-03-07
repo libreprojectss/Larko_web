@@ -23,7 +23,7 @@ class SignUpSerializer(serializers.ModelSerializer):
             if len(value)<8:
                 raise serializers.ValidationError("password must be at least 8 characters long")
             pattern=r"^(?=.*[A-Z])(?=.*[!@#$&*_\-])[A-Za-z0-9!@#$&*_\-]+$"
-            if !re.search(pattern,value):
+            if not re.search(pattern,value):
                 raise serializers.ValidationError("password must contain at least one uppercase and one special character")
 
 
