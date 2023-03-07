@@ -41,6 +41,9 @@ class SignUpSerializer(serializers.ModelSerializer):
     def validate_first_name(self,value):
         if len(value)<3:
                 raise serializers.ValidationError("First name length must be at 3 characters")
+        pattern=r"^[a-zA-Z]+$"
+        if not re.search(pattern,value):
+                raise serializers.ValidationError("Name should only contain alphabets")
         
         
         return value
@@ -48,6 +51,9 @@ class SignUpSerializer(serializers.ModelSerializer):
     def validate_last_name(self,value):
         if len(value)<3:
                 raise serializers.ValidationError("Last name length must be at 3 characters")
+        pattern=r"^[a-zA-Z]+$"
+        if not re.search(pattern,value):
+                raise serializers.ValidationError("Name should only contain alphabets")
         
         return value
 
