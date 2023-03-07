@@ -20,11 +20,11 @@ class SignUpSerializer(serializers.ModelSerializer):
             return args
     
     def validate_password(self,value):
-            if len(value)<8:
-                raise serializers.ValidationError("password must be at least 8 characters long")
+            # if len(value)<8:
+            #     raise serializers.ValidationError("password must be at least 8 characters long")
             pattern=r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$" #Minimum eight characters, at least one uppercase letter, one lowercase letter, one number and one special character
             if not re.search(pattern,value):
-                raise serializers.ValidationError("password must contain at least one uppercase and one special character")
+                raise serializers.ValidationError("password must contain minimum eight characters, at least one uppercase letter, one lowercase letter, one number and one special character")
 
 
             return value
