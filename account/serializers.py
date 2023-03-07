@@ -40,13 +40,13 @@ class SignUpSerializer(serializers.ModelSerializer):
 
     def validate_first_name(self,value):
         if len(value)<3:
-                raise serializers.ValidationError("password must be at least 8 characters long")
+                raise serializers.ValidationError("First name length must be at 3 characters")
         
         return value
     
     def validate_last_name(self,value):
         if len(value)<3:
-                raise serializers.ValidationError("password must be at least 8 characters long")
+                raise serializers.ValidationError("Last name length must be at 3 characters")
         
         return value
 
