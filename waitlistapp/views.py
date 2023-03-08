@@ -14,7 +14,7 @@ class RequiredFieldsViews(APIView):
     renderer_classes=[WaitlistRenderer]
     permission_classes=[IsAuthenticated]
     def get(self,request):
-        user_fields=Fieldlist.objects.get(user=request.user)
+        user_fields=FieldList.objects.get(user=request.user)
         fields=user_fields.fieldlist
         print(user_fields.fieldlist)
         field_list=[i for i in user_fields.fields if i['field_name'] in fields]
@@ -32,7 +32,7 @@ class WaitListView(APIView):
 
 
         def post(self,request,pk=None):
-            user_fields=Fieldlist.objects.filter(user=request.user).values("fieldlist","fields")[0]
+            user_fields=FieldList.objects.filter(user=request.user).values("fieldlist","fields")[0]
             updated_data=request.data.copy()
             updated_data.update({"user":request.user.id})
             required_fields=[i["field_name"] for i in  user_fields["fields"] if i["required"]==True]
@@ -57,7 +57,7 @@ class WaitListView(APIView):
 
                 return Response({"AccessError":"The given url is not valid"},status=status.HTTP_400_BAD_REQUEST)        
             if request.user==customer.user:
-                user_fields=Fieldlist.objects.filter(user=request.user).values("fieldlist","fields")[0]
+                user_fields=FieldList.objects.filter(user=request.user).values("fieldlist","fields")[0]
                 required_fields=[i["field_name"] for i in  user_fields["fields"] if i["required"]==True]
                 error_dict=dict()
                 for i in user_fields["fieldlist"]:
@@ -106,19 +106,19 @@ class AllFieldsView(APIView):
     renderer_classes=[WaitlistRenderer]
     permission_classes=[IsAuthenticated]
     def thread1(self,fields,user):
-        obj=Fieldlist.objects.get(user=user)
+        obj=FieldList.objects.get(user=user)
         obj.fields=fields
         obj.fieldlist=[i["field_name"] for i in fields if i["selected"]==True]
         obj.save()
         print(obj.fieldlist)
 
     def get(self,request):
-        fields=Fieldlist.objects.get(user=request.user)
+        fields=FieldList.objects.get(user=request.user)
         serializeddata=FieldlistSerializer(fields)
         return Response(serializeddata.data)
     def put(self,request):
         serializeddata=FieldsSerializer(data=request.data)
-        fields=Fieldlist.objects.get(user=request.user).fields
+        fields=FieldList.objects.get(user=request.user).fields
         if serializeddata.is_valid(raise_exception=True):
             
             for i in fields:
