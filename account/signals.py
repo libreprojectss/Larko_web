@@ -1,6 +1,7 @@
 from django.db.models.signals import post_save, pre_delete
 from django.dispatch import receiver
 from .models import *
+from waitlistapp.models import FieldList
  
  
 @receiver(post_save,sender=Bussiness_Profile)

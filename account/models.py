@@ -98,22 +98,5 @@ class Bussiness_Profile(models.Model):
 
 
 
-class FieldList(models.Model):
-    user=models.OneToOneField(User,on_delete=models.CASCADE)
-    fields=models.JSONField()
-    fieldlist=ArrayField(models.CharField(max_length=100),default=list)
-    policy_status=models.BooleanField(default=False)
-    policy=models.TextField(default=None)
 
-
-class Waitlist(models.Model):
-    user=models.ForeignKey(User,on_delete=models.CASCADE,related_name="waitlist_for")
-    phone_number=PhoneNumberField(null=True,default=None)
-    dateofbirth=models.DateField(null=True,default=None)
-    email=models.EmailField(null=True,default=None)
-    party_size=models.IntegerField(null=True,default=None)
-    first_name=models.CharField(null=True,max_length=100,default=None)
-    last_name=models.CharField(null=True,max_length=100,default=None)
-    notes=models.CharField(null=True,max_length=100,default=None)
-    description=models.TextField(null=True,default=None)
 
