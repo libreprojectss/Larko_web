@@ -164,12 +164,12 @@ class AllFieldsView(APIView):
         return Response(fields)
 
 
-class Notes(APIView):
+class NotesView(APIView):
     renderer_classes=[WaitlistRenderer]
     permission_classes=[IsAuthenticated]
-    def get(self,request,pk): #For fetching notes
+    def get(self,request,cid=None,nid=None): #For fetching notes
         try:
-            customer=Waitlist.objects.get(id=int(pk))
+            customer=Waitlist.objects.get(id=int(cid))
         except:
             return Response({"AccessError":"The given url is not valid"},status=status.HTTP_502_BAD_GATEWAY)
         if request.user==customer.user:
@@ -179,9 +179,9 @@ class Notes(APIView):
         return Response({"AccessError":"The given url is not valid because the given id don't exists"},status=status.HTTP_502_BAD_GATEWAY)        
 
 
-    def post(self,request,pk): #For saving notes
+    def post(self,request,cid=None,nid=None): #For saving notes
         try:
-            customer=Waitlist.objects.get(id=int(pk))
+            customer=Waitlist.objects.get(id=int(cid))
         except:
             return Response({"AccessError":"The given url is not valid"},status=status.HTTP_502_BAD_GATEWAY)        
         if request.user==customer.user:
@@ -192,25 +192,33 @@ class Notes(APIView):
 
         return Response({"AccessError":"The given url is not valid because the given id don't exists"},status=status.HTTP_502_BAD_GATEWAY)        
     
-    def delete(self,request,pk): #For deleting notes
+    def delete(self,request,cid=None,nid=None): #For deleting notes
         try:
-            notes=Notes.objects.get(id=int(pk))
+            notes=Notes.objects.get(id=int(nid))
         except:
             return Response({"AccessError":"The given url is not valid"},status=status.HTTP_502_BAD_GATEWAY)
 
         customer=notes.customer_on_waitlist
+        if customer.id!=int(cid):
+            return Response({"AccessError":"The given url is not valid"},status=status.HTTP_502_BAD_GATEWAY)
+
+
         if request.user==customer.user:
             notes.delete()
             return  Response("notes deleted")    
         return Response({"AccessError":"The given url is not valid because the given id don't exists"},status=status.HTTP_502_BAD_GATEWAY)   
 
-    def put(self,request,pk): #For updating notes
+    def put(self,request,cid=None,nid=None): #For updating notes
         try:
-            notes=Notes.objects.get(id=int(pk))
+            notes=Notes.objects.get(id=int(nid))
+
         except:
             return Response({"AccessError":"The given url is not valid"},status=status.HTTP_502_BAD_GATEWAY)
 
         customer=notes.customer_on_waitlist
+        if customer.id!=int(cid):
+            print(customer.id)
+            return Response({"AccessError":"The given url is not valid"},status=status.HTTP_502_BAD_GATEWAY)
         if request.user==customer.user:
             serializeddata=NoteSerializer(instance=notes,data=request.data,partial=True)
             if serializeddata.is_valid(raise_exception=True):
