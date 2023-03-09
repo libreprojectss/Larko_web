@@ -110,33 +110,33 @@ class SendPasswordResetEmailSerializer(serializers.Serializer):
         link='http://localhost:3000/user/resetpassword/'+uid+"/"+token
         print("password reset link:"+link)
 
-class Bussiness_name_serializer(serializers.Serializer):
-    bussiness_name=serializers.CharField(max_length=100)
+class Business_name_serializer(serializers.Serializer):
+    business_name=serializers.CharField(max_length=100)
     class Meta:
-        fields=['bussiness_name']
-    def validate_bussiness_name(self,data):
+        fields=['business_name']
+    def validate_business_name(self,data):
         if len(data)<3:
-            raise serializers.ValidationError("Bussiness name must me at least of 3 characters")
-        elif Bussiness_Profile.objects.filter(bussiness_name__iexact=data).exists():
+            raise serializers.ValidationError("Business name must me at least of 3 characters")
+        elif Business_Profile.objects.filter(business_name__iexact=data).exists():
             raise serializers.ValidationError("This name is unavailable")
         elif not data.isalnum():
             raise serializers.ValidationError("The name must be alphanumeric")
         return data
 
-class Bussiness_Profile_Seriaizer(serializers.ModelSerializer):
-    bussiness_name=serializers.CharField(max_length=100,validators=[Bussiness_name_serializer().validate_bussiness_name])
+class Busines_Profile_Seriaizer(serializers.ModelSerializer):
+    busines_name=serializers.CharField(max_length=100,validators=[Business_name_serializer().validate_business_name])
     class Meta:
-        model=Bussiness_Profile
-        fields=['category','role','open_now','bussiness_name','public_link']
+        model=Business_Profile
+        fields=['category','role','open_now','business_name','public_link']
         extra_kwargs={
-            'bussiness_name':{'required':True},
+            'business_name':{'required':True},
             'public_link':{'required':True}
 
         }
     def create(self,validated_data):
-        if Bussiness_Profile.objects.filter(user=validated_data["user"]).exists():
+        if Business_Profile.objects.filter(user=validated_data["user"]).exists():
             raise serializers.ValidationError("User already linked with this account")
-        profile=Bussiness_Profile(**validated_data)
+        profile=Business_Profile(**validated_data)
         profile.save()
         return profile
 

@@ -62,11 +62,9 @@ class User(AbstractBaseUser):
         return self.email
 
     def has_perm(self, perm, obj=None):
-            "Does the user have a specific permission?"
             return True
 
     def has_module_perms(self, app_label):
-        "Does the user have permissions to view the app `app_label`?"
         return True
 
     @property
@@ -87,13 +85,19 @@ roles=[
     ('Vp/Director','vp/director'),
 ]
 
-class Bussiness_Profile(models.Model):
+class Business_Profile(models.Model):
     user=models.OneToOneField(User,on_delete=models.CASCADE)
-    bussiness_name=models.CharField(max_length=100,blank=False,unique=True)
+    business_name=models.CharField(max_length=100,blank=False,unique=True)
     public_link=models.CharField(max_length=200)
     category=models.CharField(max_length=100)
     role=models.CharField(max_length=100,choices=roles,default='Manager')
     open_now=models.BooleanField(default=True)
+    business_phone_number=PhoneNumberField(null=True,default=None)
+    business_email=models.EmailField(null=True,default=None)
+    business_website=models.CharField(max_length=200,null=True,default=None)
+    business_address=models.CharField(max_length=50,null=True,default=None)
+
+
 
 
 

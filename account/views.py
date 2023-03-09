@@ -45,28 +45,32 @@ class LoginViews(APIView):
             else:
                 return Response({"errors":{"password":["Password is incorrect"]}},status=status.HTTP_400_BAD_REQUEST)
 
-class Bussiness_Profile_Views(APIView):
+class Business_Profile_Views(APIView):
     renderer_classes=[UserRenderer]
     permission_classes=[IsAuthenticated]
     def get(self,request):
-        obj=Bussiness_Profile.objects.get(user=request.user)
-        serializeddata=Bussiness_Profile_Seriaizer(obj)
+        obj=Business_Profile.objects.get(user=request.user)
+        serializeddata=Business_Profile_Seriaizer(obj)
         return Response({"user":obj.user.first_name+" "+obj.user.last_name,"data":serializeddata.data})
         
     def post(self,request):
-        serializeddata=Bussiness_Profile_Seriaizer(data=request.data)
+        serializeddata=Business_Profile_Seriaizer(data=request.data)
         if serializeddata.is_valid(raise_exception=True):
             serializeddata.save(user=request.user)
-            return Response({"msg":"Bussiness account created successfully"},status=status.HTTP_200_OK)
+            return Response({"msg":"Business account created successfully"},status=status.HTTP_200_OK)
         return Response({"error":"failed to serialize the given data"},status=status.HTTP_403_FAILED)
+    
+    def put(self,request):
+        objectvalue=Business_Profile.objects.get(user=request.user)
+        serializer=Buss
 
-class CheckBussinessName(APIView):
+class CheckBusinessName(APIView):
     renderer_classes=[UserRenderer]
     def post(self,request):
-        serializeddata=Bussiness_name_serializer(data=request.data)
+        serializeddata=Business_name_serializer(data=request.data)
         if serializeddata.is_valid(raise_exception=True):
             pass
-        return Response({"msg":"Bussiness name is valid"})
+        return Response({"msg":"Business name is valid"})
         
 
 
@@ -85,4 +89,3 @@ class SendPasswordResetEmailViews(APIView):
         serializeddata=SendPasswordResetEmailSerializer(data=request.data)
         serializeddata.is_valid(raise_exception=True)
         return Response({"msg":"Please check your email for password reset."},status=status.HTTP_200_OK)
-

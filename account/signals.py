@@ -4,7 +4,7 @@ from .models import *
 from waitlistapp.models import FieldList
  
  
-@receiver(post_save,sender=Bussiness_Profile)
+@receiver(post_save,sender=Business_Profile)
 def create_fieldlist(sender, instance, created, **kwargs):
     if created:
         FieldList.objects.create(user=instance.user,fields=

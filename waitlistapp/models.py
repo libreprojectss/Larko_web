@@ -24,6 +24,7 @@ class Waitlist(models.Model):
     notes=models.CharField(null=True,max_length=100,default=None)
     description=models.TextField(null=True,default=None)
     added_time=models.DateTimeField(auto_now_add=True)
+    is_serving=models
     
     class Meta:
         get_latest_by = "added_time"

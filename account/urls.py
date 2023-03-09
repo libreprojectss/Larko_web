@@ -7,8 +7,8 @@ urlpatterns=[
     path('updatetoken/',TokenRefreshView.as_view(),name="refresh"),
     path('signup/',SignUpViews.as_view(),name="signup"),
     path('login/',LoginViews.as_view(),name="login"),
-    path('checkbussinessname/',CheckBussinessName.as_view(),name="checkbussinessname"),
-    path('bussinessprofile/',Bussiness_Profile_Views.as_view(),name="bussiness_profile"),
+    path('checkbusinessname/',CheckBusinessName.as_view(),name="checkbusinessname"),
+    path('businessprofile/',Business_Profile_Views.as_view(),name="business_profile"),
   
 
 ]
