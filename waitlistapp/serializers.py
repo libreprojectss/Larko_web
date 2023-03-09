@@ -15,11 +15,14 @@ class FieldsSerializer(serializers.Serializer):
         fields=['field_name','label','required','selected']
 
 
-class NoteSerializer(serializers.Serializer):
+class NoteSerializer(serializers.ModelSerializer):
     notes=serializers.CharField(max_length=200)
     class Meta:
         model=Notes
-        fields='notes'
+        fields=['id','notes']
+    def create(self,validated_data):
+        return Notes.objects.create(**validated_data)
+
 class WaitlistSerializer(serializers.ModelSerializer):
     note=NoteSerializer(many=True,read_only=True) #note is related name so it is used notes would have given an error
     rank=serializers.IntegerField(read_only=True)
@@ -28,10 +31,7 @@ class WaitlistSerializer(serializers.ModelSerializer):
         fields='__all__'
         extra_fields=['rank','note']
     def create(self,validated_data):
-        try:
-            note = validated_data.pop('notes')
-        except:
-            note=None
+        note = self.context["notes"]      
         waitlist=Waitlist(**validated_data)
         if note:
             
@@ -40,5 +40,6 @@ class WaitlistSerializer(serializers.ModelSerializer):
         else:
             waitlist.save()
         return waitlist
+
    
         

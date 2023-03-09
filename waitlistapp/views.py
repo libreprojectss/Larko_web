@@ -44,6 +44,10 @@ class WaitListView(APIView):
 
 
         def post(self,request,pk=None):
+            if request.data["notes"]:
+                notes=request.data["notes"]
+            else:
+                notes=None
             user_fields=FieldList.objects.filter(user=request.user).values("fieldlist","fields")[0]
             updated_data=request.data.copy()
             updated_data.update({"user":request.user.id})
@@ -56,7 +60,7 @@ class WaitListView(APIView):
             if error_dict:
                 output={"errors":error_dict}
                 return Response(output,status=status.HTTP_400_BAD_REQUEST)
-            serializeddata=WaitlistSerializer(data=updated_data)
+            serializeddata=WaitlistSerializer(data=updated_data,context={"notes":notes})
             if serializeddata.is_valid(raise_exception=True):
                     serializeddata.save(user=request.user)
             serializeddata=WaitlistSerializer(Waitlist.objects.filter(user=request.user).annotate(
@@ -163,21 +167,55 @@ class AllFieldsView(APIView):
 class Notes(APIView):
     renderer_classes=[WaitlistRenderer]
     permission_classes=[IsAuthenticated]
-    def post(self,request,pk):
+    def get(self,request,pk): #For fetching notes
         try:
-            customer=WaitList.objects.get(id=int(pk))
+            customer=Waitlist.objects.get(id=int(pk))
         except:
-            return Response({"AccessError":"The given url is not valid"},status=status.HTTP_400_BAD_REQUEST)        
+            return Response({"AccessError":"The given url is not valid"},status=status.HTTP_502_BAD_GATEWAY)
+        if request.user==customer.user:
+            notes=customer.note.all()
+            serializeddata=NoteSerializer(notes,many=True)
+            return Response(serializeddata.data)
+        return Response({"AccessError":"The given url is not valid because the given id don't exists"},status=status.HTTP_502_BAD_GATEWAY)        
+
+
+    def post(self,request,pk): #For saving notes
+        try:
+            customer=Waitlist.objects.get(id=int(pk))
+        except:
+            return Response({"AccessError":"The given url is not valid"},status=status.HTTP_502_BAD_GATEWAY)        
         if request.user==customer.user:
             serializeddata=NoteSerializer(data=request.data)
             if serializeddata.is_valid(raise_exception=True):
-                serializeddata.save(customer=customer)
-        return Response({"AccessError":"The given url is not valid because the given id don't exists"},status=status.HTTP_400_BAD_REQUEST)        
-       
-                
+                data=serializeddata.save(customer_on_waitlist=customer)
+                return  Response("notes saved")
 
+        return Response({"AccessError":"The given url is not valid because the given id don't exists"},status=status.HTTP_502_BAD_GATEWAY)        
+    
+    def delete(self,request,pk): #For deleting notes
+        try:
+            notes=Notes.objects.get(id=int(pk))
+        except:
+            return Response({"AccessError":"The given url is not valid"},status=status.HTTP_502_BAD_GATEWAY)
 
-            
+        customer=notes.customer_on_waitlist
+        if request.user==customer.user:
+            notes.delete()
+            return  Response("notes deleted")    
+        return Response({"AccessError":"The given url is not valid because the given id don't exists"},status=status.HTTP_502_BAD_GATEWAY)   
+
+    def put(self,request,pk): #For updating notes
+        try:
+            notes=Notes.objects.get(id=int(pk))
+        except:
+            return Response({"AccessError":"The given url is not valid"},status=status.HTTP_502_BAD_GATEWAY)
+
+        customer=notes.customer_on_waitlist
+        if request.user==customer.user:
+            serializeddata=NoteSerializer(instance=notes,data=request.data,partial=True)
+            if serializeddata.is_valid(raise_exception=True):
+                data=serializeddata.save()
+                return  Response("notes updated")
 
 
 

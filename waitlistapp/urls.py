@@ -6,5 +6,5 @@ urlpatterns=[
     path('allfields/',AllFieldsView.as_view(),name="allfields"),
     path('waitlist/',WaitListView.as_view(),name="waitlist"),
     path('waitlist/<str:pk>/',WaitListView.as_view(),name="waitlist"),
-    path('notes/',WaitListView.as_view(),name="notes"),
+    path('notes/<str:pk>/',Notes.as_view(),name="notes"),
 ]
