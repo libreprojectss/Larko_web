@@ -31,5 +31,5 @@ class Waitlist(models.Model):
 
 class Notes(models.Model):
     customer_on_waitlist=models.ForeignKey(Waitlist,on_delete=models.CASCADE,related_name='note')
-    notes=ArrayField(models.CharField(max_length=100),default=list)
+    notes=models.CharField(max_length=100)
     edited_time=models.DateTimeField(auto_now=True)

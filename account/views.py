@@ -54,7 +54,7 @@ class Business_Profile_Views(APIView):
         return Response({"user":obj.user.first_name+" "+obj.user.last_name,"data":serializeddata.data})
         
     def post(self,request):
-        serializeddata=Business_Profile_Seriaizer(data=request.data)
+        serializeddata=Business_Profile_Serializer(data=request.data)
         if serializeddata.is_valid(raise_exception=True):
             serializeddata.save(user=request.user)
             return Response({"msg":"Business account created successfully"},status=status.HTTP_200_OK)
@@ -62,7 +62,13 @@ class Business_Profile_Views(APIView):
     
     def put(self,request):
         objectvalue=Business_Profile.objects.get(user=request.user)
-        serializer=Buss
+        serializer=Business_Profile_Serializer(instance=objectvalue,partial=True)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response({"msg":"Updated successfully","data":serialize.data},status=status.HTTP_200_OK)
+        return Response({"error":"failed to serialize the given data"},status=status.HTTP_403_FAILED)
+
+
 
 class CheckBusinessName(APIView):
     renderer_classes=[UserRenderer]

@@ -14,20 +14,29 @@ class FieldsSerializer(serializers.Serializer):
     class Meta:
         fields=['field_name','label','required','selected']
 
-class WaitlistSerializer(serializers.ModelSerializer):
-    rank=serializers.IntegerField(read_only=True)
-    class Meta:
-        model=Waitlist
-        fields='__all__'
-        extra_fields=['rank']
-    def create(self,validated_data):
-        waitlist=Waitlist(**validated_data)
-        waitlist.save()
-        return waitlist
-   
-        
+
 class NoteSerializer(serializers.Serializer):
     notes=serializers.CharField(max_length=200)
     class Meta:
         model=Notes
         fields='notes'
+class WaitlistSerializer(serializers.ModelSerializer):
+    note=NoteSerializer(many=True,read_only=True) #note is related name so it is used notes would have given an error
+    rank=serializers.IntegerField(read_only=True)
+    class Meta:
+        model=Waitlist
+        fields='__all__'
+        extra_fields=['rank','note']
+    def create(self,validated_data):
+        note = validated_data.pop('notes')
+        print(note)
+        waitlist=Waitlist(**validated_data)
+        if note:
+            
+                waitlist.save()
+                Notes.objects.create(customer_on_waitlist=waitlist,notes=note)
+        else:
+            waitlist.save()
+        return waitlist
+   
+        

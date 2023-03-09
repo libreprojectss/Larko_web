@@ -123,8 +123,8 @@ class Business_name_serializer(serializers.Serializer):
             raise serializers.ValidationError("The name must be alphanumeric")
         return data
 
-class Busines_Profile_Seriaizer(serializers.ModelSerializer):
-    busines_name=serializers.CharField(max_length=100,validators=[Business_name_serializer().validate_business_name])
+class Business_Profile_Serializer(serializers.ModelSerializer):
+    business_name=serializers.CharField(max_length=100,validators=[Business_name_serializer().validate_business_name])
     class Meta:
         model=Business_Profile
         fields=['category','role','open_now','business_name','public_link']

@@ -67,9 +67,9 @@ class WaitListView(APIView):
             ),many=True)
             return Response(serializeddata.data)
         
-        def put(self,request,pk):
+        def put(self,request,pk=None):
             try:
-                customer=Waitlist.objects.get(id=pk)
+                customer=Waitlist.objects.get(id=int(pk))
             except:
 
                 return Response({"AccessError":"The given url is not valid"},status=status.HTTP_400_BAD_REQUEST)        
@@ -105,11 +105,10 @@ class WaitListView(APIView):
             return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
 
             
-        def delete(self,request,pk):
-            print(pk)
+        def delete(self,request,pk=None):
             try:
 
-                customer=Waitlist.objects.get(id=pk)
+                customer=Waitlist.objects.get(id=int(pk))
             except:
                 return Response({"AccessError":"The given url is not valid"},status=status.HTTP_400_BAD_REQUEST)        
             if request.user==customer.user:
@@ -166,7 +165,7 @@ class Notes(APIView):
     permission_classes=[IsAuthenticated]
     def post(self,request,pk):
         try:
-            customer=WaitList.objects.get(id=pk)
+            customer=WaitList.objects.get(id=int(pk))
         except:
             return Response({"AccessError":"The given url is not valid"},status=status.HTTP_400_BAD_REQUEST)        
         if request.user==customer.user:
