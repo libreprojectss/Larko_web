@@ -28,8 +28,10 @@ class WaitlistSerializer(serializers.ModelSerializer):
         fields='__all__'
         extra_fields=['rank','note']
     def create(self,validated_data):
-        note = validated_data.pop('notes')
-        print(note)
+        try:
+            note = validated_data.pop('notes')
+        except:
+            note=None
         waitlist=Waitlist(**validated_data)
         if note:
             
