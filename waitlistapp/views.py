@@ -4,10 +4,14 @@ from .serializers import *
 from account.models import User
 from waitlistapp.models import *
 from .tools.renderers import WaitlistRenderer
+from datetime import date
 from rest_framework.response import Response 
 from rest_framework import status,serializers
 from rest_framework.permissions import BasePermission, IsAuthenticated
 import random,base64,json
+from django.db.models import F, Window
+from django.db.models.functions import Rank
+
 import threading
 # Create your views here.
 class RequiredFieldsViews(APIView):
@@ -25,8 +29,16 @@ class RequiredFieldsViews(APIView):
 class WaitListView(APIView):
         renderer_classes=[WaitlistRenderer]
         permission_classes=[IsAuthenticated]
+        
         def get(self,request,pk=None):
-            user_objects=Waitlist.objects.filter(user=request.user)
+        
+            user_objects=Waitlist.objects.filter(user=request.user).annotate(
+             rank=Window(
+            expression=Rank(),
+            order_by=F('added_time').asc(),
+    )
+            )
+
             serializeddata=WaitlistSerializer(user_objects,many=True)
             return Response(serializeddata.data)
 
@@ -47,7 +59,12 @@ class WaitListView(APIView):
             serializeddata=WaitlistSerializer(data=updated_data)
             if serializeddata.is_valid(raise_exception=True):
                     serializeddata.save(user=request.user)
-            serializeddata=WaitlistSerializer(Waitlist.objects.filter(user=request.user),many=True)
+            serializeddata=WaitlistSerializer(Waitlist.objects.filter(user=request.user).annotate(
+             rank=Window(
+            expression=Rank(),
+            order_by=F('added_time').asc(),
+    )
+            ),many=True)
             return Response(serializeddata.data)
         
         def put(self,request,pk):
@@ -67,12 +84,20 @@ class WaitListView(APIView):
                 if error_dict:
                     output={"errors":error_dict}
                     return Response(output,status=status.HTTP_400_BAD_REQUEST)
-                serializer = WaitlistSerializer(customer, data=request.data)
+                
+                serializer = WaitlistSerializer(customer, data=request.data,partial=True)
+
                 if serializer.is_valid(raise_exception=True):
-                        serializer.save()
+                        serializer.save(user=request.user)
                 user=request.user
-                object_list=user.waitlist_for.all()
-                print(object_list)
+                object_list=user.waitlist_for.all().annotate(
+                
+             rank=Window(
+            expression=Rank(),
+            order_by=F('added_time').asc(),
+    )
+            )
+    
                 serializer = WaitlistSerializer(object_list,many=True)
                 return Response(serializer.data)
 

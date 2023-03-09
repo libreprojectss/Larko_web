@@ -15,13 +15,16 @@ class FieldsSerializer(serializers.Serializer):
         fields=['field_name','label','required','selected']
 
 class WaitlistSerializer(serializers.ModelSerializer):
+    rank=serializers.IntegerField(read_only=True)
     class Meta:
         model=Waitlist
         fields='__all__'
+        extra_fields=['rank']
     def create(self,validated_data):
         waitlist=Waitlist(**validated_data)
         waitlist.save()
         return waitlist
+   
         
 class NoteSerializer(serializers.Serializer):
     notes=serializers.CharField(max_length=200)
