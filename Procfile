@@ -1,0 +1,1 @@
+web: gunicorn larko_web.wsgi --log-file -

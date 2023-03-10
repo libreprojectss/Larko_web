@@ -41,7 +41,7 @@ class Services(models.Model):
     duration=models.IntegerField(default=5)
     price=models.IntegerField(blank=True)
     buffer_time=models.IntegerField(default=1)
-    max_booking_per_day=models.IntegerField(default=None,blank=True)
+
 
     def __str__(self):
         return self.service_name
