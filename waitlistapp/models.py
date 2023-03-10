@@ -33,7 +33,7 @@ class Notes(models.Model):
     edited_time=models.DateTimeField(auto_now=True)
 
 class Services(models.Model):
-    user=models.ForeignKey(User,on_delete=models.CASCADE,related_name="services_for")
+    user=models.ForeignKey(User,on_delete=models.CASCADE,related_name="services_for",default=None)
     service_name=models.CharField(max_length=100)
     image=models.ImageField(upload_to='service_images/',default=None)
     category_name=models.CharField(max_length=100)

@@ -43,7 +43,7 @@ class WaitListView(APIView):
 
 
         def post(self,request,pk=None):
-            if request.data["notes"]:
+            if request.data.get("notes",None):
                 notes=request.data["notes"]
             else:
                 notes=None
@@ -116,8 +116,17 @@ class WaitListView(APIView):
                 return Response({"AccessError":"The given url is not valid"},status=status.HTTP_400_BAD_REQUEST)        
             if request.user==customer.user:
                 customer.delete()
-                user_objects=Waitlist.objects.filter(user=request.user).order_by('added_time')
-                serializeddata=WaitlistSerializer(user_objects,many=True)
+                # user_objects=Waitlist.objects.filter(user=request.user).order_by('added_time')
+                user=request.user
+                object_list=user.waitlist_for.all().annotate(
+                
+             rank=Window(
+            expression=Rank(),
+            order_by=F('added_time').asc(),
+    )
+            )
+    
+                serializeddata=WaitlistSerializer(object_list,many=True)
                 return Response(serializeddata.data)
             return Response({"AccessError":"The given url is not valid because the given id don't exists"},status=status.HTTP_400_BAD_REQUEST)
 
@@ -237,6 +246,7 @@ class ServicesViews(APIView):
         serializer=ServiceSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
+            user=request.user
             objectlist=user.services_for.all()
             serializer=ServiceSerializer(objectlist,many=True)
             return Response(serializer)

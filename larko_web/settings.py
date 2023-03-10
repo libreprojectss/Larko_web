@@ -25,10 +25,10 @@ SECRET_KEY = 'django-insecure-skhjd#c%$yllia)5e#uk_#wpj6r7o9v80s)&lkbj$4*k7pm0m5
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1','192.168.0.101']
+ALLOWED_HOSTS = ['127.0.0.1','localhost','192.168.0.101']
 DATE_INPUT_FORMATS = ["%d/%m/%Y"]
 USE_L10N = False
-CSRF_TRUSTED_ORIGINS = ['localhost']
+
 # Application definition
 
 INSTALLED_APPS = [
