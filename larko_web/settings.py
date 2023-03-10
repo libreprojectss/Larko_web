@@ -28,7 +28,7 @@ DEBUG = True
 ALLOWED_HOSTS = ['127.0.0.1','192.168.0.101']
 DATE_INPUT_FORMATS = ["%d/%m/%Y"]
 USE_L10N = False
-
+CSRF_TRUSTED_ORIGINS = ['localhost']
 # Application definition
 
 INSTALLED_APPS = [
