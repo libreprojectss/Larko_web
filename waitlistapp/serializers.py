@@ -41,5 +41,11 @@ class WaitlistSerializer(serializers.ModelSerializer):
             waitlist.save()
         return waitlist
 
+class ServiceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Services
+        fields="__all__"
+        
+
    
         

@@ -13,7 +13,6 @@ from django.db.models import F, Window
 from django.db.models.functions import Rank
 
 import threading
-# Create your views here.
 class RequiredFieldsViews(APIView):
     renderer_classes=[WaitlistRenderer]
     permission_classes=[IsAuthenticated]
@@ -224,6 +223,30 @@ class NotesView(APIView):
             if serializeddata.is_valid(raise_exception=True):
                 data=serializeddata.save()
                 return  Response("notes updated")
+        return Response({"AccessError":"The given url is not valid because the given id don't exists"},status=status.HTTP_502_BAD_GATEWAY)
+
+class ServicesViews(APIView):
+    renderer_classes=[WaitlistRenderer]
+    permission_classes=[IsAuthenticated]
+    def get(self,request):
+        user=request.user
+        objectlist=user.services_for.all()
+        serializer=ServiceSerializer(objectlist,many=True)
+        return Response(serializer)
+    def post(self,request):
+        serializer=ServiceSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            objectlist=user.services_for.all()
+            serializer=ServiceSerializer(objectlist,many=True)
+            return Response(serializer)
+        return Response(serializer)
+    
+
+        
+    
+
+    
 
 
 

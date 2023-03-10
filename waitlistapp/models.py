@@ -31,3 +31,17 @@ class Notes(models.Model):
     customer_on_waitlist=models.ForeignKey(Waitlist,on_delete=models.CASCADE,related_name='note')
     notes=models.CharField(max_length=100)
     edited_time=models.DateTimeField(auto_now=True)
+
+class Services(models.Model):
+    user=models.ForeignKey(User,on_delete=models.CASCADE,related_name="services_for")
+    service_name=models.CharField(max_length=100)
+    image=models.ImageField(upload_to='service_images/',default=None)
+    category_name=models.CharField(max_length=100)
+    description=models.TextField()
+    duration=models.IntegerField(default=5)
+    price=models.IntegerField(blank=True)
+    buffer_time=models.IntegerField(default=1)
+    max_booking_per_day=models.IntegerField(default=None,blank=True)
+
+    def __str__(self):
+        return self.service_name
