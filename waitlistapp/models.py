@@ -39,7 +39,7 @@ class Services(models.Model):
     category_name=models.CharField(max_length=100)
     description=models.TextField()
     duration=models.IntegerField(default=5)
-    price=models.IntegerField(blank=True)
+    price=models.IntegerField(blank=True,default=0)
     buffer_time=models.IntegerField(default=1)
 
 
