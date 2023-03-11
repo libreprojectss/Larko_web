@@ -8,4 +8,6 @@ urlpatterns=[
     path('waitlist/<str:pk>/',WaitListView.as_view(),name="waitlist"),
     path('notes/<str:cid>/',NotesView.as_view(),name="notes"),
     path('notes/<str:cid>/<str:nid>/',NotesView.as_view(),name="notes"),
+    path('services/',ServicesViews.as_view(),name="services"),
+
 ]
