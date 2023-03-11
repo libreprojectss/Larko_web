@@ -237,12 +237,12 @@ class NotesView(APIView):
 class ServicesViews(APIView):
     renderer_classes=[WaitlistRenderer]
     permission_classes=[IsAuthenticated]
-    def get(self,request):
+    def get(self,request,pk=None):
         user=request.user
         objectlist=user.services_for.all()
         serializer=ServiceSerializer(objectlist,many=True)
         return Response(serializer.data)
-    def post(self,request):
+    def post(self,request,pk=None):
         serializer=ServiceSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             serializer.save(user=request.user)
@@ -251,6 +251,28 @@ class ServicesViews(APIView):
             serializer=ServiceSerializer(objectlist,many=True)
             return Response(serializer.data)
         return Response(serializer.data)
+    def put(self,request,pk=None):
+        try:
+            serviceobj=Services.objects.get(id=pk)
+        except:
+            return Response({"AccessError":"The given url is not valid"},status=status.HTTP_502_BAD_GATEWAY)
+
+        serializer=ServiceSerializer(serviceobj,data=request.data,partial=True)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response(serializer.data)
+        return Response({"errors":"Some error occured"},status=status.HTTP_400_BAD_REQUEST)
+    def delete(self,request,pk=None):
+        try:
+            serviceobj=Services.objects.get(id=pk)
+        except:
+            return Response({"AccessError":"The given url is not valid"},status=status.HTTP_502_BAD_GATEWAY)
+        serviceobj.delete()
+        user=request.user
+        objectlist=user.services_for.all()
+        serializer=ServiceSerializer(objectlist,many=True)
+        return Response(serializer.data)
+
     
 
         
