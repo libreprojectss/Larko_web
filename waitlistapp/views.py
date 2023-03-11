@@ -245,12 +245,12 @@ class ServicesViews(APIView):
     def post(self,request):
         serializer=ServiceSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
-            serializer.save()
+            serializer.save(user=request.user)
             user=request.user
             objectlist=user.services_for.all()
             serializer=ServiceSerializer(objectlist,many=True)
-            return Response(serializer)
-        return Response(serializer)
+            return Response(serializer.data)
+        return Response(serializer.data)
     
 
         
