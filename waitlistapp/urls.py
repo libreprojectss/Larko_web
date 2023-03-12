@@ -9,5 +9,6 @@ urlpatterns=[
     path('notes/<str:cid>/',NotesView.as_view(),name="notes"),
     path('notes/<str:cid>/<str:nid>/',NotesView.as_view(),name="notes"),
     path('services/',ServicesViews.as_view(),name="services"),
+    path('services/<str:pk>/',ServicesViews.as_view(),name="services_edit_delete"),
 
 ]
