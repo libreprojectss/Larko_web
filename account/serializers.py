@@ -140,7 +140,7 @@ class Business_Profile_Serializer(serializers.ModelSerializer):
         profile.save()
         return profile
 
-class Bussiness_Edit_Serializer(serializers.ModelSerializer):
+class Business_Edit_Serializer(serializers.ModelSerializer):
     class Meta:
-        model=Bussiness_Profile
+        model=Business_Profile
         fields=['category','role','open_now','business_name','business_title','public_link']
