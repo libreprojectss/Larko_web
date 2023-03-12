@@ -62,7 +62,7 @@ class Business_Profile_Views(APIView):
     
     def put(self,request):
         objectvalue=Business_Profile.objects.get(user=request.user)
-        serializer=Business_Profile_Serializer(instance=objectvalue,data=request.data,partial=True)
+        serializer=Bussiness_Edit_Serializer(instance=objectvalue,data=request.data,partial=True)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response({"msg":"Updated successfully","data":serialize.data},status=status.HTTP_200_OK)
