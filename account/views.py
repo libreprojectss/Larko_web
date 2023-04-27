@@ -65,7 +65,7 @@ class Business_Profile_Views(APIView):
         serializer=Business_Edit_Serializer(instance=objectvalue,data=request.data,partial=True)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
-            return Response({"msg":"Updated successfully","data":serialize.data},status=status.HTTP_200_OK)
+            return Response({"msg":"Updated successfully","data":serializer.data},status=status.HTTP_200_OK)
         return Response({"error":"failed to serialize the given data"},status=status.HTTP_403_FAILED)
 
 
