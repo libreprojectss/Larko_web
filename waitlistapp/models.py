@@ -55,7 +55,7 @@ class Resources(models.Model):
     image=models.ImageField(upload_to='resource_images/',default=None)
     is_available=models.BooleanField(default=True)
     is_free=models.BooleanField(default=True)
-    description=models.CharField(blank=True)
+    description=models.CharField(max_length=255,blank=True)
     def __str__(self):
         return self.service_name
     
