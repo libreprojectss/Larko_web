@@ -23,9 +23,13 @@ class Waitlist(models.Model):
     last_name=models.CharField(null=True,max_length=100,default=None)
     description=models.TextField(null=True,default=None)
     added_time=models.DateTimeField(auto_now_add=True)
-    
+    serving=models.BooleanField(default=False)
+    served=models.BooleanField(default=False)
+
+
     class Meta:
         get_latest_by = "added_time"
+    
 
 class Notes(models.Model):
     customer_on_waitlist=models.ForeignKey(Waitlist,on_delete=models.CASCADE,related_name='note')
@@ -45,3 +49,14 @@ class Services(models.Model):
 
     def __str__(self):
         return self.service_name
+
+class Resources(models.Model):
+    name=models.CharField(max_length=255)
+    image=models.ImageField(upload_to='resource_images/',default=None)
+    is_available=models.BooleanField(default=True)
+    is_free=models.BooleanField(default=True)
+    description=models.CharField(blank=True)
+    def __str__(self):
+        return self.service_name
+    
+

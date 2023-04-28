@@ -50,7 +50,7 @@ class Business_Profile_Views(APIView):
     permission_classes=[IsAuthenticated]
     def get(self,request):
         obj=Business_Profile.objects.get(user=request.user)
-        serializeddata=Business_Profile_Seriaizer(obj)
+        serializeddata=Business_Profile_Serializer(obj)
         return Response({"user":obj.user.first_name+" "+obj.user.last_name,"data":serializeddata.data})
         
     def post(self,request):
