@@ -10,5 +10,9 @@ urlpatterns=[
     path('notes/<str:cid>/<str:nid>/',NotesView.as_view(),name="notes"),
     path('services/',ServicesViews.as_view(),name="services"),
     path('services/<str:pk>/',ServicesViews.as_view(),name="services_edit_delete"),
+    path('serving/<str:pk>/',Servinglist.as_view(),name="serving_list"),
+    path('serving/',Servinglist.as_view(),name="serving"),
+    path('served/',Servinglist.as_view(),name="served"),
+    path('served/<str:pk>/',Servedlist.as_view(),name="served_history"),
 
 ]

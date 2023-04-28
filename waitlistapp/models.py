@@ -51,6 +51,7 @@ class Services(models.Model):
         return self.service_name
 
 class Resources(models.Model):
+    user=models.ForeignKey(User,on_delete=models.CASCADE,related_name="resources_for",default=None)
     name=models.CharField(max_length=255)
     image=models.ImageField(upload_to='resource_images/',default=None)
     is_available=models.BooleanField(default=True)

@@ -31,7 +31,7 @@ class WaitListView(APIView):
         
         def get(self,request,pk=None):
         
-            user_objects=Waitlist.objects.filter(user=request.user).annotate(
+            user_objects=Waitlist.objects.filter(user=request.user,serving=False,served=False).annotate(
              rank=Window(
             expression=Rank(),
             order_by=F('added_time').asc(),
@@ -93,7 +93,7 @@ class WaitListView(APIView):
                 if serializer.is_valid(raise_exception=True):
                         serializer.save(user=request.user)
                 user=request.user
-                object_list=user.waitlist_for.all().annotate(
+                object_list=user.waitlist_for.all().filter(served=False,serving=False).annotate(
                 
              rank=Window(
             expression=Rank(),
@@ -118,7 +118,7 @@ class WaitListView(APIView):
                 customer.delete()
                 # user_objects=Waitlist.objects.filter(user=request.user).order_by('added_time')
                 user=request.user
-                object_list=user.waitlist_for.all().annotate(
+                object_list=user.waitlist_for.all().filter(serving=False,served=False).annotate(
                 
              rank=Window(
             expression=Rank(),
@@ -135,7 +135,61 @@ class WaitListView(APIView):
 
                 
 
-            
+
+class Servinglist(APIView):
+    renderer_classes=[WaitlistRenderer]
+    permission_classes=[IsAuthenticated]
+    def get(self,request):
+        user_objects=Waitlist.objects.filter(user=request.user,serving=True,served=False).annotate(
+             rank=Window(
+            expression=Rank(),
+            order_by=F('added_time').asc(),
+    )
+            )
+
+        serializeddata=WaitlistSerializer(user_objects,many=True)
+        return Response(serializeddata.data)
+
+
+    def post(self,request,pk=None):
+        try:
+            serveobj=Waitlist.objects.get(id=pk)
+        except:
+            return Response({"error":"Some error occured"},status=status.HTTP_502_BAD_GATEWAY)
+        serveobj.serving=True
+        serveobj.save()
+        return Response({"success":"successfully sent for serving"},status=status.HTTP_200_OK)
+
+class Servedlist(APIView):
+    renderer_classes=[WaitlistRenderer]
+    permission_classes=[IsAuthenticated]
+    def get(self,request):
+        user_objects=Waitlist.objects.filter(user=request.user,serving=False,served=True).annotate(
+             rank=Window(
+            expression=Rank(),
+            order_by=F('added_time').asc(),
+    )
+            )
+
+        serializeddata=WaitlistSerializer(user_objects,many=True)
+        return Response(serializeddata.data)
+
+
+    def post(self,request,pk=None):
+        try:
+            serveobj=Waitlist.objects.get(id=pk)
+        except:
+            return Response({"error":"Some error occured"},status=status.HTTP_502_BAD_GATEWAY)
+        serveobj.serving=False
+        serveobj.served=True
+        serveobj.save()
+        return Response({"success":"successfully served"},status=status.HTTP_200_OK)
+        
+
+
+
+
+
 
 
 class AllFieldsView(APIView):

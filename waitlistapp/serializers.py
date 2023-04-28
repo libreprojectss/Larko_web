@@ -45,6 +45,11 @@ class ServiceSerializer(serializers.ModelSerializer):
     class Meta:
         model=Services
         fields="__all__"
+
+class ResourcesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Resources
+        fields="__all__"
         
 
    
