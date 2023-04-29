@@ -127,10 +127,11 @@ class Business_Profile_Serializer(serializers.ModelSerializer):
     business_name=serializers.CharField(max_length=100,validators=[Business_name_serializer().validate_business_name])
     class Meta:
         model=Business_Profile
-        fields='__all__'
+        fields=['category','role','open_now','business_name','business_title','public_link']
         extra_kwargs={
             'business_name':{'required':True},
-            'public_link':{'required':True}
+            'public_link':{'required':True},
+            
 
         }
     def create(self,validated_data):

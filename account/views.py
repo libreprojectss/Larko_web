@@ -54,6 +54,7 @@ class Business_Profile_Views(APIView):
         return Response({"user":obj.user.first_name+" "+obj.user.last_name,"data":serializeddata.data})
         
     def post(self,request):
+        print(type(request.data))
         serializeddata=Business_Profile_Serializer(data=request.data)
         if serializeddata.is_valid(raise_exception=True):
             serializeddata.save(user=request.user)
