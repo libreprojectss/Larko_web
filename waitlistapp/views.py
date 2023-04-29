@@ -43,6 +43,7 @@ class WaitListView(APIView):
 
 
         def post(self,request,pk=None):
+            print(request.data)
             if request.data.get("notes",None):
                 notes=request.data["notes"]
             else:
@@ -184,7 +185,15 @@ class Servedlist(APIView):
         serveobj.served=True
         serveobj.save()
         return Response({"success":"successfully served"},status=status.HTTP_200_OK)
+
+class Resources(APIView):
+    renderer_classes=[WaitlistRenderer]
+    permission_classes=[IsAuthenticated]
+    def get(self,request):
         
+
+
+
 
 
 
