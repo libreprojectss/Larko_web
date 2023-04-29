@@ -189,7 +189,7 @@ class Servedlist(APIView):
 class Resources(APIView):
     renderer_classes=[WaitlistRenderer]
     permission_classes=[IsAuthenticated]
-    def get(self,request):
+    # def get(self,request):
         
 
 
