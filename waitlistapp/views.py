@@ -186,11 +186,7 @@ class Servedlist(APIView):
         serveobj.save()
         return Response({"success":"successfully served"},status=status.HTTP_200_OK)
 
-class Resources(APIView):
-    renderer_classes=[WaitlistRenderer]
-    permission_classes=[IsAuthenticated]
-    # def get(self,request):
-        
+
 
 
 
@@ -336,7 +332,45 @@ class ServicesViews(APIView):
         serializer=ServiceSerializer(objectlist,many=True)
         return Response(serializer.data)
 
-    
+class ResourcesViews(APIView):
+    renderer_classes=[WaitlistRenderer]
+    permission_classes=[IsAuthenticated]
+    def get(self,request,pk=None):
+        user=request.user
+        objectlist=user.resources_for.all()
+        serializer=ResourcesSerializer(objectlist,many=True)
+        return Response(serializer.data)
+    def post(self,request,pk=None):
+        serializer=ResourcesSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save(user=request.user)
+            user=request.user
+            objectlist=user.resources_for.all()
+            serializer=ResourcesSerializer(objectlist,many=True)
+            return Response(serializer.data)
+        return Response(serializer.data)
+    def put(self,request,pk=None):
+        try:
+            resourceobj=Resources.objects.get(id=pk)
+        except:
+            return Response({"AccessError":"The given url is not valid"},status=status.HTTP_502_BAD_GATEWAY)
+
+        serializer=ResourcesSerializer(resourceobj,data=request.data,partial=True)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response(serializer.data)
+        return Response({"errors":"Some error occured"},status=status.HTTP_400_BAD_REQUEST)
+    def delete(self,request,pk=None):
+        try:
+            resourceobj=Resources.objects.get(id=pk)
+        except:
+            return Response({"AccessError":"The given url is not valid"},status=status.HTTP_502_BAD_GATEWAY)
+        serviceobj.delete()
+        user=request.user
+        objectlist=user.resources_for.all()
+        serializer=ResourcesSerializer(objectlist,many=True)
+        return Response(serializer.data)
+
 
         
     

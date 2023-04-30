@@ -14,5 +14,7 @@ urlpatterns=[
     path('serving/',Servinglist.as_view(),name="serving"),
     path('served/',Servinglist.as_view(),name="served"),
     path('served/<str:pk>/',Servedlist.as_view(),name="served_history"),
+    path('resources/',ResourcesViews.as_view(),name="resources"),
+    path('resources/<str:pk>/',ResourcesViews.as_view(),name="resources")
 
 ]
