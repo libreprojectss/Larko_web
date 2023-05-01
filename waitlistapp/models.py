@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.postgres.fields import ArrayField
 from account.models import User 
 import datetime,uuid
+from django.utils import timezone
+from django.utils.timesince import timesince
 from django.dispatch import receiver
 from phonenumber_field.modelfields import PhoneNumberField
 
@@ -23,8 +25,39 @@ class Waitlist(models.Model):
     last_name=models.CharField(null=True,max_length=100,default=None)
     description=models.TextField(null=True,default=None)
     added_time=models.DateTimeField(auto_now_add=True)
+    served_time=models.DateTimeField(null=True,default=None)
+    serving_started_time=models.DateTimeField(null=True,default=None)
     serving=models.BooleanField(default=False)
     served=models.BooleanField(default=False)
+    
+    def wait_time(self):
+        if self.serving_started_time==None:
+            current_time = timezone.now()
+        else:
+            current_time = self.serving_started_time
+        time_difference = current_time - self.added_time
+        minutes, seconds = divmod(time_difference.seconds, 60)
+
+        
+        return {"days":time_difference.days,"minutes": minutes,"seconds":seconds}
+    
+    def burst_time(self):
+        if self.serving_started_time==None:
+            return "Not served yet"
+        elif self.served_time:
+            current_time = self.served_time
+        else:
+            current_time = timezone.now()
+        
+        time_difference = current_time - self.serving_started_time
+        minutes, seconds = divmod(time_difference.seconds, 60)
+
+        
+        return {"days":time_difference.days,"minutes": minutes,"seconds":seconds}
+    
+        return time_difference
+    
+    
 
 
     class Meta:
@@ -52,6 +85,7 @@ class Services(models.Model):
 
 class Resources(models.Model):
     user=models.ForeignKey(User,on_delete=models.CASCADE,related_name="resources_for",default=None)
+    services=models.ManyToManyField(Services)
     name=models.CharField(max_length=255)
     image=models.ImageField(upload_to='resource_images/',default=None)
     is_available=models.BooleanField(default=True)
@@ -59,5 +93,7 @@ class Resources(models.Model):
     description=models.CharField(max_length=255,blank=True)
     def __str__(self):
         return self.service_name
+
+
     
 

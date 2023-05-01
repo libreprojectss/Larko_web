@@ -2,6 +2,7 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from .serializers import *
 from account.models import User
+from django.utils import timezone
 from waitlistapp.models import *
 from .tools.renderers import WaitlistRenderer
 from datetime import date
@@ -140,7 +141,7 @@ class WaitListView(APIView):
 class Servinglist(APIView):
     renderer_classes=[WaitlistRenderer]
     permission_classes=[IsAuthenticated]
-    def get(self,request):
+    def get(self,request,pk=None):
         user_objects=Waitlist.objects.filter(user=request.user,serving=True,served=False).annotate(
              rank=Window(
             expression=Rank(),
@@ -148,7 +149,7 @@ class Servinglist(APIView):
     )
             )
 
-        serializeddata=WaitlistSerializer(user_objects,many=True)
+        serializeddata=ServingSerializer(user_objects,many=True)
         return Response(serializeddata.data)
 
 
@@ -157,22 +158,27 @@ class Servinglist(APIView):
             serveobj=Waitlist.objects.get(id=pk)
         except:
             return Response({"error":"Some error occured"},status=status.HTTP_502_BAD_GATEWAY)
+        if serveobj.user!=request.user:
+                return Response({"error":"Some error occured"},status=status.HTTP_502_BAD_GATEWAY)
+
+
         serveobj.serving=True
+        serveobj.serving_started_time=timezone.now()
         serveobj.save()
         return Response({"success":"successfully sent for serving"},status=status.HTTP_200_OK)
 
 class Servedlist(APIView):
     renderer_classes=[WaitlistRenderer]
     permission_classes=[IsAuthenticated]
-    def get(self,request):
+    def get(self,request,pk=None):
         user_objects=Waitlist.objects.filter(user=request.user,serving=False,served=True).annotate(
              rank=Window(
             expression=Rank(),
-            order_by=F('added_time').asc(),
+            order_by=F('serving_started_time').asc(),
     )
             )
 
-        serializeddata=WaitlistSerializer(user_objects,many=True)
+        serializeddata=HistorySerializer(user_objects,many=True)
         return Response(serializeddata.data)
 
 
@@ -181,7 +187,10 @@ class Servedlist(APIView):
             serveobj=Waitlist.objects.get(id=pk)
         except:
             return Response({"error":"Some error occured"},status=status.HTTP_502_BAD_GATEWAY)
+        if serveobj.user!=request.user:
+                return Response({"error":"Some error occured"},status=status.HTTP_502_BAD_GATEWAY)
         serveobj.serving=False
+        serveobj.served_time=timezone.now()
         serveobj.served=True
         serveobj.save()
         return Response({"success":"successfully served"},status=status.HTTP_200_OK)
@@ -341,14 +350,25 @@ class ResourcesViews(APIView):
         serializer=ResourcesSerializer(objectlist,many=True)
         return Response(serializer.data)
     def post(self,request,pk=None):
+        
+
+        servicelist=request.data["services"] if request.data["services"] else []
+        print(servicelist)
+        
         serializer=ResourcesSerializer(data=request.data)
+       
         if serializer.is_valid(raise_exception=True):
-            serializer.save(user=request.user)
+            obj=serializer.save(user=request.user)
+            for i in servicelist:
+                i=Services.objects.get(id=int(i))
+            
+
+            obj.services.set(servicelist)
             user=request.user
             objectlist=user.resources_for.all()
             serializer=ResourcesSerializer(objectlist,many=True)
             return Response(serializer.data)
-        return Response(serializer.data)
+        return Response(request.data)
     def put(self,request,pk=None):
         try:
             resourceobj=Resources.objects.get(id=pk)
@@ -365,7 +385,7 @@ class ResourcesViews(APIView):
             resourceobj=Resources.objects.get(id=pk)
         except:
             return Response({"AccessError":"The given url is not valid"},status=status.HTTP_502_BAD_GATEWAY)
-        serviceobj.delete()
+        resourceobj.delete()
         user=request.user
         objectlist=user.resources_for.all()
         serializer=ResourcesSerializer(objectlist,many=True)
