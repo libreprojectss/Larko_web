@@ -24,5 +24,5 @@ def create_fieldlist(sender, instance, created, **kwargs):
 @receiver(post_save,sender=Business_Profile)
 def create_public_link(sender,instance,created, **kwargs):
     if created:
-        Public_link.objects.create(profile=instance.user)
+        Public_link.objects.create(profile=instance)
 

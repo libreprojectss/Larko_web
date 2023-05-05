@@ -40,7 +40,7 @@ class Public_link_Views(APIView):
                 return Response({"status":"You are being served","serving time":waitlist_profile.burst_time})
             elif not waitlist_profile.serving and not waitlist_profile.served:
 
-                user=public_link_profile.profile
+                user=public_link_profile.profile.user
                 ordered=Waitlist.objects.filter(user=user).order_by('added_time')
                 rank=list(ordered).index(waitlist_profile)+1
                 return Response({"status":"You are on the queue","waited_for":waitlist_profile.wait_time(),"rank":rank})
@@ -49,7 +49,7 @@ class Public_link_Views(APIView):
 
         else:
             
-            user=public_link_profile.profile
+            user=public_link_profile.profile.user
             print(user)
             user_fields=FieldList.objects.filter(user=user).values("fieldlist","fields")[0]
             

@@ -48,10 +48,10 @@ class User(AbstractBaseUser):
         max_length=20)
     password=models.CharField(max_length=100)
     account_created=models.DateField(auto_now_add=True,blank=True)
-    is_active = models.BooleanField(default=True)
-    is_verified = models.BooleanField(default=True)
-    is_admin = models.BooleanField(default=False)
-    is_staff = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True,null=False)
+    is_verified = models.BooleanField(default=True,null=False)
+    is_admin = models.BooleanField(default=False,null=False)
+    is_staff = models.BooleanField(default=False,null=False)
 
     objects = UserManager()
 
@@ -91,7 +91,7 @@ class Business_Profile(models.Model):
     business_title=models.CharField(max_length=100)
     category=models.CharField(max_length=100)
     role=models.CharField(max_length=100,choices=roles,default='Manager')
-    open_now=models.BooleanField(default=True)
+    open_now=models.BooleanField(default=True,null=False)
     business_phone_number=PhoneNumberField(null=True,default=None)
     business_email=models.EmailField(null=True,default=None)
     business_website=models.CharField(max_length=200,null=True,default=None)

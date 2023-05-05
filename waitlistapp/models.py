@@ -11,7 +11,7 @@ class FieldList(models.Model):
     user=models.OneToOneField(User,on_delete=models.CASCADE)
     fields=models.JSONField()
     fieldlist=ArrayField(models.CharField(max_length=100),default=list)
-    policy_status=models.BooleanField(default=False)
+    policy_status=models.BooleanField(default=False,null=False)
     policy=models.TextField(default=None)
 
 class Services(models.Model):
@@ -33,8 +33,8 @@ class Resources(models.Model):
     services=models.ManyToManyField(Services)
     name=models.CharField(max_length=255)
     image=models.ImageField(upload_to='resource_images/',default=None)
-    is_available=models.BooleanField(default=True)
-    is_free=models.BooleanField(default=True)
+    is_available=models.BooleanField(default=True,null=False)
+    is_free=models.BooleanField(default=True,null=False)
     description=models.CharField(max_length=255,blank=True)
     def __str__(self):
         return self.service_name
@@ -54,8 +54,8 @@ class Waitlist(models.Model):
     added_time=models.DateTimeField(auto_now_add=True)
     served_time=models.DateTimeField(null=True,default=None)
     serving_started_time=models.DateTimeField(null=True,default=None)
-    serving=models.BooleanField(default=False)
-    served=models.BooleanField(default=False)
+    serving=models.BooleanField(default=False,null=False)
+    served=models.BooleanField(default=False,null=False)
     
     def wait_time(self):
         if self.serving_started_time==None:

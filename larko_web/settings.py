@@ -93,28 +93,28 @@ AUTH_USER_MODEL='account.User'
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
-DATABASES = {  
-    'default': {  
-        'ENGINE': 'django.db.backends.postgresql',  
-        'NAME': 'larko_db',  
-        'USER': 'postgres',  
-        'PASSWORD': '',  
-        'HOST': 'localhost',  
-        'PORT': '5432',  
-        
-    }  
-}
 # DATABASES = {  
 #     'default': {  
 #         'ENGINE': 'django.db.backends.postgresql',  
-#         'NAME': 'railway',  
+#         'NAME': 'larko_db',  
 #         'USER': 'postgres',  
-#         'PASSWORD': 'LORO73muDgOJ8GtyJvjL',  
-#         'HOST': 'containers-us-west-180.railway.app',  
-#         'PORT': '7191',  
+#         'PASSWORD': '',  
+#         'HOST': 'localhost',  
+#         'PORT': '5432',  
         
 #     }  
 # }
+DATABASES = {  
+    'default': {  
+        'ENGINE': 'django.db.backends.postgresql',  
+        'NAME': 'railway',  
+        'USER': 'postgres',  
+        'PASSWORD': 'eGTMx2erMAezWCdwcDTm',  
+        'HOST': 'containers-us-west-184.railway.app',  
+        'PORT': '6794',  
+        
+    }  
+}
 
 
 # Password validation
