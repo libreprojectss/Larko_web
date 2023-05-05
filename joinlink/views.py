@@ -11,9 +11,10 @@ from .serializers import *
 class Public_link_Views(APIView):
     renderer_classes=[UserRenderer]
 
-    def get(self,pk):
+    def get(self,request,pk):
+        print(pk)
         try:
-            obj=Public_link.objects.fiter(public_id=pk)[0]
+            obj=Public_link.objects.get(public_id=pk)
         except:
             return Response({"AccessError":"The given url is not valid"},status=status.HTTP_502_BAD_GATEWAY)
         profile=obj.profile
