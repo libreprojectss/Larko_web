@@ -159,9 +159,9 @@ class Servinglist(APIView):
         except:
             return Response({"error":"Some error occured"},status=status.HTTP_502_BAD_GATEWAY)
         if serveobj.user!=request.user:
-                return Response({"error":"Some error occured"},status=status.HTTP_502_BAD_GATEWAY)
+                return Response({"error":"Some error occured please recheck the hit address"},status=status.HTTP_502_BAD_GATEWAY)
 
-
+        
         serveobj.serving=True
         serveobj.serving_started_time=timezone.now()
         serveobj.save()
@@ -189,6 +189,8 @@ class Servedlist(APIView):
             return Response({"error":"Some error occured"},status=status.HTTP_502_BAD_GATEWAY)
         if serveobj.user!=request.user:
                 return Response({"error":"Some error occured"},status=status.HTTP_502_BAD_GATEWAY)
+        elif not serveobj.serving:
+                return Response({"error":"The selected waitlist cusutomer is not sent for serving"},status=status.HTTP_502_BAD_GATEWAY)
         serveobj.serving=False
         serveobj.served_time=timezone.now()
         serveobj.served=True

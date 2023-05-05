@@ -14,9 +14,36 @@ class FieldList(models.Model):
     policy_status=models.BooleanField(default=False)
     policy=models.TextField(default=None)
 
+class Services(models.Model):
+    user=models.ForeignKey(User,on_delete=models.CASCADE,related_name="services_for",default=None)
+    service_name=models.CharField(max_length=100)
+    image=models.ImageField(upload_to='service_images/',default=None)
+    category_name=models.CharField(max_length=100)
+    description=models.TextField()
+    duration=models.IntegerField(default=5)
+    price=models.IntegerField(blank=True,default=0)
+    buffer_time=models.IntegerField(default=1)
+
+
+    def __str__(self):
+        return self.service_name
+
+class Resources(models.Model):
+    user=models.ForeignKey(User,on_delete=models.CASCADE,related_name="resources_for",default=None)
+    services=models.ManyToManyField(Services)
+    name=models.CharField(max_length=255)
+    image=models.ImageField(upload_to='resource_images/',default=None)
+    is_available=models.BooleanField(default=True)
+    is_free=models.BooleanField(default=True)
+    description=models.CharField(max_length=255,blank=True)
+    def __str__(self):
+        return self.service_name
+
 
 class Waitlist(models.Model):
     user=models.ForeignKey(User,on_delete=models.CASCADE,related_name="waitlist_for")
+    service=models.ForeignKey(Services,on_delete=models.SET_NULL,null=True,default=None,related_name="services_taken")
+    resource=models.ForeignKey(Resources,on_delete=models.SET_NULL,related_name="waitlist_for",default=None,null=True)
     phone_number=PhoneNumberField(null=True,default=None)
     dateofbirth=models.DateField(null=True,default=None)
     email=models.EmailField(null=True,default=None)
@@ -55,8 +82,6 @@ class Waitlist(models.Model):
         
         return {"days":time_difference.days,"minutes": minutes,"seconds":seconds}
     
-        return time_difference
-    
     
 
 
@@ -69,30 +94,7 @@ class Notes(models.Model):
     notes=models.CharField(max_length=100)
     edited_time=models.DateTimeField(auto_now=True)
 
-class Services(models.Model):
-    user=models.ForeignKey(User,on_delete=models.CASCADE,related_name="services_for",default=None)
-    service_name=models.CharField(max_length=100)
-    image=models.ImageField(upload_to='service_images/',default=None)
-    category_name=models.CharField(max_length=100)
-    description=models.TextField()
-    duration=models.IntegerField(default=5)
-    price=models.IntegerField(blank=True,default=0)
-    buffer_time=models.IntegerField(default=1)
 
-
-    def __str__(self):
-        return self.service_name
-
-class Resources(models.Model):
-    user=models.ForeignKey(User,on_delete=models.CASCADE,related_name="resources_for",default=None)
-    services=models.ManyToManyField(Services)
-    name=models.CharField(max_length=255)
-    image=models.ImageField(upload_to='resource_images/',default=None)
-    is_available=models.BooleanField(default=True)
-    is_free=models.BooleanField(default=True)
-    description=models.CharField(max_length=255,blank=True)
-    def __str__(self):
-        return self.service_name
 
 
     

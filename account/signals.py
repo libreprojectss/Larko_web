@@ -1,5 +1,6 @@
 from django.db.models.signals import post_save, pre_delete
 from django.dispatch import receiver
+from joinlink.models import Public_link
 from .models import *
 from waitlistapp.models import FieldList
  
@@ -20,4 +21,8 @@ def create_fieldlist(sender, instance, created, **kwargs):
         ],fieldlist=["email","first_name", "last_name","notes"],
         policy="")
         
+@receiver(post_save,sender=Business_Profile)
+def create_public_link(sender,instance,created, **kwargs):
+    if created:
+        Public_link.objects.create(profile=instance.user)
 

@@ -86,10 +86,9 @@ roles=[
 ]
 
 class Business_Profile(models.Model):
-    user=models.OneToOneField(User,on_delete=models.CASCADE)
+    user=models.OneToOneField(User,on_delete=models.CASCADE,related_name="profile_of")
     business_name=models.CharField(max_length=100,blank=False,unique=True)
     business_title=models.CharField(max_length=100)
-    public_link=models.CharField(max_length=200)
     category=models.CharField(max_length=100)
     role=models.CharField(max_length=100,choices=roles,default='Manager')
     open_now=models.BooleanField(default=True)
@@ -97,6 +96,9 @@ class Business_Profile(models.Model):
     business_email=models.EmailField(null=True,default=None)
     business_website=models.CharField(max_length=200,null=True,default=None)
     business_address=models.CharField(max_length=50,null=True,default=None)
+
+    
+
 
 
 

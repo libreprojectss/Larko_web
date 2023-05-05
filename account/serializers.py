@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import *
+from joinlink.serializers import Public_Link_Serializer
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from .helpers import IdEncodeDecode
 import re
@@ -112,6 +113,7 @@ class SendPasswordResetEmailSerializer(serializers.Serializer):
 
 class Business_name_serializer(serializers.Serializer):
     business_name=serializers.CharField(max_length=100)
+
     class Meta:
         fields=['business_name']
     def validate_business_name(self,data):
@@ -125,10 +127,11 @@ class Business_name_serializer(serializers.Serializer):
 
 class Business_Profile_Serializer(serializers.ModelSerializer):
     business_name=serializers.CharField(max_length=100,validators=[Business_name_serializer().validate_business_name])
+    public_link_to=Public_Link_Serializer(read_only=True)
     class Meta:
         model=Business_Profile
-        fields=['category','role','open_now','business_name','business_title','public_link','business_phone_number','business_email'
-        ,'business_website','business_address'
+        fields=['category','role','open_now','business_name','business_title','business_phone_number','business_email'
+        ,'business_website','business_address',"public_link_to"
         ]
         extra_kwargs={
             'business_name':{'required':True},
