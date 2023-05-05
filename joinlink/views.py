@@ -13,7 +13,7 @@ class Public_link_Views(APIView):
 
     def get(self,pk):
         try:
-            obj=Public_link.objects.get(public_id=pk)
+            obj=Public_link.objects.fiter(public_id=pk)[0]
         except:
             return Response({"AccessError":"The given url is not valid"},status=status.HTTP_502_BAD_GATEWAY)
         profile=obj.profile
