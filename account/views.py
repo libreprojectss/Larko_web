@@ -3,6 +3,7 @@ from rest_framework.views import APIView
 from .serializers import *
 from account.models import *
 from waitlistapp.models import *
+from joinlink.models import Public_link
 from .renderers import UserRenderer
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.response import Response 
@@ -96,3 +97,48 @@ class SendPasswordResetEmailViews(APIView):
         serializeddata=SendPasswordResetEmailSerializer(data=request.data)
         serializeddata.is_valid(raise_exception=True)
         return Response({"msg":"Please check your email for password reset."},status=status.HTTP_200_OK)
+
+class OpenCloseBusiness(APIView):
+    renderer_classes=[UserRenderer]
+    permission_classes=[IsAuthenticated]
+    def get(self,request,pk=None):
+        try:
+            profile=Business_Profile.objects.get(user=request.user)
+        except:
+            return Response({"error":"Some error occured.Make sure you are authorized"},status=status.HTTP_403_FORBIDDEN)
+        if pk:
+            if pk=='1':
+                profile.open_now=True
+                profile.save()
+            elif pk=='0':
+                profile.open_now=False
+                profile.save()
+            else:
+                return Response({"error":"Value of the key should be either 0 or 1"},status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+
+        return Response({"status":profile.open_now})
+    
+class OpenClosePublicLink(APIView):
+    renderer_classes=[UserRenderer]
+    permission_classes=[IsAuthenticated]
+    def get(self,request,pk=None):
+        try:
+            profile=Business_Profile.objects.get(user=request.user)
+            public_profile=Public_link.objects.get(profile=profile)
+        except:
+            return Response({"error":"Some error occured.Make sure you are authorized"},status=status.HTTP_403_FORBIDDEN)
+        if pk:
+            if pk=='1':
+                public_profile.public_access=True
+                public_profile.save()
+            elif pk=='0':
+                public_profile.public_access=False
+                public_profile.save()
+            else:
+                return Response({"error":"Value of the key should be either 0 or 1"},status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+
+        return Response({"status":public_profile.public_access})
+    
+   

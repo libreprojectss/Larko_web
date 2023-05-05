@@ -11,4 +11,5 @@ class Public_link(models.Model):
 
     def public_join_link(self):
         return("/publicjoin/"+str(self.public_id))
+
 # Create your models here.

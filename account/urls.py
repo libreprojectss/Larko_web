@@ -9,6 +9,13 @@ urlpatterns=[
     path('login/',LoginViews.as_view(),name="login"),
     path('checkbusinessname/',CheckBusinessName.as_view(),name="checkbusinessname"),
     path('businessprofile/',Business_Profile_Views.as_view(),name="business_profile"),
+    path("openclosebusiness/",OpenCloseBusiness.as_view(),name="open close business"),
+
+    path("openclosebusiness/<str:pk>/",OpenCloseBusiness.as_view(),name="open close business"),
+     path("openclosepubliclink/",OpenClosePublicLink.as_view(),name="open close business"), 
+
+    path("openclosepubliclink/<str:pk>/",OpenClosePublicLink.as_view(),name="open close business")
+
   
 
 ]
