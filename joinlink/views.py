@@ -12,7 +12,6 @@ class Public_link_Views(APIView):
     renderer_classes=[UserRenderer]
 
     def get(self,request,pk):
-        print(pk)
         try:
             obj=Public_link.objects.get(public_id=pk)
         except:
@@ -77,8 +76,26 @@ class Public_link_Views(APIView):
             
             return Response({"error":"There is problem in validating the data.Please check the inputs"},status=status.HTTP_502_BAD_GATEWAY)
 
+    def delete(self,request,pk):
+        # Check if the cookie is present and contains user information
+        cookie_name = 'queue_cookie'
+        try:
+            public_link_profile=Public_link.objects.get(public_id=pk)
+        except:
+            return Response({"AccessError":"The provided url is not valid."},status=status.HTTP_400_BAD_REQUEST)
+        user_info = request.COOKIES.get(cookie_name, None)
+        key=public_link_profile.fernet_key
+        print(user_info)
+        if user_info:
+            customerid=decrypt_user_id(user_info,key)
+            waitlist_profile=Waitlist.objects.get(id=customerid)
+            waitlist_profile.delete()
+            response = Response({"message": "You have been removed from the waitlist."}, status=status.HTTP_200_OK)
+            response.delete_cookie(cookie_name)
+            return response
 
-
+        else:
+            return Response({"error":"Some error occured.Token is not available."},status=status.HTTP_400_BAD_REQUEST)
 
 
 

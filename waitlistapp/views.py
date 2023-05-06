@@ -197,17 +197,6 @@ class Servedlist(APIView):
         serveobj.save()
         return Response({"success":"successfully served"},status=status.HTTP_200_OK)
 
-
-
-
-
-
-
-
-
-
-
-
 class AllFieldsView(APIView):
     renderer_classes=[WaitlistRenderer]
     permission_classes=[IsAuthenticated]
@@ -392,6 +381,9 @@ class ResourcesViews(APIView):
         objectlist=user.resources_for.all()
         serializer=ResourcesSerializer(objectlist,many=True)
         return Response(serializer.data)
+
+
+
 
 
         
