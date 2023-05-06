@@ -15,6 +15,7 @@ urlpatterns=[
     path('served/',Servedlist.as_view(),name="served"),        #send serving id from serving list to be served here in pk in post request
     path('served/<str:pk>/',Servedlist.as_view(),name="served_history"),  #for get request 
     path('resources/',ResourcesViews.as_view(),name="resources"),  #for resources get and post
-    path('resources/<str:pk>/',ResourcesViews.as_view(),name="resources")    #For resources put and delete. can send services along with the data
+    path('resources/<str:pk>/',ResourcesViews.as_view(),name="resources"), #For resources put and delete. can send services along with the data
+    path('analytics/<str:pk>/',AnalyticsViews.as_view(),name="analytics"),
 
 ]

@@ -5,7 +5,8 @@ from account.models import User
 from django.utils import timezone
 from waitlistapp.models import *
 from .tools.renderers import WaitlistRenderer
-from datetime import date
+from .timefunc import *
+from datetime import date,timedelta
 from rest_framework.response import Response 
 from rest_framework import status,serializers
 from rest_framework.permissions import BasePermission, IsAuthenticated
@@ -381,6 +382,59 @@ class ResourcesViews(APIView):
         objectlist=user.resources_for.all()
         serializer=ResourcesSerializer(objectlist,many=True)
         return Response(serializer.data)
+
+
+class AnalyticsViews(APIView):
+    renderer_classes=[WaitlistRenderer]
+    permission_classes=[IsAuthenticated]
+    def calculate_values(self,start_time,end_time):
+        total_served = Waitlist.objects.filter(served_time__range=(start_time, end_time)).count()
+        total_entries = Waitlist.objects.filter(added_time__range=(start_time, end_time)).count()
+        if total_entries!=0:
+            serve_rate = (total_served / total_entries) * 100
+        else:
+            serve_rate=0
+        waitlists= Waitlist.objects.exclude(serving_started_time=None).filter(serving_started_time__range=(start_time, end_time))
+        total_wait_time = sum([waitlist.serving_started_time - waitlist.added_time for waitlist in waitlists], timedelta())
+        average_wait_time = total_wait_time / len(waitlists) if len(waitlists) > 0 else None
+        waitlists_served = Waitlist.objects.exclude(served_time=None).filter(served_time__range=(start_time, end_time))
+        total_serve_time = sum([waitlist.time_served - waitlist.time_added for waitlist in waitlists_served], timedelta())
+        average_serve_time = total_serve_time / len(waitlists_served) if len(waitlists_served) > 0 else None
+        cancelled=total_entries-waitlists.count()
+        return({"total_served":total_served,"total_entries":total_entries,"serve_rate":serve_rate,"avg_wait_time":average_wait_time,"avg_serve_time":average_serve_time,"total_cancelled":cancelled})
+
+    def self_checked(self,start_time,end_time):
+        self_checked=Waitlist.objects.filter(added_time__range=(start_time, end_time),self_checked=True).count()
+        total_entries = Waitlist.objects.filter(added_time__range=(start_time, end_time)).count()
+        return({"self_checked":self_checked,"manually_added":total_entries-self_checked})
+    def get(self,request,pk):
+        today = timezone.now()
+        if pk=="today":
+            # start_time = datetime.combine(today, datetime.min.time())
+            # end_time = datetime.combine(today, datetime.max.time())
+
+            start_time,end_time=get_day_range(today)
+        elif pk=="week":
+            # start_time = datetime.combine(today - timedelta(days=today.weekday()), datetime.min.time())
+            # end_time = datetime.combine(today, datetime.max.time())
+            start_time,end_time=get_week_range(today)
+
+        elif pk=="month":
+            # start_time = datetime.combine(today.replace(day=1), datetime.min.time())
+            # end_time = datetime.combine(today, datetime.max.time())
+            start_time,end_time=get_month_range(today)
+
+        elif pk=="year":
+            # start_time = datetime.combine(today.replace(month=1, day=1), datetime.min.time())
+            # end_time = datetime.combine(today, datetime.max.time())
+            start_time,end_time=get_year_range(today)
+
+        else:
+            return Response({"error":"Invalid url.Please check the url and try again."},status=status.HTTP_404_NOT_FOUND)
+        return Response({"statistics":self.calculate_values(start_time, end_time),"pie_chart":self.self_checked(start_time, end_time)})
+
+
+
 
 
 

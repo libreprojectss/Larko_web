@@ -150,3 +150,9 @@ class Business_Edit_Serializer(serializers.ModelSerializer):
     class Meta:
         model=Business_Profile
         fields=['category','role','open_now','business_name','business_title','public_link']
+
+
+class OperationScheduleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OperationSchedule
+        fields = ('id', 'start_time', 'end_time', 'days_of_week')

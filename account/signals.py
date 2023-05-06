@@ -25,4 +25,6 @@ def create_fieldlist(sender, instance, created, **kwargs):
 def create_public_link(sender,instance,created, **kwargs):
     if created:
         Public_link.objects.create(profile=instance)
+        SetOperationTime.objects.create(profile=instance)
+
 

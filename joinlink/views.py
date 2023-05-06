@@ -67,6 +67,8 @@ class Public_link_Views(APIView):
             serializeddata=WaitlistSerializer(data=updated_data,context={"notes":None})
             if serializeddata.is_valid(raise_exception=True):
                     serialized=serializeddata.save(user=user)
+                    serialized.self_checkin=True
+                    serialized.save()
                     user_identifier = encrypt_user_id(serialized.id,key)
                     ordered=Waitlist.objects.filter(user=user).order_by('added_time')
                     rank=list(ordered).index(serialized)+1
@@ -77,7 +79,6 @@ class Public_link_Views(APIView):
             return Response({"error":"There is problem in validating the data.Please check the inputs"},status=status.HTTP_502_BAD_GATEWAY)
 
     def delete(self,request,pk):
-        # Check if the cookie is present and contains user information
         cookie_name = 'queue_cookie'
         try:
             public_link_profile=Public_link.objects.get(public_id=pk)

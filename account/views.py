@@ -7,7 +7,7 @@ from joinlink.models import Public_link
 from .renderers import UserRenderer
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.response import Response 
-from rest_framework import status,serializers
+from rest_framework import status,serializers,generics
 from rest_framework.permissions import BasePermission, IsAuthenticated
 import random,base64,json
 import threading
@@ -140,5 +140,21 @@ class OpenClosePublicLink(APIView):
 
 
         return Response({"status":public_profile.public_access})
+
+class OperationScheduleView(generics.ListCreateAPIView):
+    serializer_class = OperationScheduleSerializer
+    renderer_classes=[UserRenderer]
+
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        businessprofile=Business_Profile.objects.get(user=request.user)
+        return OperationSchedule.objects.filter(business_profile=businessprofile)
+
+    def perform_create(self, serializer):
+        business_profile=Business_Profile.objects.get(user=request.user)
+        serializer.save(business_profile=business_profile)
+
+
     
    

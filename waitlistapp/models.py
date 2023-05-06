@@ -56,6 +56,7 @@ class Waitlist(models.Model):
     serving_started_time=models.DateTimeField(null=True,default=None)
     serving=models.BooleanField(default=False,null=False)
     served=models.BooleanField(default=False,null=False)
+    self_checkin=models.BooleanField(default=False,null=False)
     
     def wait_time(self):
         if self.serving_started_time==None:

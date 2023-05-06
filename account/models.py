@@ -97,8 +97,29 @@ class Business_Profile(models.Model):
     business_website=models.CharField(max_length=200,null=True,default=None)
     business_address=models.CharField(max_length=50,null=True,default=None)
 
-    
+DAY_CHOICES = [
+        ('MONDAY', 'Monday'),
+        ('TUESDAY', 'Tuesday'),
+        ('WEDNESDAY', 'Wednesday'),
+        ('THURSDAY', 'Thursday'),
+        ('FRIDAY', 'Friday'),
+        ('SATURDAY', 'Saturday'),
+        ('SUNDAY', 'Sunday'),]
+def default_days_of_week():
+    return ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"]
+class OperationSchedule(models.Model):
+    business_profile = models.OneToOneField(Business_Profile, on_delete=models.CASCADE, related_name='operation_schedule')
+    start_time = models.TimeField(default='10:00')
+    end_time = models.TimeField(default='16:00')
+    days_of_week =ArrayField(
+        models.CharField(max_length=10),
+        choices=DAY_CHOICES,
+        default=default_days_of_week,
+    )
 
+    def __str__(self):
+        days = ', '.join(self.days_of_week)
+        return f"{days} from {self.start_time} to {self.end_time}"
 
 
 
