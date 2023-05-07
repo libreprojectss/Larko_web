@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import *
+from rest_framework import generics
 from joinlink.serializers import Public_Link_Serializer
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from .helpers import IdEncodeDecode

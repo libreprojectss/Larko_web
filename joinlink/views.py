@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from account.renderers import UserRenderer
 from .helpers import encrypt_user_id,decrypt_user_id
-from waitlistapp.models import Waitlist,FieldList
+from waitlistapp.models import Waitlist,FieldList,Services
 from rest_framework.response import Response 
 from rest_framework import status,serializers
 from waitlistapp.serializers import WaitlistSerializer
@@ -100,3 +100,18 @@ class Public_link_Views(APIView):
 
 
 
+class RequiredFieldsViews(APIView):
+    renderer_classes=[UserRenderer]
+    def get(self,request,pk):
+        try:
+            public_link_profile=Public_link.objects.get(public_id=pk)
+        except:
+            return Response({"AccessError":"The provided url is not valid."},status=status.HTTP_502_BAD_GATEWAY)
+        user=public_link_profile.profile.user
+        user_fields=FieldList.objects.get(user=user)
+        fields=user_fields.fieldlist
+        print(user_fields.fieldlist)
+        field_list=[i for i in user_fields.fields if i['field_name'] in fields]
+        services=Services.objects.filter(user=request.user)
+        service_list=[{"name":i.service_name,"duration":i.service_duration,"id":i.id} for i in services]
+        return Response({"field_list":field_list,"services":service_list})

@@ -4,6 +4,8 @@ from .serializers import *
 from account.models import User
 from django.utils import timezone
 from waitlistapp.models import *
+from twilio.rest import Client
+from django.conf import settings
 from .tools.renderers import WaitlistRenderer
 from .timefunc import *
 from datetime import date,timedelta
@@ -23,7 +25,9 @@ class RequiredFieldsViews(APIView):
         fields=user_fields.fieldlist
         print(user_fields.fieldlist)
         field_list=[i for i in user_fields.fields if i['field_name'] in fields]
-        return Response(field_list)
+        services=Services.objects.filter(user=request.user)
+        service_list=[{"name":i.service_name,"duration":i.service_duration,"id":i.id} for i in services]
+        return Response({"field_list":field_list,"services":service_list})
     
 
 
@@ -140,7 +144,8 @@ class WaitListView(APIView):
 
 
 class Servinglist(APIView):
-    renderer_classes=[WaitlistRenderer]
+    renderer_classes=[WaitlistRenderer]           
+
     permission_classes=[IsAuthenticated]
     def get(self,request,pk=None):
         user_objects=Waitlist.objects.filter(user=request.user,serving=True,served=False).annotate(
@@ -265,6 +270,7 @@ class NotesView(APIView):
             notes=Notes.objects.get(id=int(nid))
         except:
             return Response({"AccessError":"The given url is not valid"},status=status.HTTP_502_BAD_GATEWAY)
+            return Response(self.calculate_values(start_time, end_time))
 
         customer=notes.customer_on_waitlist
         if customer.id!=int(cid):
@@ -410,23 +416,16 @@ class AnalyticsViews(APIView):
     def get(self,request,pk):
         today = timezone.now()
         if pk=="today":
-            # start_time = datetime.combine(today, datetime.min.time())
-            # end_time = datetime.combine(today, datetime.max.time())
+         
 
             start_time,end_time=get_day_range(today)
         elif pk=="week":
-            # start_time = datetime.combine(today - timedelta(days=today.weekday()), datetime.min.time())
-            # end_time = datetime.combine(today, datetime.max.time())
             start_time,end_time=get_week_range(today)
 
         elif pk=="month":
-            # start_time = datetime.combine(today.replace(day=1), datetime.min.time())
-            # end_time = datetime.combine(today, datetime.max.time())
             start_time,end_time=get_month_range(today)
 
         elif pk=="year":
-            # start_time = datetime.combine(today.replace(month=1, day=1), datetime.min.time())
-            # end_time = datetime.combine(today, datetime.max.time())
             start_time,end_time=get_year_range(today)
 
         else:
@@ -435,9 +434,21 @@ class AnalyticsViews(APIView):
 
 
 
+class NotifyByEmailSmsViews(APIView):
+    renderer_classes=[WaitlistRenderer]
+    def get(self,request):
+        client = Client(settings.TWILIO_ACCOUNT_SID, settings.TWILIO_AUTH_TOKEN)
+        try:
+            message = client.messages.create(
+                body='Hello, World!',
+                from_=settings.TWILO_PHONE_NUMBER,
+                to='+9779845519593'
+            )
+        except :
+            return Response({"errors":"Cannot send sms to the given number"},status=status.HTTP_400_BAD_REQUEST)
 
-
-
+            
+        return Response(f"SMS message sent to {message.to} with ID: {message.sid}")
 
 
         
