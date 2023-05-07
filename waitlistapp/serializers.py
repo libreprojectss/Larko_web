@@ -32,6 +32,10 @@ class WaitlistSerializer(serializers.ModelSerializer):
         fields=['phone_number','dateofbirth','email','party_size','first_name','last_name','description','added_time','wait_time','rank','note','id']
         extra_fields=['rank','note']
     def create(self,validated_data):
+        try:
+            serviceid=validated_data.pop("service")
+        except:
+            serviceid=None
         note = self.context["notes"]      
         waitlist=Waitlist(**validated_data)
         if note:
@@ -39,6 +43,9 @@ class WaitlistSerializer(serializers.ModelSerializer):
                 waitlist.save()
                 Notes.objects.create(customer_on_waitlist=waitlist,notes=note)
         else:
+            waitlist.save()
+        if serviceid:
+            waitlist.service=Service.objects.get(id=int(serviceid))
             waitlist.save()
         return waitlist
     
