@@ -45,7 +45,6 @@ INSTALLED_APPS = [
     'joinlink',
     'rest_framework_simplejwt',
     'phonenumber_field',
-    'graphene_django'
 ]
 
 MIDDLEWARE = [
@@ -197,3 +196,15 @@ MEDIA_URL="/media/"
 TWILIO_ACCOUNT_SID = 'AC972174727fde92f0bee89e82d45ca5f5'
 TWILIO_AUTH_TOKEN = '57082e5a230866204d60304207424ce1'
 TWILO_PHONE_NUMBER='+12705581681'
+
+#For email
+# settings.py
+
+# Email settings
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'larkoinc@gmail.com' # replace with your email address
+EMAIL_HOST_PASSWORD = 'nrfuitytppbxmyny' # replace with your email password
+

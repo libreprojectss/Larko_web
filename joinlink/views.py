@@ -110,7 +110,6 @@ class RequiredFieldsViews(APIView):
         user=public_link_profile.profile.user
         user_fields=FieldList.objects.get(user=user)
         fields=user_fields.fieldlist
-        print(user_fields.fieldlist)
         field_list=[i for i in user_fields.fields if i['field_name'] in fields]
         services=Services.objects.filter(user=user)
         service_list=[{"name":i.service_name,"duration":i.service_duration,"id":i.id} for i in services]

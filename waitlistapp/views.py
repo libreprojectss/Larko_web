@@ -1,12 +1,11 @@
 from django.shortcuts import render
 from rest_framework.views import APIView
 from .serializers import *
-from account.models import User
+from account.models import User,Business_Profile
 from django.utils import timezone
 from waitlistapp.models import *
-from twilio.rest import Client
-from django.conf import settings
 from .tools.renderers import WaitlistRenderer
+from .tools.helpers import send_email,send_sms
 from .timefunc import *
 from datetime import date,timedelta
 from rest_framework.response import Response 
@@ -15,7 +14,6 @@ from rest_framework.permissions import BasePermission, IsAuthenticated
 import random,base64,json
 from django.db.models import F, Window
 from django.db.models.functions import Rank
-
 import threading
 class RequiredFieldsViews(APIView):
     renderer_classes=[WaitlistRenderer]
@@ -34,7 +32,22 @@ class RequiredFieldsViews(APIView):
 class WaitListView(APIView):
         renderer_classes=[WaitlistRenderer]
         permission_classes=[IsAuthenticated]
-        
+        def smsthread1(self,waitlistobj,user):
+                    business_name=Business_Profile.objects.get(user=user).business_name
+
+                    ordered=Waitlist.objects.filter(user=user).order_by('added_time')
+                    rank=list(ordered).index(waitlistobj)+1
+                    if waitlistobj.phone_number:
+
+                        msg=f"You have been added to the queue of {business_name}.You are at {rank} position."
+                        try:
+                            send_sms(message=msg,to_number=waitlistobj.phone_number)
+                        except:
+                            pass
+                
+                    if waitlistobj.email:
+                        msg=f"<h3 style='color:black'>Dear customer,</h3><p style='color:black'>You ahve been added to the waitlist of business <strong>{business_name}</strong></p><h2 style='color:black'> Your current position in the queue is <strong>{rank}</strong></h2></p><p style='color:black'>We appreciate your patience as we work to ensure that each customer receives the best possible service.</p><p style='color:black'>If you have any questions or concerns, please don't hesitate to contact us at <a href='mailto:larkoinc@gmail.com'>larkoinc@gmail.com</a>.</p><p style='color:black'>Best Regards,<br>Team Larko</p>"
+                        send_email(message=msg,to_email=waitlistobj.email,subject=f"You have been added to the queue at {rank} position")
         def get(self,request,pk=None):
         
             user_objects=Waitlist.objects.filter(user=request.user,serving=False,served=False).annotate(
@@ -68,7 +81,10 @@ class WaitListView(APIView):
                 return Response(output,status=status.HTTP_400_BAD_REQUEST)
             serializeddata=WaitlistSerializer(data=updated_data,context={"notes":notes})
             if serializeddata.is_valid(raise_exception=True):
-                    serializeddata.save(user=request.user)
+                    waitlistobj=serializeddata.save(user=request.user)
+                    thread1=threading.Thread(target=self.smsthread1,args=(waitlistobj,request.user))
+                    thread1.start()
+                    
             serializeddata=WaitlistSerializer(Waitlist.objects.filter(user=request.user).annotate(
              rank=Window(
             expression=Rank(),
@@ -118,14 +134,28 @@ class WaitListView(APIView):
         def delete(self,request,pk=None):
             try:
 
-                customer=Waitlist.objects.get(id=int(pk))
+                waitlistobj=Waitlist.objects.get(id=int(pk))
             except:
                 return Response({"AccessError":"The given url is not valid"},status=status.HTTP_400_BAD_REQUEST)        
-            if request.user==customer.user:
-                customer.delete()
+            if request.user==waitlistobj.user:
+                business_name=Business_Profile.objects.get(user=request.user).business_name
+
+                if waitlistobj.phone_number:
+
+                    msg=f"You have been removed from the queue of {business_name}.Please feel free to ask any queries at larkoinc@gmail.com"
+                    try:
+                        send_sms(message=msg,to_number=waitlistobj.phone_number)
+                    except:
+                        pass
+            
+                if waitlistobj.email:
+                    msg=f"<h3 style='color:black'>Dear customer,</h3><p style='color:black'>We would like to inform that you have been removed from the waitlist of business <strong>{business_name}</strong></p><p style='color:black'>We appreciate your patience as we work to ensure that each customer receives the best possible service.</p><p style='color:black'>If you have any questions or concerns, please don't hesitate to contact us at <a href='mailto:larkoinc@gmail.com'>larkoinc@gmail.com</a>.</p><p style='color:black'>Best Regards,<br>Team Larko</p>"
+                    send_email(message=msg,to_email=waitlistobj.email,subject=f"You have been removed from the queue")
+                waitlistobj.delete()
+
                 # user_objects=Waitlist.objects.filter(user=request.user).order_by('added_time')
-                user=request.user
-                object_list=user.waitlist_for.all().filter(serving=False,served=False).annotate(
+            user=request.user
+            object_list=user.waitlist_for.all().filter(serving=False,served=False).annotate(
                 
              rank=Window(
             expression=Rank(),
@@ -133,8 +163,8 @@ class WaitListView(APIView):
     )
             )
     
-                serializeddata=WaitlistSerializer(object_list,many=True)
-                return Response(serializeddata.data)
+            serializeddata=WaitlistSerializer(object_list,many=True)
+            return Response(serializeddata.data)
             return Response({"AccessError":"The given url is not valid because the given id don't exists"},status=status.HTTP_400_BAD_REQUEST)
 
             
@@ -435,20 +465,45 @@ class AnalyticsViews(APIView):
 
 
 class NotifyByEmailSmsViews(APIView):
+    permission_classes=[IsAuthenticated]
     renderer_classes=[WaitlistRenderer]
-    def get(self,request):
-        client = Client(settings.TWILIO_ACCOUNT_SID, settings.TWILIO_AUTH_TOKEN)
+    def get(self,request,pk):
         try:
-            message = client.messages.create(
-                body='Hello, World!',
-                from_=settings.TWILO_PHONE_NUMBER,
-                to='+9779845519593'
-            )
-        except :
-            return Response({"errors":"Cannot send sms to the given number"},status=status.HTTP_400_BAD_REQUEST)
+            waitlistobj=Waitlist.objects.get(id=int(pk))
+        except:
+            return Response({"error":"The value of pk is not valid.Cannot access the api.","status":status.HTTP_403_FORBIDDEN})
+        if waitlistobj.user!=request.user:
+            return Response({"error":"The value of pk is not valid.Cannot access the api.","status":status.HTTP_403_FORBIDDEN})
+        ordered=Waitlist.objects.filter(user=request.user).order_by('added_time')
+        rank=list(ordered).index(waitlistobj)+1
+        business_name=Business_Profile.objects.get(user=request.user).business_name
+
+        if waitlistobj.first_name:
+                customer=waitlistobj.first_name
+        else:
+                customer="customer"
+
+        if waitlistobj.phone_number:
+
+            msg=f"You are at postion {rank} at the queue of {business_name}.Hope you will be on time."
+            try:
+                send_sms(message=msg,to_number=waitlistobj.phone_number)
+            except:
+                pass
+            # except :
+            #     return Response({"errors":"Cannot send sms to the given number"},status=status.HTTP_400_BAD_REQUEST)
+
+        if waitlistobj.email:
+                msg=f"<h3 style='color:black'>Dear {customer},</h3><p style='color:black'>We wanted to provide you with an update on your waitlist status for <strong>{business_name}</strong>.\n<h2 style='color:black'> Your current position in the queue is <strong>{rank}</strong></h2>.</p><p style='color:black'>We appreciate your patience as we work to ensure that each customer receives the best possible service.</p><p style='color:black'>If you have any questions or concerns, please don't hesitate to contact us at <a href='mailto:larkoinc@gmail.com'>larkoinc@gmail.com</a>.</p><p style='color:black'>Best Regards,<br>Team Larko</p>"
+
+                send_email(message=msg,to_email=waitlistobj.email,subject=f"Update on your queue postion.You are at {rank}")
+        
+        elif not waitlistobj.phone_number:
+            return Response({"errors":"Cannot send mail or sms as neither mail or phone_number is available"},status=status.HTTP_400_BAD_REQUEST)
+
 
             
-        return Response(f"SMS message sent to {message.to} with ID: {message.sid}")
+        return Response({"success":"sent sucessfully"})
 
 
         

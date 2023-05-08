@@ -12,7 +12,7 @@ urlpatterns=[
     path("openclosebusiness/",OpenCloseBusiness.as_view(),name="open close business"), #For getting the information either business is open or closed
 
     path("openclosebusiness/<str:pk>/",OpenCloseBusiness.as_view(),name="open close business"), #For psot request to change the value if pk=1 it set open as true else open is set to false that means closed
-     path("openclosepubliclink/",OpenClosePublicLink.as_view(),name="open close business"), #Similar to open close business this is for open close the public self checkins
+    path("openclosepubliclink/",OpenClosePublicLink.as_view(),name="open close business"), #Similar to open close business this is for open close the public self checkins
 
     path("openclosepubliclink/<str:pk>/",OpenClosePublicLink.as_view(),name="open close business")
 

@@ -17,5 +17,5 @@ urlpatterns=[
     path('resources/',ResourcesViews.as_view(),name="resources"),  #for resources get and post
     path('resources/<str:pk>/',ResourcesViews.as_view(),name="resources"), #For resources put and delete. can send services along with the data
     path('analytics/<str:pk>/',AnalyticsViews.as_view(),name="analytics"),
-    path("sendsms/",NotifyByEmailSmsViews.as_view(),name="notify")
+    path("sendsms/<str:pk>/",NotifyByEmailSmsViews.as_view(),name="notify")
 ]
