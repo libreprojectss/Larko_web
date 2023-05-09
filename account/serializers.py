@@ -156,4 +156,4 @@ class Business_Edit_Serializer(serializers.ModelSerializer):
 class OperationScheduleSerializer(serializers.ModelSerializer):
     class Meta:
         model = OperationSchedule
-        fields = ('id', 'start_time', 'end_time', 'days_of_week')
+        fields = ('id','start_time','end_time','days_of_week')

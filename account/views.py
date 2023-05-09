@@ -141,19 +141,24 @@ class OpenClosePublicLink(APIView):
 
         return Response({"status":public_profile.public_access})
 
-class OperationScheduleView(generics.ListCreateAPIView):
-    serializer_class = OperationScheduleSerializer
+class OperationScheduleView(APIView):
     renderer_classes=[UserRenderer]
 
     permission_classes = [IsAuthenticated]
 
-    def get_queryset(self):
+    def get(self,request):
         businessprofile=Business_Profile.objects.get(user=request.user)
-        return OperationSchedule.objects.filter(business_profile=businessprofile)
+        objs=OperationSchedule.objects.filter(business_profile=businessprofile)
+        serializeddata=OperationScheduleSerializer(objs,many=True)
+        return Response(serializeddata.data)
 
-    def perform_create(self, serializer):
-        business_profile=Business_Profile.objects.get(user=request.user)
-        serializer.save(business_profile=business_profile)
+    def post(self,request):
+        businessprofile=Business_Profile.objects.get(user=request.user)
+        serializeddata=ObjectSerializer(data=request.data)
+        if serializeddata.is_valid():
+            serializeddata.save(business_profile=businessprofile)
+        return Response("data changed sucessfully")
+
 
 
     
