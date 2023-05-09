@@ -2,6 +2,8 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from .serializers import *
 from account.models import *
+import jsonschema
+from jsonschema import validate
 from waitlistapp.models import *
 from joinlink.models import Public_link
 from .renderers import UserRenderer
@@ -152,11 +154,36 @@ class OperationScheduleView(APIView):
         return Response(objs.operation_time)
 
     def post(self,request):
+        schema = {
+    "type": "array",
+    "items": {
+        "type": "object",
+        "properties": {
+            "day": {"type": "string"},
+            "start_time": {"type": "string"},
+            "end_time": {"type": "string"},
+            "holiday": {"type": "boolean"}
+        },
+        "required": ["day", "start_time", "end_time", "holiday"]
+    }
+}
+        try:
+            validate(request.data, schema)
+        except jsonschema.exceptions.ValidationError as e:
+            return Response({"error":"The data provided is not in correct format.Make sure it is json data with all the required values"})
+            
+
         businessprofile=Business_Profile.objects.get(user=request.user)
-        serializeddata=ObjectSerializer(data=request.data)
-        if serializeddata.is_valid():
-            serializeddata.save(business_profile=businessprofile)
-        return Response("data changed sucessfully")
+        objs=OperationSchedule.objects.get(business_profile=businessprofile)
+        operation_time=objs.operation_time
+        for i in range(len(operation_time)):
+            for j in request.data:
+                if operation_time[i]["day"]==j["day"]:
+                    operation_time[i]=j
+        objs.save()
+
+        
+        return Response({"success":"data changed sucessfully"})
 
 
 
