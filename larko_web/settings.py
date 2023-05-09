@@ -192,19 +192,17 @@ CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_ALL_ORIGINS=True
 MEDIA_ROOT=BASE_DIR /"media"
 MEDIA_URL="/media/"
-
-TWILIO_ACCOUNT_SID = 'AC972174727fde92f0bee89e82d45ca5f5'
-TWILIO_AUTH_TOKEN = '57082e5a230866204d60304207424ce1'
-TWILO_PHONE_NUMBER='+12705581681'
+#For sms
+TWILIO_ACCOUNT_SID = 'ACc408f5c3cbbf654840087568215c40f9'
+TWILIO_AUTH_TOKEN = '4507c1f88aa8c65c0579ad5ab5189c0d'
+TWILO_PHONE_NUMBER='+12706123299'
 
 #For email
-# settings.py
-
 # Email settings
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'larkoinc@gmail.com' # replace with your email address
-EMAIL_HOST_PASSWORD = 'nrfuitytppbxmyny' # replace with your email password
+EMAIL_HOST_USER = 'larkoinc@gmail.com'
+EMAIL_HOST_PASSWORD = 'nrfuitytppbxmyny' 
 

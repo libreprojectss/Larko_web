@@ -4,12 +4,32 @@ from account.renderers import UserRenderer
 from .helpers import encrypt_user_id,decrypt_user_id
 from waitlistapp.models import Waitlist,FieldList,Services
 from rest_framework.response import Response 
+from waitlistapp.tools.helpers import send_sms,send_email
 from rest_framework import status,serializers
 from waitlistapp.serializers import WaitlistSerializer
+from account.models import Business_Profile
 from .serializers import *
+import threading
 # Create your views here.
 class Public_link_Views(APIView):
     renderer_classes=[UserRenderer]
+
+    def smsthread1(self,waitlistobj,user):
+                    business_name=Business_Profile.objects.get(user=user).business_name
+
+                    ordered=Waitlist.objects.filter(user=user).order_by('added_time')
+                    rank=list(ordered).index(waitlistobj)+1
+                    if waitlistobj.phone_number:
+
+                        msg=f"You have been added to the queue of {business_name}.You are at {rank} position."
+                        try:
+                            send_sms(message=msg,to_number=waitlistobj.phone_number)
+                        except:
+                            pass
+                
+                    if waitlistobj.email:
+                        msg=f"<h3 style='color:black'>Dear customer,</h3><p style='color:black'>You ahve been added to the waitlist of business <strong>{business_name}</strong></p><h2 style='color:black'> Your current position in the queue is <strong>{rank}</strong></h2></p><p style='color:black'>We appreciate your patience as we work to ensure that each customer receives the best possible service.</p><p style='color:black'>If you have any questions or concerns, please don't hesitate to contact us at <a href='mailto:larkoinc@gmail.com'>larkoinc@gmail.com</a>.</p><p style='color:black'>Best Regards,<br>Team Larko</p>"
+                        send_email(message=msg,to_email=waitlistobj.email,subject=f"You have been added to the queue at {rank} position")
 
     def get(self,request,pk):
         try:
@@ -69,6 +89,8 @@ class Public_link_Views(APIView):
                     serialized=serializeddata.save(user=user)
                     serialized.self_checkin=True
                     serialized.save()
+                    thread1=threading.Thread(target=self.smsthread1,args=(serialized,user))
+                    thread1.start()
                     user_identifier = encrypt_user_id(serialized.id,key)
                     ordered=Waitlist.objects.filter(user=user).order_by('added_time')
                     rank=list(ordered).index(serialized)+1

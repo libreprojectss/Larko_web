@@ -25,6 +25,6 @@ def create_fieldlist(sender, instance, created, **kwargs):
 def create_public_link(sender,instance,created, **kwargs):
     if created:
         Public_link.objects.create(profile=instance)
-        OperationSchedule.objects.create(profile=instance)
+        OperationSchedule.objects.create(business_profile=instance)
 
 
