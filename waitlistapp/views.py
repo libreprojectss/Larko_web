@@ -24,7 +24,7 @@ class RequiredFieldsViews(APIView):
         print(user_fields.fieldlist)
         field_list=[i for i in user_fields.fields if i['field_name'] in fields]
         services=Services.objects.filter(user=request.user)
-        service_list=[{"name":i.service_name,"duration":i.service_duration,"id":i.id} for i in services]
+        service_list=[{"name":i.service_name,"duration":i.duration,"id":i.id} for i in services]
         return Response({"field_list":field_list,"services":service_list})
     
 

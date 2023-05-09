@@ -143,14 +143,13 @@ class OpenClosePublicLink(APIView):
 
 class OperationScheduleView(APIView):
     renderer_classes=[UserRenderer]
-
     permission_classes = [IsAuthenticated]
 
     def get(self,request):
+        
         businessprofile=Business_Profile.objects.get(user=request.user)
-        objs=OperationSchedule.objects.filter(business_profile=businessprofile)
-        serializeddata=OperationScheduleSerializer(objs,many=True)
-        return Response(serializeddata.data)
+        objs=OperationSchedule.objects.get(business_profile=businessprofile)
+        return Response(objs.operation_time)
 
     def post(self,request):
         businessprofile=Business_Profile.objects.get(user=request.user)

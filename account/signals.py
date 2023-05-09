@@ -25,6 +25,16 @@ def create_fieldlist(sender, instance, created, **kwargs):
 def create_public_link(sender,instance,created, **kwargs):
     if created:
         Public_link.objects.create(profile=instance)
-        OperationSchedule.objects.create(business_profile=instance)
+        OperationSchedule.objects.create(business_profile=instance,operation_time=[
+            {"day":"SUNDAY","start_time":"10:00","end_time":"16:00","holiday":False},
+            {"day":"MONDAY","start_time":"10:00","end_time":"16:00","holiday":False},
+            {"day":"TUESDAY","start_time":"10:00","end_time":"16:00","holiday":False},
+            {"day":"WEDNESDAY","start_time":"10:00","end_time":"16:00","holiday":False},
+            {"day":"THURSDAY","start_time":"10:00","end_time":"16:00","holiday":False},
+            {"day":"FRIDAY","start_time":"10:00","end_time":"14:00","holiday":False},
+            {"day":"SATURDAY","start_time":"10:00","end_time":"16:00","holiday":True},
+
+
+        ])
 
 

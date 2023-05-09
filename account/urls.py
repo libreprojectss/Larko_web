@@ -15,7 +15,7 @@ urlpatterns=[
     path("openclosepubliclink/",OpenClosePublicLink.as_view(),name="open close business"), #Similar to open close business this is for open close the public self checkins
 
     path("openclosepubliclink/<str:pk>/",OpenClosePublicLink.as_view(),name="open close business"),
-    path("operationshedule/",OperationScheduleView.as_view(),name="operation shedule for  business")
+    path("operationschedule/",OperationScheduleView.as_view(),name="operation shedule for  business")
   
 
 ]

@@ -153,7 +153,12 @@ class Business_Edit_Serializer(serializers.ModelSerializer):
         fields=['category','role','open_now','business_name','business_title','public_link']
 
 
-class OperationScheduleSerializer(serializers.ModelSerializer):
+class OperationScheduleSerializer(serializers.Serializer):
+    start_time=serializers.TimeField()
+    end_time=serializers.TimeField()
+    day=serializers.CharField(max_length=200)
+    holiday=serializers.BooleanField()
+
     class Meta:
         model = OperationSchedule
-        fields = ('id','start_time','end_time','days_of_week')
+        fields = ('start_time','end_time','day','holiday')
