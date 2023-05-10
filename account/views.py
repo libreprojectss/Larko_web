@@ -154,6 +154,7 @@ class OperationScheduleView(APIView):
         return Response(objs.operation_time)
 
     def post(self,request):
+        print(request.data)
         schema = {
     "type": "array",
     "items": {

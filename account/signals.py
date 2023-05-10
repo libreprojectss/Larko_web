@@ -18,7 +18,7 @@ def create_fieldlist(sender, instance, created, **kwargs):
             {"field_name":"last_name","label":"Last Name","required":False,"selected":True},
             {"field_name":"notes","label":"Notes","required":False,"selected":True},
             {"field_name":"description","label":"Description","required":True,"selected":False}
-        ],fieldlist=["email","first_name", "last_name","notes"],
+        ],fieldlist=["email","phone_number","first_name", "last_name","notes"],
         policy="")
         
 @receiver(post_save,sender=Business_Profile)

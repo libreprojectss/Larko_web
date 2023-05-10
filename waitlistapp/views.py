@@ -15,6 +15,17 @@ import random,base64,json
 from django.db.models import F, Window
 from django.db.models.functions import Rank
 import threading
+
+
+def sendsms_thread(waitlistobj,msg1,msg2,subject="Larko reminder"):
+
+                    if waitlistobj.phone_number:
+                        try:
+                            send_sms(message=msg1,to_number=waitlistobj.phone_number)
+                        except:
+                            pass
+                    if waitlistobj.email:
+                        send_email(message=msg2,to_email=waitlistobj.email,subject=subject)
 class RequiredFieldsViews(APIView):
     renderer_classes=[WaitlistRenderer]
     permission_classes=[IsAuthenticated]
@@ -85,7 +96,7 @@ class WaitListView(APIView):
                     thread1=threading.Thread(target=self.smsthread1,args=(waitlistobj,request.user))
                     thread1.start()
                     
-            serializeddata=WaitlistSerializer(Waitlist.objects.filter(user=request.user).annotate(
+            serializeddata=WaitlistSerializer(Waitlist.objects.filter(user=request.user,serving=False,served=False).annotate(
              rank=Window(
             expression=Rank(),
             order_by=F('added_time').asc(),
@@ -94,7 +105,8 @@ class WaitListView(APIView):
             return Response(serializeddata.data)
         
         def put(self,request,pk=None):
-            try:
+            try:                        
+
                 customer=Waitlist.objects.get(id=int(pk))
             except:
 
@@ -201,6 +213,26 @@ class Servinglist(APIView):
         serveobj.serving=True
         serveobj.serving_started_time=timezone.now()
         serveobj.save()
+        business_name=Business_Profile.objects.get(user=request.user).business_name
+        fmsg1 = f"<h3 style='color:black'>Hello,</h3><p style='color:black'>It's your turn to be served at <strong>{business_name}</strong>!</p><h2 style='color:black'>Please proceed to the front of the queue.</h2><p style='color:black'>We hope you enjoy your experience with us, and thank you for your patience while waiting.</p><p style='color:black'>If you have any questions or concerns, please don't hesitate to contact us at <a href='mailto:larkoinc@gmail.com'>larkoinc@gmail.com</a>.</p><p style='color:black'>Best Regards,<br>Team Larko</p>"
+        fmsg2=f"Its your turn at the queue of {business_name}.Please proceed to the front of the queue."
+        fsubject=f"You are next in the queue at {business_name}"
+        smsg1 = f"<h3 style='color:black'>Hello,</h3><p style='color:black'>This is a notification from <strong>{business_name}</strong>.</p><h2 style='color:black'>You are currently second in line and will be served soon!</h2><p style='color:black'>Please be ready and arrive on time to ensure a smooth experience for you and our other customers.</p><p style='color:black'>If you have any questions or concerns, please don't hesitate to contact us at <a href='mailto:larkoinc@gmail.com'>larkoinc@gmail.com</a>.</p><p style='color:black'>Thank you for your patience, and we look forward to serving you soon.</p><p style='color:black'>Best Regards,<br>Team Larko</p>"
+        smsg2=f"Reminder: You are second in line at {business_name}. Please be ready to be served soon. Thank you!"
+        ssubject=f"You are second in line at {business_name}"
+        ordered=Waitlist.objects.filter(user=request.user).order_by('added_time')
+        if len(ordered)!=0:
+            waitlistobj=ordered[0]
+            smsthread=threading.Thread(target=sendsms_thread,args=(waitlistobj,fmsg2,fmsg1,fsubject))
+            smsthread.start()
+        if len(ordered)>1:
+            waitlistobj=ordered[1]
+            smsthread=threading.Thread(target=sendsms_thread,args=(waitlistobj,smsg2,smsg1,ssubject))
+            smsthread.start()
+        
+
+
+
         return Response({"success":"successfully sent for serving"},status=status.HTTP_200_OK)
 
 class Servedlist(APIView):
@@ -231,6 +263,12 @@ class Servedlist(APIView):
         serveobj.served_time=timezone.now()
         serveobj.served=True
         serveobj.save()
+        business=Business_Profile.objects.get(user=request.user)
+        msg1=f"You have been served by {business.business_name}.Thank you for using our services."
+        msg2=f"<h3 style='color:black'>Dear customer,</h3><p style='color:black'>You have been served by <strong>{business.business_name}</strong></p><p style='color:black'>We appreciate your patience as we work to ensure that each customer receives the best possible service.</p><p style='color:black'>If you have any questions or concerns, please don't hesitate to contact us at <a href='mailto:larkoinc@gmail.com'>larkoinc@gmail.com</a>.</p><p style='color:black'>Best Regards,<br>Team Larko</p>"
+        subject=f"You have been served"
+        smsthread=threading.Thread(target=sendsms_thread,args=(serveobj,msg1,msg2,subject))
+        smsthread.start()
         return Response({"success":"successfully served"},status=status.HTTP_200_OK)
 
 class AllFieldsView(APIView):
