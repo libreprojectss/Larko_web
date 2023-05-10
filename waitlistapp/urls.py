@@ -8,6 +8,7 @@ urlpatterns=[
     path('waitlist/<str:pk>/',WaitListView.as_view(),name="waitlist"),
     path('notes/<str:cid>/',NotesView.as_view(),name="notes"),
     path('notes/<str:cid>/<str:nid>/',NotesView.as_view(),name="notes"),
+    path('getservicename/',Getservices.as_view(),name="get services"),
     path('services/',ServicesViews.as_view(),name="services"),
     path('services/<str:pk>/',ServicesViews.as_view(),name="services_edit_delete"),
     path('serving/<str:pk>/',Servinglist.as_view(),name="serving_list"), #send waitlist id from waitlist to be served here in pk in post request

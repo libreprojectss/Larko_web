@@ -49,8 +49,9 @@ class Getservices(APIView):
     renderer_classes=[WaitlistRenderer]
     permission_classes=[IsAuthenticated]
     def get(self,request):
-        serialized_data=ServicesNameSerializer(many=True)
-        return Response(serialized_data)
+        servicesobj=Services.objects.filter(user=request.user)
+        serialized_data=ServicesNameSerializer(servicesobj,many=True)
+        return Response(serialized_data.data)
 class RequiredFieldsViews(APIView):
     renderer_classes=[WaitlistRenderer]
     permission_classes=[IsAuthenticated]
