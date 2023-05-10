@@ -32,15 +32,35 @@ class Public_link_Views(APIView):
                         send_email(message=msg,to_email=waitlistobj.email,subject=f"You have been added to the queue at {rank} position")
 
     def get(self,request,pk):
+        cookie_name = 'queue_cookie'
         try:
             obj=Public_link.objects.get(public_id=pk)
         except:
             return Response({"AccessError":"The given url is not valid"},status=status.HTTP_502_BAD_GATEWAY)
         profile=obj.profile
+        waitlist_count=profile.user.waitlist_for.all().count()
+
         if not profile.open_now or not obj.public_access:
             return Response({"AccessError":"The service is closed at the moment or not receiving public registration","business_name":profile.business_name},status=status.HTTP_503_SERVICE_UNAVAILABLE)
-        waitlist_count=profile.user.waitlist_for.all().count()
-        return Response({"business_name":profile.business_name,"waitlist_count":waitlist_count})
+        user_info = request.COOKIES.get(cookie_name, None)
+        key=obj.fernet_key
+        print(user_info)
+        if user_info:
+            customerid=decrypt_user_id(user_info,key)
+            print(customerid)
+            waitlist_profile=Waitlist.objects.get(id=customerid)
+            if waitlist_profile.serving and not waitlist_profile.served:
+                return Response({"joined":True,"status":"You are being served","serving time":waitlist_profile.burst_time,"business_name":profile.business_name,"waitlist_count":waitlist_count})
+            elif not waitlist_profile.serving and not waitlist_profile.served:
+
+                user=obj.profile.user
+                ordered=Waitlist.objects.filter(user=user).order_by('added_time')
+                rank=list(ordered).index(waitlist_profile)+1
+                return Response({"joined":True,"status":"You are on the queue","waited_for":waitlist_profile.wait_time(),"rank":rank,"business_name":profile.business_name,"waitlist_count":waitlist_count})
+            else:
+                return Response({"joined":True,"status":"You are served.","serving time":waitlist_profile.burst_time(),"business_name":profile.business_name,"waitlist_count":waitlist_count})
+        
+        return Response({"joined":False,"business_name":profile.business_name,"waitlist_count":waitlist_count})
     
     def post(self,request,pk):
         # Check if the cookie is present and contains user information
