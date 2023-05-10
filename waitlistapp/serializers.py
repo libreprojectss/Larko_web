@@ -29,7 +29,7 @@ class WaitlistSerializer(serializers.ModelSerializer):
     rank=serializers.IntegerField(read_only=True)
     class Meta:
         model=Waitlist
-        fields=['phone_number','dateofbirth','email','party_size','first_name','last_name','description','added_time','wait_time','rank','note','id']
+        fields=['phone_number','dateofbirth','email','party_size','first_name','last_name','description','added_time','wait_time','rank','note','id','service']
         extra_fields=['rank','note']
     def create(self,validated_data):
         try:
@@ -45,7 +45,7 @@ class WaitlistSerializer(serializers.ModelSerializer):
         else:
             waitlist.save()
         if serviceid:
-            waitlist.service=Service.objects.get(id=int(serviceid))
+            waitlist.service=serviceid
             waitlist.save()
         return waitlist
     
@@ -74,9 +74,12 @@ class ServingSerializer(serializers.ModelSerializer):
         extra_fields=['rank','note']
 
 class ServiceSerializer(serializers.ModelSerializer):
+    waiting=serializers.IntegerField(read_only=True)
+    serving=serializers.IntegerField(read_only=True)
+
     class Meta:
         model=Services
-        fields="__all__"
+        fields=['id','service_name','image','category_name','description','duration','price','buffer_time','waiting','serving']
     # def to_internal_value(self, data):
     #     try:
     #         return Service.objects.get(id=data)
@@ -85,6 +88,10 @@ class ServiceSerializer(serializers.ModelSerializer):
     #     except (TypeError, ValueError):
     #         self.fail('incorrect_type', data_type=type(data).__name__)
 
+class ServicesNameSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Services
+        fields=['id','service_name']
 
 
 class ResourcesSerializer(serializers.ModelSerializer):

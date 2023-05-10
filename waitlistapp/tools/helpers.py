@@ -22,3 +22,4 @@ def send_sms(message,to_number):
                 from_=settings.TWILO_PHONE_NUMBER,
                 to=str(to_number)
     )
+

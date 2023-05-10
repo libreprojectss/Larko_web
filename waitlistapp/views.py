@@ -12,7 +12,7 @@ from rest_framework.response import Response
 from rest_framework import status,serializers
 from rest_framework.permissions import BasePermission, IsAuthenticated
 import random,base64,json
-from django.db.models import F, Window
+from django.db.models import F, Window,Count,Q
 from django.db.models.functions import Rank
 import threading
 
@@ -26,6 +26,31 @@ def sendsms_thread(waitlistobj,msg1,msg2,subject="Larko reminder"):
                             pass
                     if waitlistobj.email:
                         send_email(message=msg2,to_email=waitlistobj.email,subject=subject)
+
+def allocate_resource_thread(waitlistobj,user):
+    resource=Resources.objects.filter(user=user,is_available=True,is_free=True)
+    if resource.exists():
+        if waitlistobj.service:
+            resources = resources.filter(service__in=[waitlistobj.service])
+            waitlistobj.resource = resources[0]
+            resources[0].is_free = False
+            resources[0].save()
+            print("resource alloted")
+
+        else:
+            waitlistobj=resource[0]
+            resource[0].is_free = False
+            resource[0].save()
+            print("resource alloted")
+
+            
+        
+class Getservices(APIView):
+    renderer_classes=[WaitlistRenderer]
+    permission_classes=[IsAuthenticated]
+    def get(self,request):
+        serialized_data=ServicesNameSerializer(many=True)
+        return Response(serialized_data)
 class RequiredFieldsViews(APIView):
     renderer_classes=[WaitlistRenderer]
     permission_classes=[IsAuthenticated]
@@ -93,6 +118,7 @@ class WaitListView(APIView):
             serializeddata=WaitlistSerializer(data=updated_data,context={"notes":notes})
             if serializeddata.is_valid(raise_exception=True):
                     waitlistobj=serializeddata.save(user=request.user)
+                    
                     thread1=threading.Thread(target=self.smsthread1,args=(waitlistobj,request.user))
                     thread1.start()
                     
@@ -213,6 +239,11 @@ class Servinglist(APIView):
         serveobj.serving=True
         serveobj.serving_started_time=timezone.now()
         serveobj.save()
+        if serverobj.resource:
+            serveobj.resource.update(is_free=False)
+        else:
+            thread_allocate=threading.Thread(target=allocate_resource_thread,args=(serveobj,request.user))
+            thread_allocate.start()
         business_name=Business_Profile.objects.get(user=request.user).business_name
         fmsg1 = f"<h3 style='color:black'>Hello,</h3><p style='color:black'>It's your turn to be served at <strong>{business_name}</strong>!</p><h2 style='color:black'>Please proceed to the front of the queue.</h2><p style='color:black'>We hope you enjoy your experience with us, and thank you for your patience while waiting.</p><p style='color:black'>If you have any questions or concerns, please don't hesitate to contact us at <a href='mailto:larkoinc@gmail.com'>larkoinc@gmail.com</a>.</p><p style='color:black'>Best Regards,<br>Team Larko</p>"
         fmsg2=f"Its your turn at the queue of {business_name}.Please proceed to the front of the queue."
@@ -263,6 +294,8 @@ class Servedlist(APIView):
         serveobj.served_time=timezone.now()
         serveobj.served=True
         serveobj.save()
+        if serverobj.resource:
+            serveobj.resource.update(is_free=True)
         business=Business_Profile.objects.get(user=request.user)
         msg1=f"You have been served by {business.business_name}.Thank you for using our services."
         msg2=f"<h3 style='color:black'>Dear customer,</h3><p style='color:black'>You have been served by <strong>{business.business_name}</strong></p><p style='color:black'>We appreciate your patience as we work to ensure that each customer receives the best possible service.</p><p style='color:black'>If you have any questions or concerns, please don't hesitate to contact us at <a href='mailto:larkoinc@gmail.com'>larkoinc@gmail.com</a>.</p><p style='color:black'>Best Regards,<br>Team Larko</p>"
@@ -374,6 +407,10 @@ class ServicesViews(APIView):
     def get(self,request,pk=None):
         user=request.user
         objectlist=user.services_for.all()
+        objectlist = objectlist.annotate(
+        waiting=Count('services_taken', filter=Q(services_taken__served=False, services_taken__serving=False)),
+        serving=Count('services_taken', filter=Q(services_taken__served=False, services_taken__serving=True))
+    )
         serializer=ServiceSerializer(objectlist,many=True)
         return Response(serializer.data)
     def post(self,request,pk=None):
@@ -416,7 +453,7 @@ class ResourcesViews(APIView):
         serializer=ResourcesSerializer(objectlist,many=True)
         return Response(serializer.data)
     def post(self,request,pk=None):
-        
+        waitlist
 
         servicelist=request.data["services"] if request.data["services"] else []
         print(servicelist)
