@@ -2,6 +2,8 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from .serializers import *
 from time import sleep
+from corsheaders.defaults import default_headers
+
 from django.http import StreamingHttpResponse
 from account.models import User,Business_Profile
 from django.utils import timezone
@@ -87,29 +89,29 @@ class WaitListView(APIView):
                     if waitlistobj.email:
                         msg=f"<h3 style='color:black'>Dear customer,</h3><p style='color:black'>You ahve been added to the waitlist of business <strong>{business_name}</strong></p><h2 style='color:black'> Your current position in the queue is <strong>{rank}</strong></h2></p><p style='color:black'>We appreciate your patience as we work to ensure that each customer receives the best possible service.</p><p style='color:black'>If you have any questions or concerns, please don't hesitate to contact us at <a href='mailto:larkoinc@gmail.com'>larkoinc@gmail.com</a>.</p><p style='color:black'>Best Regards,<br>Team Larko</p>"
                         send_email(message=msg,to_email=waitlistobj.email,subject=f"You have been added to the queue at {rank} position")
-        def get(self,request,pk=None):
-        
-            def stream_response():
-                while True:
-                    queryset = Waitlist.objects.filter(user=request.user, serving=False, served=False).annotate(
-                        rank=Window(
-                            expression=Rank(),
-                            order_by=F('added_time').asc(),
+
+
+        def get(self, request, pk=None):
+                def stream_response():
+                    while True:
+                        queryset = Waitlist.objects.filter(user=request.user, serving=False, served=False).annotate(
+                            rank=Window(
+                                expression=Rank(),
+                                order_by=F('added_time').asc(),
+                            )
                         )
-                    )
-                    serializer = WaitlistSerializer(queryset, many=True)
+                        serializer = WaitlistSerializer(queryset, many=True)
 
-                    yield 'data:{}\n'.format(serializer.data)
+                        yield 'data:{}\n\n'.format(json.dumps(serializer.data))
+                        sleep(0.5)
 
-                    sleep(0.5)
+                response = StreamingHttpResponse(stream_response(), content_type='text/event-stream')
+                response['Cache-Control'] = 'no-cache'
+                response['Access-Control-Allow-Origin'] = request.headers.get('Origin', '*')
+                response['Access-Control-Allow-Credentials'] = 'true'
+                response['Access-Control-Allow-Headers'] = ', '.join(default_headers + ['Authorization', 'Content-Type'])
+                return response
 
-            response= StreamingHttpResponse(stream_response(), content_type='text/event-stream')
-            response['Cache-Control'] = 'no-cache'
-            # response['Connection'] = 'keep-alive'
-            response['Access-Control-Allow-Origin'] = request.headers.get('Origin', '*')
-            response['Access-Control-Allow-Credentials'] = 'true'
-            response['Access-Control-Allow-Headers'] = 'Authorization, Content-Type'
-            return response
 
 
 
@@ -470,8 +472,8 @@ class ResourcesViews(APIView):
        
         if serializer.is_valid(raise_exception=True):
             obj=serializer.save(user=request.user)
-            for i in servicelist:
-                i=Services.objects.get(id=int(i))
+            # for i in servicelist:
+            #     i=Services.objects.get(id=int(i))
             
 
             obj.services.set(servicelist)
