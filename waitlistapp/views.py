@@ -248,7 +248,7 @@ class Servinglist(APIView):
         serveobj.serving=True
         serveobj.serving_started_time=timezone.now()
         serveobj.save()
-        if serverobj.resource:
+        if serveobj.resource:
             serveobj.resource.update(is_free=False)
         else:
             thread_allocate=threading.Thread(target=allocate_resource_thread,args=(serveobj,request.user))
