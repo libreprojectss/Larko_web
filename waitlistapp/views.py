@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from rest_framework.views import APIView
 from .serializers import *
+from time import sleep
+from django.http import StreamingHttpResponse
 from account.models import User,Business_Profile
 from django.utils import timezone
 from waitlistapp.models import *
@@ -87,15 +89,23 @@ class WaitListView(APIView):
                         send_email(message=msg,to_email=waitlistobj.email,subject=f"You have been added to the queue at {rank} position")
         def get(self,request,pk=None):
         
-            user_objects=Waitlist.objects.filter(user=request.user,serving=False,served=False).annotate(
-             rank=Window(
-            expression=Rank(),
-            order_by=F('added_time').asc(),
-    )
-            )
+            def stream_response():
+                while True:
+                    queryset = Waitlist.objects.filter(user=request.user, serving=False, served=False).annotate(
+                        rank=Window(
+                            expression=Rank(),
+                            order_by=F('added_time').asc(),
+                        )
+                    )
+                    serializer = WaitlistSerializer(queryset, many=True)
 
-            serializeddata=WaitlistSerializer(user_objects,many=True)
-            return Response(serializeddata.data)
+                    yield 'data:{}\n'.format(serializer.data)
+
+                    sleep(0.5)
+
+            return StreamingHttpResponse(stream_response(), content_type='text/event-stream')
+
+
 
 
         def post(self,request,pk=None):
@@ -178,18 +188,10 @@ class WaitListView(APIView):
                 return Response({"AccessError":"The given url is not valid"},status=status.HTTP_400_BAD_REQUEST)        
             if request.user==waitlistobj.user:
                 business_name=Business_Profile.objects.get(user=request.user).business_name
-
-                if waitlistobj.phone_number:
-
-                    msg=f"You have been removed from the queue of {business_name}.Please feel free to ask any queries at larkoinc@gmail.com"
-                    try:
-                        send_sms(message=msg,to_number=waitlistobj.phone_number)
-                    except:
-                        pass
-            
-                if waitlistobj.email:
-                    msg=f"<h3 style='color:black'>Dear customer,</h3><p style='color:black'>We would like to inform that you have been removed from the waitlist of business <strong>{business_name}</strong></p><p style='color:black'>We appreciate your patience as we work to ensure that each customer receives the best possible service.</p><p style='color:black'>If you have any questions or concerns, please don't hesitate to contact us at <a href='mailto:larkoinc@gmail.com'>larkoinc@gmail.com</a>.</p><p style='color:black'>Best Regards,<br>Team Larko</p>"
-                    send_email(message=msg,to_email=waitlistobj.email,subject=f"You have been removed from the queue")
+                msg1=f"You have been removed from the queue of {business_name}.Please feel free to ask any queries at larkoinc@gmail.com"
+                msg2=f"<h3 style='color:black'>Dear customer,</h3><p style='color:black'>We would like to inform that you have been removed from the waitlist of business <strong>{business_name}</strong></p><p style='color:black'>We appreciate your patience as we work to ensure that each customer receives the best possible service.</p><p style='color:black'>If you have any questions or concerns, please don't hesitate to contact us at <a href='mailto:larkoinc@gmail.com'>larkoinc@gmail.com</a>.</p><p style='color:black'>Best Regards,<br>Team Larko</p>"
+                subject=f"You have been removed from the queue"
+                thread1=threading.Thread(target=sendsms_thread,args=(waitlistobj,msg1,msg2,subject))
                 waitlistobj.delete()
 
                 # user_objects=Waitlist.objects.filter(user=request.user).order_by('added_time')

@@ -98,7 +98,7 @@ DATABASES = {
         'NAME': 'larko_db',  
         'USER': 'postgres',  
         'PASSWORD': '',  
-        'HOST': 'localhost',  
+        'HOST':'localhost',  
         'PORT': '5432',  
         
     }  
