@@ -6,6 +6,8 @@ from waitlistapp.models import Waitlist,FieldList,Services
 from rest_framework.response import Response 
 from waitlistapp.tools.helpers import send_sms,send_email
 from rest_framework import status,serializers
+from django.db.models.functions import Rank
+from django.db.models import Window,F
 from waitlistapp.serializers import WaitlistSerializer
 from account.models import Business_Profile
 from .serializers import *
@@ -156,3 +158,32 @@ class RequiredFieldsViews(APIView):
         services=Services.objects.filter(user=user)
         service_list=[{"name":i.service_name,"duration":i.service_duration,"id":i.id} for i in services]
         return Response({"field_list":field_list,"services":service_list})
+
+class QueueStatus(APIView):
+    renderer_classes=[UserRenderer]
+    def get(self,request,pk):
+        cookie_name = 'queue_cookie'
+
+        try:
+            public_link_profile=Public_link.objects.get(public_id=pk)
+        except:
+            return Response({"AccessError":"The provided url is not valid."},status=status.HTTP_502_BAD_GATEWAY)
+        user=public_link_profile.profile.user
+        user_info = request.COOKIES.get(cookie_name, None)
+        key=public_link_profile.fernet_key
+        if user_info:
+            try:
+                customerid=decrypt_user_id(user_info,key)
+            except:
+                return Response({"error":"Couldn't read the provided cookie"},status=status.HTTP_400_BAD_REQUEST)
+            waitlist_profile=Waitlist.objects.get(id=customerid)
+            ordered=Waitlist.objects.filter(user=user,serving=False,served=False).only('first_name','last_name','self_checkin','service__service_name').annotate(rank=Window(
+            expression=Rank(),
+            order_by=F('added_time').asc(),))
+            for obj in ordered:
+                obj.wait_time = obj.wait_time
+            rank=list(ordered).index(waitlist_profile)+1
+            serializeddata=QueueSerializer(ordered,many=True)
+            return Response({"Queue_data":serializeddata.data,"rank":rank})
+
+
