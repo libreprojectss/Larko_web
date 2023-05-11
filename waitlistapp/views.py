@@ -103,7 +103,13 @@ class WaitListView(APIView):
 
                     sleep(0.5)
 
-            return StreamingHttpResponse(stream_response(), content_type='text/event-stream')
+            response= StreamingHttpResponse(stream_response(), content_type='text/event-stream')
+            response['Cache-Control'] = 'no-cache'
+            # response['Connection'] = 'keep-alive'
+            response['Access-Control-Allow-Origin'] = request.headers.get('Origin', '*')
+            response['Access-Control-Allow-Credentials'] = 'true'
+            response['Access-Control-Allow-Headers'] = 'Authorization, Content-Type'
+            return response
 
 
 
@@ -456,7 +462,6 @@ class ResourcesViews(APIView):
         serializer=ResourcesSerializer(objectlist,many=True)
         return Response(serializer.data)
     def post(self,request,pk=None):
-        waitlist
 
         servicelist=request.data["services"] if request.data["services"] else []
         print(servicelist)
