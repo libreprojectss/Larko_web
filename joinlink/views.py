@@ -44,12 +44,13 @@ class Public_link_Views(APIView):
 
         if not profile.open_now or not obj.public_access:
             return Response({"AccessError":"The service is closed at the moment or not receiving public registration","business_name":profile.business_name},status=status.HTTP_503_SERVICE_UNAVAILABLE)
-        user_info = request.COOKIES.get(cookie_name, None)
+        user_info = request.data.get("validation_token", None)
         key=obj.fernet_key
-        print(user_info)
         if user_info:
-            customerid=decrypt_user_id(user_info,key)
-            print(customerid)
+            try:
+                customerid=decrypt_user_id(user_info,key)
+            except:
+                return Response({"error":"The request cannot be processed because the validation token is not correct"},status=status.HTTP_400_BAD_REQUEST)
             waitlist_profile=Waitlist.objects.get(id=customerid)
             if waitlist_profile.serving and not waitlist_profile.served:
                 return Response({"joined":True,"status":"You are being served","serving time":waitlist_profile.burst_time,"business_name":profile.business_name,"waitlist_count":waitlist_count})
@@ -71,11 +72,13 @@ class Public_link_Views(APIView):
             public_link_profile=Public_link.objects.get(public_id=pk)
         except:
             return Response({"AccessError":"The provided url is not valid."},status=status.HTTP_400_BAD_REQUEST)
-        user_info = request.COOKIES.get(cookie_name, None)
+        user_info = request.data.get('validation_token', None)
         key=public_link_profile.fernet_key
-        print(user_info)
         if user_info:
-            customerid=decrypt_user_id(user_info,key)
+            try:
+                customerid=decrypt_user_id(user_info,key)
+            except:
+                return Response({"error":"The request cannot be processed because the validation token is not correct"},status=status.HTTP_400_BAD_REQUEST)
             print(customerid)
             waitlist_profile=Waitlist.objects.get(id=customerid)
             if waitlist_profile.serving and not waitlist_profile.served:
@@ -116,8 +119,8 @@ class Public_link_Views(APIView):
                     user_identifier = encrypt_user_id(serialized.id,key)
                     ordered=Waitlist.objects.filter(user=user).order_by('added_time')
                     rank=list(ordered).index(serialized)+1
-                    response = Response({'status': 'You have been added to the queue.','rank':rank})
-                    response.set_cookie(cookie_name, user_identifier, max_age=86400) # Cookie expires in 24 hours
+                    response = Response({'status': 'You have been added to the queue.','rank':rank,'validation_token':user_identifier})
+                    # response.set_cookie(cookie_name, user_identifier, max_age=86400) # Cookie expires in 24 hours
                     return response
             
             return Response({"error":"There is problem in validating the data.Please check the inputs"},status=status.HTTP_502_BAD_GATEWAY)

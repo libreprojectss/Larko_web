@@ -69,21 +69,28 @@ class RequiredFieldsViews(APIView):
         return Response({"field_list":field_list,"services":service_list})
     
 class WaitlistSseView(BaseSseView):
-    permission_classes = [IsAuthenticated]
 
-    def iterator(self, user=None):
-        queryset = Waitlist.objects.filter(user=user, serving=False, served=False).annotate(
-            rank=Window(
-                expression=Rank(),
-                order_by=F('added_time').asc(),
+    def iterator(self):
+        while True:
+            # Wait for 5 seconds before sending another event
+            sleep(5)
+
+            queryset = Waitlist.objects.filter(serving=False, served=False).annotate(
+                rank=Window(
+                    expression=Rank(),
+                    order_by=F('added_time').asc(),
+                )
             )
-        )
-        serializer = WaitlistSerializer(queryset, many=True)
-        data = serializer.data
-        yield dict(data)
+            serializer = WaitlistSerializer(queryset, many=True)
+            data = serializer.data
+
+            # Create the message to send to the client
+            message = f"data: {json.dumps(data)}\n\n"
+
+            yield message
 
     def get(self, request, *args, **kwargs):
-        response = SseResponse(self.iterator(user=request.user))
+        response = SseResponse(self.iterator())
         response['Cache-Control'] = 'no-cache'
         response['Content-Type'] = 'text/event-stream'
         response['Access-Control-Allow-Origin'] = 'http://localhost:5173'
@@ -113,9 +120,6 @@ class WaitListView(APIView):
 
 
         def get(self, request, pk=None):
-                print("hello")
-                def stream_response():
-                    while True:
                         queryset = Waitlist.objects.filter(user=request.user, serving=False, served=False).annotate(
                             rank=Window(
                                 expression=Rank(),
@@ -124,16 +128,15 @@ class WaitListView(APIView):
                         )
                         serializer = WaitlistSerializer(queryset, many=True)
 
-                        yield '{}'.format(serializer.data)
-                        sleep(1)
-                response = StreamingHttpResponse(stream_response())
-                response['Content-Type'] = 'text/event-stream'
-                # response['Connection'] = 'keep-alive'
-                response['Cache-Control'] = 'no-cache'
-                response['Access-Control-Allow-Methods'] = 'GET, OPTIONS'
-                response['Access-Control-Allow-Origin'] = request.headers.get('Origin', '*')
-                response['Access-Control-Allow-Credentials'] = 'true'
-                return response
+                        response=Response(serializer.data)   
+                # response = StreamingHttpResponse(stream_response())
+                # response['Content-Type'] = 'text/event-stream'
+                # # response['Connection'] = 'keep-alive'
+                # response['Cache-Control'] = 'no-cache'
+                # response['Access-Control-Allow-Methods'] = 'GET, OPTIONS'
+                # response['Access-Control-Allow-Origin'] = request.headers.get('Origin', '*')
+                # response['Access-Control-Allow-Credentials'] = 'true'
+                        return response
 
 
 

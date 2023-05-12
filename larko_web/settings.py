@@ -190,19 +190,14 @@ SIMPLE_JWT = {
 CORS_ORIGIN_ALLOW_ALL = True  
 CORS_ALLOW_HEADERS = [
     "content-type",
-    "X-CSRFToken"
-]
-CORS_EXPOSE_HEADERS =[
-    "content-type",
-    "X-CSRFToken"
+    "X-CSRFToken",
+    "Authorization"
 ]
 
 CSRF_COOKIE_SAMESITE='Lax'
 CSRF_COOKIE_HTTPONLY =True
 CORS_ALLOW_CREDENTIALS = True
-CORS_ORIGIN_WHITELIST = [
-    'http://localhost:5173',
-]
+
 CORS_ALLOW_ALL_ORIGINS=True
 MEDIA_ROOT=BASE_DIR /"media"
 MEDIA_URL="/media/"
