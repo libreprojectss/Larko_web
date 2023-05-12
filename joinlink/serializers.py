@@ -12,3 +12,8 @@ class QueueSerializer(serializers.ModelSerializer):
         model=Waitlist
         fields=['first_name','wait_time','last_name','service','rank']
 
+class QueueProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Waitlist
+        fields=['phone_number','dateofbirth','email','party_size','first_name','last_name','description','added_time','service']
+
