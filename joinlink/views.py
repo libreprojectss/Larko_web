@@ -165,14 +165,14 @@ class RequiredFieldsViews(APIView):
 class QueueStatus(APIView):
     renderer_classes=[UserRenderer]
     def get(self,request,pk):
-        cookie_name = 'queue_cookie'
+        cookie_name = 'validation_token'
 
         try:
             public_link_profile=Public_link.objects.get(public_id=pk)
         except:
             return Response({"AccessError":"The provided url is not valid."},status=status.HTTP_502_BAD_GATEWAY)
         user=public_link_profile.profile.user
-        user_info = request.COOKIES.get(cookie_name, None)
+        user_info = request.data.get(cookie_name, None)
         key=public_link_profile.fernet_key
         if user_info:
             try:
