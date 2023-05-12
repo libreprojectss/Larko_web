@@ -188,5 +188,6 @@ class QueueStatus(APIView):
             rank=list(ordered).index(waitlist_profile)+1
             serializeddata=QueueSerializer(ordered,many=True)
             return Response({"Queue_data":serializeddata.data,"rank":rank})
+        return Response({"error":"The cookie is invalid"})
 
 
