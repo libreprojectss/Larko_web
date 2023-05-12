@@ -164,7 +164,7 @@ class RequiredFieldsViews(APIView):
 
 class QueueStatus(APIView):
     renderer_classes=[UserRenderer]
-    def get(self,request,pk):
+    def post(self,request,pk):
         cookie_name = 'validation_token'
 
         try:
