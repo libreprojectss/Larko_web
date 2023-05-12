@@ -1,11 +1,13 @@
 from django.urls import path,include
 from .views import *
-
+from django.views.decorators.csrf import csrf_exempt
 urlpatterns=[
     path('getrequiredfields/',RequiredFieldsViews.as_view(),name="requiredfields"),
     path('allfields/',AllFieldsView.as_view(),name="allfields"),
-    path('waitlist/',WaitListView.as_view(),name="waitlist"),
+    path('waitlist/',csrf_exempt(WaitListView.as_view()),name="waitlist"),
     path('waitlist/<str:pk>/',WaitListView.as_view(),name="waitlist"),
+    path('waitlistapp/sse/',csrf_exempt(WaitlistSseView.as_view()),name="waitlist"),
+
     path('notes/<str:cid>/',NotesView.as_view(),name="notes"),
     path('notes/<str:cid>/<str:nid>/',NotesView.as_view(),name="notes"),
     path('getservicename/',Getservices.as_view(),name="get services"),

@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from .serializers import *
 from time import sleep
 from corsheaders.defaults import default_headers
-
+from django_sse.views import BaseSseView
 from django.http import StreamingHttpResponse
 from account.models import User,Business_Profile
 from django.utils import timezone
@@ -68,6 +68,27 @@ class RequiredFieldsViews(APIView):
         service_list=[{"name":i.service_name,"duration":i.duration,"id":i.id} for i in services]
         return Response({"field_list":field_list,"services":service_list})
     
+class WaitlistSseView(BaseSseView):
+    permission_classes = [IsAuthenticated]
+
+    def iterator(self, user=None):
+        queryset = Waitlist.objects.filter(user=user, serving=False, served=False).annotate(
+            rank=Window(
+                expression=Rank(),
+                order_by=F('added_time').asc(),
+            )
+        )
+        serializer = WaitlistSerializer(queryset, many=True)
+        data = serializer.data
+        yield dict(data)
+
+    def get(self, request, *args, **kwargs):
+        response = SseResponse(self.iterator(user=request.user))
+        response['Cache-Control'] = 'no-cache'
+        response['Content-Type'] = 'text/event-stream'
+        response['Access-Control-Allow-Origin'] = 'http://localhost:5173'
+        response['Access-Control-Allow-Credentials'] = 'true'
+        return response
 
 
 class WaitListView(APIView):
@@ -92,6 +113,7 @@ class WaitListView(APIView):
 
 
         def get(self, request, pk=None):
+                print("hello")
                 def stream_response():
                     while True:
                         queryset = Waitlist.objects.filter(user=request.user, serving=False, served=False).annotate(
@@ -102,14 +124,15 @@ class WaitListView(APIView):
                         )
                         serializer = WaitlistSerializer(queryset, many=True)
 
-                        yield 'data:{}\n\n'.format(json.dumps(serializer.data))
-                        sleep(0.5)
-
-                response = StreamingHttpResponse(stream_response(), content_type='text/event-stream')
+                        yield '{}'.format(serializer.data)
+                        sleep(1)
+                response = StreamingHttpResponse(stream_response())
+                response['Content-Type'] = 'text/event-stream'
+                # response['Connection'] = 'keep-alive'
                 response['Cache-Control'] = 'no-cache'
+                response['Access-Control-Allow-Methods'] = 'GET, OPTIONS'
                 response['Access-Control-Allow-Origin'] = request.headers.get('Origin', '*')
                 response['Access-Control-Allow-Credentials'] = 'true'
-                response['Access-Control-Allow-Headers'] = ', '.join(default_headers + ['Authorization', 'Content-Type'])
                 return response
 
 
