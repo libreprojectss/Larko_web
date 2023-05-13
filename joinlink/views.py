@@ -1,10 +1,11 @@
 from django.shortcuts import render
+from django.http import HttpResponse
 from rest_framework.views import APIView
 from account.renderers import UserRenderer
 from .helpers import encrypt_user_id,decrypt_user_id
-from waitlistapp.models import Waitlist,FieldList,Services
+from waitlistapp.models import Waitlist,FieldList,Services,ValidationToken
 from rest_framework.response import Response 
-from waitlistapp.tools.helpers import send_sms,send_email
+from waitlistapp.tools.helpers import send_sms,send_email,generate_token
 from rest_framework import status,serializers
 from django.db.models.functions import Rank
 from django.db.models import Window,F
@@ -81,15 +82,20 @@ class Public_link_Views(APIView):
                 return Response({"error":"The request cannot be processed because the validation token is not correct"},status=status.HTTP_400_BAD_REQUEST)
             print(customerid)
             waitlist_profile=Waitlist.objects.get(id=customerid)
+            
+
             serialized=QueueProfileSerializer(waitlist_profile)
             if waitlist_profile.serving and not waitlist_profile.served:
                 return Response({"status":"You are being served","serving time":waitlist_profile.burst_time,"personalInfo":serialized.data})
             elif not waitlist_profile.serving and not waitlist_profile.served:
-
+                try:
+                    queue_token=ValidationToken.objects.get(waitlist=waitlist_profile).token
+                except:
+                    return Response({"error":"This is old waitlist please delete this and create a new one"},status=status.HTTP_400_BAD_REQUEST)
                 user=public_link_profile.profile.user
                 ordered=Waitlist.objects.filter(user=user).order_by('added_time')
                 rank=list(ordered).index(waitlist_profile)+1
-                return Response({"status":"You are on the queue","waited_for":waitlist_profile.wait_time(),"rank":rank,"personalInfo":serialized.data})
+                return Response({"status":"You are on the queue","waited_for":waitlist_profile.wait_time(),"rank":rank,"personalInfo":serialized.data,"queue_token":queue_token})
             else:
                 return Response({"status":"You are served.","serving time":waitlist_profile.burst_time(),"personalInfo":serialized.data})
 
@@ -115,13 +121,15 @@ class Public_link_Views(APIView):
                     serialized=serializeddata.save(user=user)
                     serialized.self_checkin=True
                     serialized.save()
+                    ValidationToken.objects.create(waitlist=serialized,token=generate_token(serialized.id))
+
                     thread1=threading.Thread(target=self.smsthread1,args=(serialized,user))
                     thread1.start()
                     user_identifier = encrypt_user_id(serialized.id,key)
                     ordered=Waitlist.objects.filter(user=user).order_by('added_time')
                     rank=list(ordered).index(serialized)+1
                     response = Response({'status': 'You have been added to the queue.','rank':rank,'validation_token':user_identifier})
-                    # response.set_cookie(cookie_name, user_identifier, max_age=86400) # Cookie expires in 24 hours
+                    response.set_cookie(cookie_name, user_identifier, max_age=86400) # Cookie expires in 24 hours
                     return response
             
             return Response({"error":"There is problem in validating the data.Please check the inputs"},status=status.HTTP_502_BAD_GATEWAY)

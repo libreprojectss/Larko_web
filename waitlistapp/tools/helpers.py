@@ -1,6 +1,7 @@
 from django.core.mail import send_mail
 from twilio.rest import Client
 from django.conf import settings
+import random
 
 
 
@@ -23,3 +24,10 @@ def send_sms(message,to_number):
                 to=str(to_number)
     )
 
+
+def generate_token(waitlistid):
+    random_number = random.randint(1000, 9999)
+    
+    token = str(waitlistid) + str(random_number)
+    
+    return token

@@ -11,9 +11,21 @@ class QueueSerializer(serializers.ModelSerializer):
     class Meta:
         model=Waitlist
         fields=['first_name','wait_time','last_name','service','rank']
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        service = instance.service
+        if service is not None:
+            representation['service_name'] = service.service_name
+        return representation
 
 class QueueProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model=Waitlist
         fields=['phone_number','dateofbirth','email','party_size','first_name','last_name','description','added_time','service']
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        service = instance.service
+        if service is not None:
+            representation['service_name'] = service.service_name
+        return representation
 

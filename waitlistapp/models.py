@@ -56,6 +56,7 @@ class Waitlist(models.Model):
     serving_started_time=models.DateTimeField(null=True,default=None)
     serving=models.BooleanField(default=False,null=False)
     served=models.BooleanField(default=False,null=False)
+    validated=models.BooleanField(default=False,null=False)
     self_checkin=models.BooleanField(default=False,null=False)
     
     def wait_time(self):
@@ -94,6 +95,13 @@ class Notes(models.Model):
     customer_on_waitlist=models.ForeignKey(Waitlist,on_delete=models.CASCADE,related_name='note')
     notes=models.CharField(max_length=100)
     edited_time=models.DateTimeField(auto_now=True)
+
+
+class ValidationToken(models.Model):
+    waitlist=models.OneToOneField(Waitlist,on_delete=models.CASCADE,related_name="waitlist")
+    token = models.CharField(max_length=100)
+    is_valid = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
 
 

@@ -9,7 +9,7 @@ from account.models import User,Business_Profile
 from django.utils import timezone
 from waitlistapp.models import *
 from .tools.renderers import WaitlistRenderer
-from .tools.helpers import send_email,send_sms
+from .tools.helpers import send_email,send_sms,generate_token
 from .timefunc import *
 from datetime import date,timedelta
 from rest_framework.response import Response 
@@ -163,7 +163,7 @@ class WaitListView(APIView):
             serializeddata=WaitlistSerializer(data=updated_data,context={"notes":notes})
             if serializeddata.is_valid(raise_exception=True):
                     waitlistobj=serializeddata.save(user=request.user)
-                    
+                    ValidationToken.objects.create(waitlist=waitlistobj,token=generate_token(waitlistobj.id))
                     thread1=threading.Thread(target=self.smsthread1,args=(waitlistobj,request.user))
                     thread1.start()
                     
@@ -618,9 +618,28 @@ class NotifyByEmailSmsViews(APIView):
 
 
         
-    
+class Validate_customer(APIView):
+    renderer_classes=[WaitlistRenderer]
+    permission_classes=[IsAuthenticated]
+    def post(self,request):
+        if request.data.get('queue_token',None):
+            try:
+                validobj=ValidationToken.objects.filter(token=request.data["queue_token"])[0]
+                waitistobj=validobj.waitlist
+                if waitistobj.user==request.user:
+                    validobj.waitlist.validated=True
+                    validobj.save()
+                else:
+                    return Response({"error":"The provided token is not valid"},status=status.HTTP_400_BAD_REQUEST)
 
-    
+
+                validobj.delete()
+                return Response({"success":"Customer sucessfully validated"},status=status.HTTP_400_BAD_REQUEST)
+
+            except:
+                return Response({"error":"The provided token is not valid"},status=status.HTTP_400_BAD_REQUEST)
+        return Response({"error":"The provided token is not valid"},status=status.HTTP_400_BAD_REQUEST)
+
 
 
 

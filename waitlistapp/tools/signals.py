@@ -1,7 +1,8 @@
 from django.db.models.signals import post_save, pre_delete
 from django.dispatch import receiver
 from .models import *
- 
+import random
+from .helpers import generate_token
  
 @receiver(post_save,sender=Waitlist)
 def create_notes(sender, instance, created, **kwargs):
@@ -12,5 +13,6 @@ def create_notes(sender, instance, created, **kwargs):
     if created:
         Notes.objects.create(customer=instance,notes=note
         )
+    
         
 

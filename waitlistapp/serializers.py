@@ -29,8 +29,15 @@ class WaitlistSerializer(serializers.ModelSerializer):
     rank=serializers.IntegerField(read_only=True)
     class Meta:
         model=Waitlist
-        fields=['phone_number','dateofbirth','email','party_size','first_name','last_name','description','added_time','wait_time','rank','note','id','service']
+        fields=['phone_number','dateofbirth','validated','self_checkin','email','party_size','first_name','last_name','description','added_time','wait_time','rank','note','id','service']
         extra_fields=['rank','note']
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        service = instance.service
+        if service is not None:
+            representation['service_name'] = service.service_name
+        return representation
+   
     def create(self,validated_data):
         try:
             serviceid=validated_data.pop("service")
