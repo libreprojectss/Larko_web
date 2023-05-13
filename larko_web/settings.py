@@ -32,6 +32,7 @@ USE_L10N = False
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -45,7 +46,7 @@ INSTALLED_APPS = [
     'joinlink',
     'rest_framework_simplejwt',
     'phonenumber_field',
-    'django_cron'
+    'django_cron',
 ]
 
 MIDDLEWARE = [
@@ -77,6 +78,9 @@ TEMPLATES = [
 ]
 
 
+#for async requests
+ASGI_APPLICATION='larko_web.asgi.application'
+
 REST_FRAMEWORK = {
     
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -87,7 +91,14 @@ REST_FRAMEWORK = {
 
 }
 AUTH_USER_MODEL='account.User'
-
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("localhost", 6379)],
+        },
+    },
+}
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
