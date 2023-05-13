@@ -140,9 +140,8 @@ class Public_link_Views(APIView):
             public_link_profile=Public_link.objects.get(public_id=pk)
         except:
             return Response({"AccessError":"The provided url is not valid."},status=status.HTTP_400_BAD_REQUEST)
-        user_info = request.COOKIES.get(cookie_name, None)
+        user_info = request.data.get('validation_token', None)
         key=public_link_profile.fernet_key
-        print(user_info)
         if user_info:
             customerid=decrypt_user_id(user_info,key)
             waitlist_profile=Waitlist.objects.get(id=customerid)

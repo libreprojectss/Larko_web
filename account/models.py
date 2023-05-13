@@ -92,6 +92,7 @@ class Business_Profile(models.Model):
     category=models.CharField(max_length=100)
     role=models.CharField(max_length=100,choices=roles,default='Manager')
     open_now=models.BooleanField(default=True,null=False)
+    enable_validation=models.BooleanField(default=True,null=False)
     business_phone_number=PhoneNumberField(null=True,default=None)
     business_email=models.EmailField(null=True,default=None)
     business_website=models.CharField(max_length=200,null=True,default=None)
