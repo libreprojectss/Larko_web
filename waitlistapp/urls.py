@@ -6,7 +6,6 @@ urlpatterns=[
     path('allfields/',AllFieldsView.as_view(),name="allfields"),
     path('waitlist/',csrf_exempt(WaitListView.as_view()),name="waitlist"),
     path('waitlist/<str:pk>/',WaitListView.as_view(),name="waitlist"),
-    path('waitlistapp/sse/',csrf_exempt(WaitlistSseView.as_view()),name="waitlist"),
 
     path('notes/<str:cid>/',NotesView.as_view(),name="notes"),
     path('notes/<str:cid>/<str:nid>/',NotesView.as_view(),name="notes"),

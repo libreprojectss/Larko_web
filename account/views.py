@@ -189,4 +189,23 @@ class OperationScheduleView(APIView):
 
 
     
-   
+class OpenCloseValidation(APIView):
+    renderer_classes=[UserRenderer]
+    permission_classes=[IsAuthenticated]
+    def get(self,request,pk=None):
+        try:
+            profile=Business_Profile.objects.get(user=request.user)
+        except:
+            return Response({"error":"Some error occured.Make sure you are authorized"},status=status.HTTP_403_FORBIDDEN)
+        if pk:
+            if pk=='1':
+                profile.enable_validation=True
+                profile.save()
+            elif pk=='0':
+                profile.enable_validation=False
+                profile.save()
+            else:
+                return Response({"error":"Value of the key should be either 0 or 1"},status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+
+        return Response({"status":profile.enable_validation})

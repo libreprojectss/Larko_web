@@ -2,9 +2,11 @@ from django.urls import path,include
 from .views import *
 from rest_framework_simplejwt.views import (
     TokenRefreshView,
+    TokenVerifyView
 )
 urlpatterns=[
-    path('updatetoken/',TokenRefreshView.as_view(),name="refresh"),
+    path('token/update/',TokenRefreshView.as_view(),name="refresh"),
+    path('token/verify/', TokenVerifyView.as_view(), name='token_verify'),
     path('signup/',SignUpViews.as_view(),name="signup"),
     path('login/',LoginViews.as_view(),name="login"),
     path('checkbusinessname/',CheckBusinessName.as_view(),name="checkbusinessname"),
@@ -15,7 +17,8 @@ urlpatterns=[
     path("openclosepubliclink/",OpenClosePublicLink.as_view(),name="open close business"), #Similar to open close business this is for open close the public self checkins
 
     path("openclosepubliclink/<str:pk>/",OpenClosePublicLink.as_view(),name="open close business"),
-    path("operationschedule/",OperationScheduleView.as_view(),name="operation shedule for  business")
-  
+    path("operationschedule/",OperationScheduleView.as_view(),name="operation shedule for  business"),
+    path("openclosevalidation/",OpenCloseValidation.as_view(),name="open close validation"),
+    path("openclosevalidation/<str:pk>/",OpenCloseValidation.as_view(),name="open close validation"),
 
 ]

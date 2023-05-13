@@ -42,10 +42,10 @@ INSTALLED_APPS = [
     'waitlistapp',
     'corsheaders',
     'rest_framework',
-    'django_sse',
     'joinlink',
     'rest_framework_simplejwt',
     'phonenumber_field',
+    'django_cron'
 ]
 
 MIDDLEWARE = [
@@ -187,6 +187,11 @@ SIMPLE_JWT = {
     'SLIDING_TOKEN_LIFETIME': timedelta(minutes=5),
     'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
 }
+#CRON_JOBS SETTINGS
+CRON_CLASSES = [
+    'larko_web.Waitlist_cron_jobs.MyCronJob',
+]
+##CORS ORIGIN SETTINGS
 CORS_ORIGIN_ALLOW_ALL = True  
 CORS_ALLOW_HEADERS = [
     "content-type",
