@@ -72,6 +72,7 @@ class WaitlistConsumer(WebsocketConsumer):
         except:
             self.send("Access toke is not specified")
             self.close()
+            return
         SECRET_KEY = settings.SECRET_KEY
 
         
@@ -82,6 +83,7 @@ class WaitlistConsumer(WebsocketConsumer):
             print(e)
             self.send(str(e))
             self.close()
+            return
             
         self.accept()
         self.waitlist_thread = Thread(target=self.send_waitlist_periodically, args=(self.user,))
