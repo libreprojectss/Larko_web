@@ -91,14 +91,19 @@ REST_FRAMEWORK = {
 
 }
 AUTH_USER_MODEL='account.User'
+# CHANNEL_LAYERS = {
+#     "default": {
+#         "BACKEND": "channels_redis.core.RedisChannelLayer",
+#         "CONFIG": {
+#             "hosts": [("localhost", 6379)],
+#         },
+#     },
 CHANNEL_LAYERS = {
     "default": {
-        "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {
-            "hosts": [("localhost", 6379)],
-        },
-    },
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+    }
 }
+# }
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
