@@ -69,13 +69,6 @@ class RequiredFieldsViews(APIView):
     
 
 
-    def get(self, request, *args, **kwargs):
-        response = SseResponse(self.iterator())
-        response['Cache-Control'] = 'no-cache'
-        response['Content-Type'] = 'text/event-stream'
-        response['Access-Control-Allow-Origin'] = 'http://localhost:5173'
-        response['Access-Control-Allow-Credentials'] = 'true'
-        return response
 
 
 class WaitListView(APIView):
@@ -109,13 +102,6 @@ class WaitListView(APIView):
                         serializer = WaitlistSerializer(queryset, many=True)
 
                         response=Response(serializer.data)   
-                # response = StreamingHttpResponse(stream_response())
-                # response['Content-Type'] = 'text/event-stream'
-                # # response['Connection'] = 'keep-alive'
-                # response['Cache-Control'] = 'no-cache'
-                # response['Access-Control-Allow-Methods'] = 'GET, OPTIONS'
-                # response['Access-Control-Allow-Origin'] = request.headers.get('Origin', '*')
-                # response['Access-Control-Allow-Credentials'] = 'true'
                         return response
 
 
