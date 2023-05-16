@@ -209,3 +209,11 @@ class OpenCloseValidation(APIView):
 
 
         return Response({"status":profile.enable_validation})
+
+class AutoAttributesViews(APIView):
+    renderer_classes=[UserRenderer]
+    permission_classes=[IsAuthenticated]
+    def get(self,request):
+        user=request.user
+        profie=user.profile_of
+        return Response({"maximum_serve_per_day":profie.maximum_serve_per_day,"auto_remove_after":profie.auto_remove_after})

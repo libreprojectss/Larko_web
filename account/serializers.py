@@ -162,3 +162,8 @@ class OperationScheduleSerializer(serializers.Serializer):
     class Meta:
         model = OperationSchedule
         fields = ('start_time','end_time','day','holiday')
+
+class Auto_attributes_Serializer(serializers.ModelSerializer):
+    class Meta:
+        model=Business_Profile
+        fields=['maximum_serve_per_day','auto_remove_after']

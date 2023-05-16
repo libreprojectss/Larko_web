@@ -92,12 +92,13 @@ class Business_Profile(models.Model):
     category=models.CharField(max_length=100)
     role=models.CharField(max_length=100,choices=roles,default='Manager')
     open_now=models.BooleanField(default=True,null=False)
+    maximum_serve_per_day=models.IntegerField(default=100)
+    auto_remove_after=models.IntegerField(default=5)
     enable_validation=models.BooleanField(default=True,null=False)
     business_phone_number=PhoneNumberField(null=True,default=None)
     business_email=models.EmailField(null=True,default=None)
     business_website=models.CharField(max_length=200,null=True,default=None)
     business_address=models.CharField(max_length=50,null=True,default=None)
-
 
 class OperationSchedule(models.Model):
     business_profile = models.OneToOneField(Business_Profile, on_delete=models.CASCADE, related_name='operation_schedule')
@@ -105,6 +106,19 @@ class OperationSchedule(models.Model):
 
     def __str__(self):
         return self.operation_time
+
+levels=[
+   ('WARNINGS','warning'),
+    ('INFO','info'),
+    ('ERROR','error'),
+   
+]
+
+class Logs(models.Model):
+    user=models.ForeignKey(User,on_delete=models.CASCADE,related_name="logs_for")
+    level=models.CharField(max_length=50,choices=levels)
+    message=models.CharField(max_length=255)
+    timestamp=models.DateTimeField(auto_now_add=True)
 
 
 

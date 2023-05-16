@@ -20,5 +20,6 @@ urlpatterns=[
     path("operationschedule/",OperationScheduleView.as_view(),name="operation shedule for  business"),
     path("openclosevalidation/",OpenCloseValidation.as_view(),name="open close validation"),
     path("openclosevalidation/<str:pk>/",OpenCloseValidation.as_view(),name="open close validation"),
+    path("autoattributes/",AutoAttributesViews.as_view(),name="auto attributes"),
 
 ]

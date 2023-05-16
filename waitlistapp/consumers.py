@@ -1,8 +1,10 @@
 from asgiref.sync import async_to_sync,sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer,AsyncJsonWebsocketConsumer
-import json,time,jwt,time
+import json,time,jwt
+from account.helpers import SaveLogs
 import asyncio
 from django.utils import timezone
+from waitlistapp.views import sendsms_thread
 from datetime import date,timedelta,datetime
 from urllib.parse import parse_qs
 from django.core.exceptions import ObjectDoesNotExist
@@ -74,8 +76,7 @@ class WaitlistConsumer(WebsocketConsumer):
         try:
             access_token = parse_qs(self.scope['query_string'].decode("utf-8"))["access_token"][0]
         except:
-            self.send("Access toke is not specified")
-            self.close()
+            self.close(code=1002, reason="Access token is not specified")
             return
         SECRET_KEY = settings.SECRET_KEY
 
@@ -107,8 +108,21 @@ class WaitlistConsumer(WebsocketConsumer):
                     try:
                         first_on_queue=First_on_queue.objects.get(user=user)
                         time_difference = timezone.now() - first_on_queue.started_time
-                        if time_difference > timedelta(minutes=1):
+                        profile=user.profile_of
+                        if time_difference > timedelta(minutes=profile.auto_remove_after):
                                 Waitlist.objects.get(id=first_on_queue.waitlist.id).delete()
+                                business_name=profile.business_name
+                                SaveLogs(user,f"customer with id {first_on_queue.waitlist.id} first_name {first_on_queue.waitlist.first_name} is autoremoved","INFO")
+                                msg1=f"You have been auto removed from the queue cause.Our apologies on this behaviour but its our policy to serve users on time."
+                                msg2 = f"""
+                                <h3 style='color: black;'>Dear customer,</h3>
+                                <p style='color: black;'>We regret to inform you that you have been automatically removed from the waitlist for business <strong>{business_name}</strong>.</p>
+                                <p style='color: black;'>We apologize for any inconvenience caused, but it is our policy to ensure timely service for all customers.</p>
+                                <p style='color: black;'>If you have any questions or concerns, please do not hesitate to contact us at <a href='mailto:larkoinc@gmail.com' style='color: #007bff;'>larkoinc@gmail.com</a>.</p>
+                                <p style='color: black;'>Best Regards,<br>Team Larko</p>
+                                """
+                                thread1=Thread(target=sendsms_thread,args=(first_on_queue.waitlist,msg1,msg2,"You have been removed from the queue"))
+
                                 first_on_queue.delete()
                                 continue
 
@@ -120,10 +134,12 @@ class WaitlistConsumer(WebsocketConsumer):
                         print(e)
                             
                     
-                        
-                    serialized_data = WaitlistSerializer(queryset,many=True)
-                    self.send(json.dumps(serialized_data.data))
-                    time.sleep(3)
+                    if queryset:
+                        serialized_data = WaitlistSerializer(queryset,many=True)
+                        self.send(json.dumps(serialized_data.data))
+                        time.sleep(3)
+                    else:
+                        time.sleep(6)
 
 class ServinglistConsumer(WebsocketConsumer):
     groups = ["serving"]
@@ -132,8 +148,7 @@ class ServinglistConsumer(WebsocketConsumer):
         try:
             access_token = parse_qs(self.scope['query_string'].decode("utf-8"))["access_token"][0]
         except:
-            self.send("Access toke is not specified")
-            self.close()
+            self.close(code=1002, reason="Access token is not specified")
             return
         SECRET_KEY = settings.SECRET_KEY
 
@@ -164,8 +179,7 @@ class AnalyticsConsumer(WebsocketConsumer):
         try:
             access_token = parse_qs(self.scope['query_string'].decode("utf-8"))["access_token"][0]
         except:
-            self.send("Access toke is not specified")
-            self.close()
+            self.close(code=1002, reason="Access token is not specified")
             return
         SECRET_KEY = settings.SECRET_KEY
 
@@ -175,8 +189,7 @@ class AnalyticsConsumer(WebsocketConsumer):
             self.user = User.objects.get(id=int(decoded_token['user_id']))
         except Exception as e:
             print(e)
-            self.send(str(e))
-            self.close()
+            self.close(code=1002, reason=str(e))
             return
             
         self.accept()

@@ -109,7 +109,3 @@ class First_on_queue(models.Model):
     started_time=models.DateTimeField(auto_now_add=True)
 
 
-
-
-    
-
