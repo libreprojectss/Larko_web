@@ -297,7 +297,7 @@ class Servedlist(APIView):
         serveobj.served_time=timezone.now()
         serveobj.served=True
         serveobj.save()
-        if serverobj.resource:
+        if serveobj.resource:
             serveobj.resource.update(is_free=True)
         business=Business_Profile.objects.get(user=request.user)
         msg1=f"You have been served by {business.business_name}.Thank you for using our services."
@@ -520,6 +520,29 @@ class AnalyticsViews(APIView):
         self_checked=Waitlist.objects.filter(added_time__range=(start_time, end_time),self_checked=True).count()
         total_entries = Waitlist.objects.filter(added_time__range=(start_time, end_time)).count()
         return({"self_checked":self_checked,"manually_added":total_entries-self_checked})
+    
+    def resources_data(self, start_time, end_time):
+        resources_objs = Resources.objects.all()
+        resources_dict = {}
+        for resource_obj in resources_objs:
+            waitlist_qs = Waitlist.objects.filter(resource=resource_obj,served=True,added_time__range=(start_time, end_time))
+            waitlist_count = waitlist_qs.count()
+            resources_dict[resource_obj.name] = waitlist_count
+        return resources_dict
+    
+    def services_data(self, start_time, end_time):
+        services_objs = Services.objects.all()
+        services_dict = {}
+        for service_obj in services_objs:
+            waitlist_served = Waitlist.objects.filter(service=service_obj,served=True,added_time__range=(start_time, end_time))
+            waitlist_total = Waitlist.objects.filter(service=service_obj,added_time__range=(start_time, end_time))
+            waitlist_count = waitlist_qs.count()
+            services_dict[services_obj.name] = waitlist_count
+        return services_dict
+    
+    
+
+
     def get(self,request,pk):
         today = timezone.now()
         if pk=="today":

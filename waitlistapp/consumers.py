@@ -2,13 +2,17 @@ from asgiref.sync import async_to_sync,sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer,AsyncJsonWebsocketConsumer
 import json,time,jwt,time
 import asyncio
+from django.utils import timezone
+from datetime import date,timedelta,datetime
 from urllib.parse import parse_qs
-from .models import Waitlist
-from account.models import User
+from django.core.exceptions import ObjectDoesNotExist
+from .models import Waitlist,First_on_queue
+from account.models import User,Business_Profile
 from threading import Thread
 from django.conf import settings
-
-from .serializers import WaitlistSerializer
+from django.db.models import Window,F
+from django.db.models.functions import Rank
+from .serializers import WaitlistSerializer,ServingSerializer
 from channels.db import database_sync_to_async
 from django.contrib.auth import get_user_model
 # @database_sync_to_async
@@ -62,9 +66,9 @@ from django.contrib.auth import get_user_model
 
 
 from channels.generic.websocket import WebsocketConsumer
-
+from channels.layers import get_channel_layer
 class WaitlistConsumer(WebsocketConsumer):
-    groups = ["broadcast"]
+    groups = ["waitlist"]
 
     def connect(self):
         try:
@@ -88,14 +92,167 @@ class WaitlistConsumer(WebsocketConsumer):
         self.accept()
         self.waitlist_thread = Thread(target=self.send_waitlist_periodically, args=(self.user,))
         self.waitlist_thread.start()
-    def receive(self, text_data=None, bytes_data=None):
-        self.send(text_data="Hello world!")
+   
         
     def disconnect(self, close_code):
         pass
     def send_waitlist_periodically(self, user):
                while self.websocket_connect or self.websocket_keepalive:
-                    waitlist = Waitlist.objects.filter(user=user,served=False,serving=False)
-                    serialized_data = WaitlistSerializer(waitlist,many=True)
+                    queryset = Waitlist.objects.filter(user=user, serving=False, served=False).annotate(
+                            rank=Window(
+                                expression=Rank(),
+                                order_by=F('added_time').asc(),
+                            )
+                        )
+                    try:
+                        first_on_queue=First_on_queue.objects.get(user=user)
+                        time_difference = timezone.now() - first_on_queue.started_time
+                        if time_difference > timedelta(minutes=1):
+                                Waitlist.objects.get(id=first_on_queue.waitlist.id).delete()
+                                first_on_queue.delete()
+                                continue
+
+
+                    except ObjectDoesNotExist:
+                        if queryset:
+                            first_on_queue=First_on_queue.objects.create(user=user,waitlist=queryset[0])
+                    except Exception as e:
+                        print(e)
+                            
+                    
+                        
+                    serialized_data = WaitlistSerializer(queryset,many=True)
                     self.send(json.dumps(serialized_data.data))
                     time.sleep(3)
+
+class ServinglistConsumer(WebsocketConsumer):
+    groups = ["serving"]
+
+    def connect(self):
+        try:
+            access_token = parse_qs(self.scope['query_string'].decode("utf-8"))["access_token"][0]
+        except:
+            self.send("Access toke is not specified")
+            self.close()
+            return
+        SECRET_KEY = settings.SECRET_KEY
+
+        
+        try:
+            decoded_token = jwt.decode(access_token,SECRET_KEY, algorithms=["HS256"])
+            self.user = User.objects.get(id=int(decoded_token['user_id']))
+        except Exception as e:
+            print(e)
+            self.send(str(e))
+            self.close()
+            return
+            
+        self.accept()
+        self.waitlist_thread = Thread(target=self.send_servelist_periodically, args=(self.user,))
+        self.waitlist_thread.start()
+    def send_servelist_periodically(self, user):
+               while self.websocket_connect or self.websocket_keepalive:
+                    waitlist = Waitlist.objects.filter(user=user,served=False,serving=True)
+                    serialized_data = ServingSerializer(waitlist,many=True)
+                    self.send(json.dumps(serialized_data.data))
+                    time.sleep(3)
+
+class AnalyticsConsumer(WebsocketConsumer):
+    groups = ["analytics"]
+
+    def connect(self):
+        try:
+            access_token = parse_qs(self.scope['query_string'].decode("utf-8"))["access_token"][0]
+        except:
+            self.send("Access toke is not specified")
+            self.close()
+            return
+        SECRET_KEY = settings.SECRET_KEY
+
+        
+        try:
+            decoded_token = jwt.decode(access_token,SECRET_KEY, algorithms=["HS256"])
+            self.user = User.objects.get(id=int(decoded_token['user_id']))
+        except Exception as e:
+            print(e)
+            self.send(str(e))
+            self.close()
+            return
+            
+        self.accept()
+        self.waitlist_thread = Thread(target=self.send_servelist_periodically, args=(self.user,))
+        self.waitlist_thread.start()
+    def send_servelist_periodically(self, user):
+               while self.websocket_connect or self.websocket_keepalive:
+                    waitlist = Waitlist.objects.filter(user=user,served=False,serving=True)
+                    serialized_data = ServingSerializer(waitlist,many=True)
+                    self.send(json.dumps(serialized_data.data))
+                    time.sleep(6)
+
+
+# class ServelistConsumer(AsyncWebsocketConsumer):
+#     async def connect(self):
+#         self.channel_layer=get_channel_layer()
+#         try:
+#             access_token = parse_qs(self.scope['query_string'].decode("utf-8"))["access_token"][0]
+#         except:
+#             self.send("Access token is not specified")
+#             self.close()
+#             return
+#         SECRET_KEY = settings.SECRET_KEY
+
+#         await self.accept()
+#         try:
+#             decoded_token = jwt.decode(access_token,SECRET_KEY, algorithms=["HS256"])
+#             print(decoded_token['user_id'])
+#             self.user = await self.get_user(int(decoded_token['user_id']))
+#             self.profile=await  self.get_profile(self.user)
+#         except Exception as e :
+
+#             print(e)
+#             self.send(str(e))
+#             self.close()
+#             return
+
+#         await self.channel_layer.group_add(
+#             self.profile.business_name,
+#             self.channel_name
+#         )
+#         await self.waitlist_changed()
+
+#     async def disconnect(self, close_code):
+#         await self.channel_layer.group_discard(
+#             self.business_name,
+#             self.channel_name
+#         )auto
+#     @database_sync_to_async
+#     def get_servinglist(self):
+#         return Waitlist.objects.filter(user=self.user,served=False,serving=True)
+#     @database_sync_to_async
+#     def get_user(self,user_id):
+#             user = User.objects.get(id=int(user_id))
+#             return user
+#     @database_sync_to_async
+#     def get_profile(self,user):
+#             profile=Business_Profile.objects.get(user=user)
+#             return profile
+#     @sync_to_async
+#     def serialize_waitlist(self,waitlist):
+#         serializeddata=ServingSerializer(waitlist,many=True)
+#         return serializeddata
+#     async def waitlist_changed(self):
+#         serving_waitlist = await self.get_servinglist()
+#         serialized_waitlist = await self.serialize_waitlist(serving_waitlist)
+
+#         await self.channel_layer.group_send(
+#             self.profile.business_name,
+#             {
+#                 "type": "waitlist_change",
+#                 "waitlist":"hello"
+#             }
+#         )
+#     async def waitlist_change(self, event):
+#         waitlist = event["waitlist"]
+#         await self.send(text_data=json.dumps({
+#         "waitlist": waitlist,
+#     }))

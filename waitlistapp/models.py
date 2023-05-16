@@ -43,7 +43,7 @@ class Resources(models.Model):
 class Waitlist(models.Model):
     user=models.ForeignKey(User,on_delete=models.CASCADE,related_name="waitlist_for")
     service=models.ForeignKey(Services,on_delete=models.SET_NULL,null=True,default=None,related_name="services_taken")
-    resource=models.ForeignKey(Resources,on_delete=models.SET_NULL,related_name="waitlist_for",default=None,null=True)
+    resource=models.ForeignKey(Resources,on_delete=models.SET_NULL,related_name="resource",default=None,null=True)
     phone_number=PhoneNumberField(null=True,default=None)
     dateofbirth=models.DateField(null=True,default=None)
     email=models.EmailField(null=True,default=None)
@@ -102,6 +102,11 @@ class ValidationToken(models.Model):
     token = models.CharField(max_length=100)
     is_valid = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
+
+class First_on_queue(models.Model):
+    user=models.OneToOneField(User,on_delete=models.CASCADE,related_name="user_of")
+    waitlist=models.ForeignKey(Waitlist,on_delete=models.CASCADE,related_name="waitlist_for")
+    started_time=models.DateTimeField(auto_now_add=True)
 
 
 
