@@ -76,7 +76,7 @@ class WaitlistConsumer(WebsocketConsumer):
         try:
             access_token = parse_qs(self.scope['query_string'].decode("utf-8"))["access_token"][0]
         except:
-            self.close(code=1002, reason="Access token is not specified")
+            self.close(code=1002)
             return
         SECRET_KEY = settings.SECRET_KEY
 
@@ -86,8 +86,7 @@ class WaitlistConsumer(WebsocketConsumer):
             self.user = User.objects.get(id=int(decoded_token['user_id']))
         except Exception as e:
             print(e)
-            self.send(str(e))
-            self.close()
+            self.close(code=1002)
             return
             
         self.accept()
@@ -158,8 +157,7 @@ class ServinglistConsumer(WebsocketConsumer):
             self.user = User.objects.get(id=int(decoded_token['user_id']))
         except Exception as e:
             print(e)
-            self.send(str(e))
-            self.close()
+            self.close(code=1002, reason=str(e))
             return
             
         self.accept()
