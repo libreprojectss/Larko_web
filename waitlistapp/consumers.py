@@ -108,7 +108,7 @@ class WaitlistConsumer(WebsocketConsumer):
                         first_on_queue=First_on_queue.objects.get(user=user)
                         time_difference = timezone.now() - first_on_queue.started_time
                         profile=user.profile_of
-                        if time_difference > timedelta(minutes=profile.auto_remove_after):
+                        if time_difference > timedelta(minutes=30):
                                 Waitlist.objects.get(id=first_on_queue.waitlist.id).delete()
                                 business_name=profile.business_name
                                 SaveLogs(user,f"customer with id {first_on_queue.waitlist.id} first_name {first_on_queue.waitlist.first_name} is autoremoved","INFO")

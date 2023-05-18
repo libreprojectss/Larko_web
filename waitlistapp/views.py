@@ -414,6 +414,7 @@ class ServicesViews(APIView):
         waiting=Count('services_taken', filter=Q(services_taken__served=False, services_taken__serving=False)),
         serving=Count('services_taken', filter=Q(services_taken__served=False, services_taken__serving=True))
     )
+    
         serializer=ServiceSerializer(objectlist,many=True)
         return Response(serializer.data)
     def post(self,request,pk=None):
@@ -500,6 +501,7 @@ class ResourcesViews(APIView):
 class AnalyticsViews(APIView):
     renderer_classes=[WaitlistRenderer]
     permission_classes=[IsAuthenticated]
+    @staticmethod
     def calculate_values(self,start_time,end_time):
         total_served = Waitlist.objects.filter(served_time__range=(start_time, end_time)).count()
         total_entries = Waitlist.objects.filter(added_time__range=(start_time, end_time)).count()
@@ -511,7 +513,7 @@ class AnalyticsViews(APIView):
         total_wait_time = sum([waitlist.serving_started_time - waitlist.added_time for waitlist in waitlists], timedelta())
         average_wait_time = total_wait_time / len(waitlists) if len(waitlists) > 0 else None
         waitlists_served = Waitlist.objects.exclude(served_time=None).filter(served_time__range=(start_time, end_time))
-        total_serve_time = sum([waitlist.time_served - waitlist.time_added for waitlist in waitlists_served], timedelta())
+        total_serve_time = sum([waitlist.served_time - waitlist.time_added for waitlist in waitlists_served], timedelta())
         average_serve_time = total_serve_time / len(waitlists_served) if len(waitlists_served) > 0 else None
         cancelled=total_entries-waitlists.count()
         return({"total_served":total_served,"total_entries":total_entries,"serve_rate":serve_rate,"avg_wait_time":average_wait_time,"avg_serve_time":average_serve_time,"total_cancelled":cancelled})
