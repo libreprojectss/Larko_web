@@ -518,7 +518,7 @@ class AnalyticsViews(APIView):
         return({"total_served":total_served,"total_entries":total_entries,"serve_rate":serve_rate,"avg_wait_time":average_wait_time,"avg_serve_time":average_serve_time,"total_cancelled":cancelled})
 
     def self_checked(self,start_time,end_time):
-        self_checked=Waitlist.objects.filter(added_time__range=(start_time, end_time),self_check=True).count()
+        self_checked=Waitlist.objects.filter(added_time__range=(start_time, end_time),self_checkin=True).count()
         total_entries = Waitlist.objects.filter(added_time__range=(start_time, end_time)).count()
         return({"self_checked":self_checked,"manually_added":total_entries-self_checked})
     
