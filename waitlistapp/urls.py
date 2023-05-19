@@ -4,7 +4,7 @@ from django.views.decorators.csrf import csrf_exempt
 urlpatterns=[
     path('getrequiredfields/',RequiredFieldsViews.as_view(),name="requiredfields"),
     path('allfields/',AllFieldsView.as_view(),name="allfields"),
-    path('waitlist/',csrf_exempt(WaitListView.as_view()),name="waitlist"),
+    path('waitlist/',csrf_exempt(WaitListView.as_view()),name="customer-waitlist"),
     path('waitlist/<str:pk>/',WaitListView.as_view(),name="waitlist"),
 
     path('notes/<str:cid>/',NotesView.as_view(),name="notes"),
@@ -21,5 +21,6 @@ urlpatterns=[
     path('analytics/<str:pk>/',AnalyticsViews.as_view(),name="analytics"),
     path("sendsms/<str:pk>/",NotifyByEmailSmsViews.as_view(),name="notify"),
     path("validatetoken/",Validate_customer.as_view(),name="validate"),
+    path("validatetoken/<str:pk>/",Validate_customer.as_view(),name="validate"),
 
 ]

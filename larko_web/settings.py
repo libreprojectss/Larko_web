@@ -107,28 +107,28 @@ CHANNEL_LAYERS = {
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
+DATABASES = {  
+    'default': {  
+        'ENGINE': 'django.db.backends.postgresql',  
+        'NAME': 'larko_db',  
+        'USER': 'postgres',  
+        'PASSWORD': '',  
+        'HOST':'localhost',  
+        'PORT': '5432',  
+        
+    }  
+}
 # DATABASES = {  
 #     'default': {  
 #         'ENGINE': 'django.db.backends.postgresql',  
-#         'NAME': 'larko_db',  
-#         'USER': 'postgres',  
-#         'PASSWORD': '',  
-#         'HOST':'localhost',  
+#         'NAME': 'vnenvygl',  
+#         'USER': 'vnenvygl',  
+#         'PASSWORD': 'jc_E0DUW5y7SCXJ9GjMnemYJg23Mitfx',  
+#         'HOST': 'satao.db.elephantsql.com',  
 #         'PORT': '5432',  
         
 #     }  
 # }
-DATABASES = {  
-    'default': {  
-        'ENGINE': 'django.db.backends.postgresql',  
-        'NAME': 'railway',  
-        'USER': 'postgres',  
-        'PASSWORD': 'O1RBZR5dnKnt0Ob4P8RA',  
-        'HOST': 'containers-us-west-175.railway.app',  
-        'PORT': '6888',  
-        
-    }  
-}
 
 
 # Password validation

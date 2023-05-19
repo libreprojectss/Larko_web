@@ -537,7 +537,7 @@ class AnalyticsViews(APIView):
         for service_obj in services_objs:
             waitlist_served = Waitlist.objects.filter(service=service_obj,served=True,added_time__range=(start_time, end_time))
             waitlist_total = Waitlist.objects.filter(service=service_obj,added_time__range=(start_time, end_time))
-            waitlist_count = waitlist_qs.count()
+            waitlist_count = waitlist_served.count()
             services_dict[services_obj.name] = waitlist_count
         return services_dict
     
@@ -611,6 +611,15 @@ class NotifyByEmailSmsViews(APIView):
 class Validate_customer(APIView):
     renderer_classes=[WaitlistRenderer]
     permission_classes=[IsAuthenticated]
+
+    def get(self,request,pk):
+        try:
+            validobj=ValidationToken.objects.get(token=pk)
+        except:
+            return Response({"error":"The provided token is not valid"},status=status.HTTP_400_BAD_REQUEST)
+        waitistobj=validobj.waitlist
+        serialized=WaitlistSerializer(waitistobj)
+        return Response(serialized.data)
     def post(self,request):
         if request.data.get('queue_token',None):
             try:
