@@ -525,8 +525,7 @@ class AnalyticsViews(APIView):
     #     return(time_difference_in_hours)
     
     def calculate_values(self,user,start_time,end_time):
-        print(start_time)
-        print(end_time)
+       
         total_served = Waitlist.objects.filter(user=user,served_time__range=(start_time, end_time)).count()
         total_entries = Waitlist.objects.filter(user=user,added_time__range=(start_time, end_time)).count() #total entities
         if total_entries!=0:
@@ -568,10 +567,13 @@ class AnalyticsViews(APIView):
         services_objs = Services.objects.all()
         services_dict = {}
         for service_obj in services_objs:
-            waitlist_served = Waitlist.objects.filter(user=user,service=service_obj,served=True,added_time__range=(start_time, end_time))
-            waitlist_total = Waitlist.objects.filter(user=user,service=service_obj,added_time__range=(start_time, end_time))
-            waitlist_count = waitlist_served.count()
-            services_dict[services_obj.name] = waitlist_count
+            waitlists_served = Waitlist.objects.filter(user=user,service=service_obj,served=True,added_time__range=(start_time, end_time))
+            total_system_time = sum([waitlist.served_time - waitlist.added_time for waitlist in waitlists_served], timedelta())
+            average_system_time = total_serve_time / len(waitlists_served) if len(waitlists_served) > 0 else None
+            total_service_time = sum([waitlist.served_time - waitlist.serving_started_time for waitlist in waitlists_served], timedelta())
+            average_service_duration = total_service_time / len(waitlists_served) if len(waitlists_served) > 0 else None
+            waitlist_count = waitlists_served.count()
+            services_dict[service_obj.service_name] = {"served":waitlist_count,"avg_system_time":average_system_time,"average_service_duration":average_service_duration}
         return services_dict
     
     
@@ -596,7 +598,9 @@ class AnalyticsViews(APIView):
         else:
             return Response({"error":"Invalid url.Please check the url and try again."},status=status.HTTP_404_NOT_FOUND)
         schedule=OperationSchedule.objects.get(business_profile=user.profile_of).operation_time
-        return Response({"statistics":self.calculate_values(request.user,start_time, end_time),"pie_chart":self.self_checked(request.user,start_time, end_time),"chart":calculate_stats(request.user,pk,schedule)})
+        return Response({"statistics":self.calculate_values(request.user,start_time, end_time),"pie_chart":self.self_checked(request.user,start_time, end_time),"chart":calculate_stats(request.user,pk,schedule),
+        "services":self.services_data(request.user,start_time,end_time)
+        })
 
 
 
