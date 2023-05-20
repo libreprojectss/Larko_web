@@ -9,6 +9,7 @@ from django.utils import timezone
 from waitlistapp.models import *
 from .tools.renderers import WaitlistRenderer
 from .tools.helpers import send_email,send_sms,generate_token
+from .tools.calculate_stat import calculate_stats
 from .timefunc import *
 from datetime import date,timedelta,time,datetime
 from rest_framework.response import Response 
@@ -592,7 +593,7 @@ class AnalyticsViews(APIView):
 
         else:
             return Response({"error":"Invalid url.Please check the url and try again."},status=status.HTTP_404_NOT_FOUND)
-        return Response({"statistics":self.calculate_values(request.user,start_time, end_time),"pie_chart":self.self_checked(request.user,start_time, end_time)})
+        return Response({"statistics":self.calculate_values(request.user,start_time, end_time),"pie_chart":self.self_checked(request.user,start_time, end_time),"chart":calculate_stats(request.user,pk)})
 
 
 
