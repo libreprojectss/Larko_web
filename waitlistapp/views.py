@@ -569,7 +569,7 @@ class AnalyticsViews(APIView):
         for service_obj in services_objs:
             waitlists_served = Waitlist.objects.filter(user=user,service=service_obj,served=True,added_time__range=(start_time, end_time))
             total_system_time = sum([waitlist.served_time - waitlist.added_time for waitlist in waitlists_served], timedelta())
-            average_system_time = total_serve_time / len(waitlists_served) if len(waitlists_served) > 0 else None
+            average_system_time = total_system_time / len(waitlists_served) if len(waitlists_served) > 0 else None
             total_service_time = sum([waitlist.served_time - waitlist.serving_started_time for waitlist in waitlists_served], timedelta())
             average_service_duration = total_service_time / len(waitlists_served) if len(waitlists_served) > 0 else None
             waitlist_count = waitlists_served.count()
