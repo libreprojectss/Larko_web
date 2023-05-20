@@ -599,7 +599,7 @@ class AnalyticsViews(APIView):
             return Response({"error":"Invalid url.Please check the url and try again."},status=status.HTTP_404_NOT_FOUND)
         schedule=OperationSchedule.objects.get(business_profile=user.profile_of).operation_time
         return Response({"statistics":self.calculate_values(request.user,start_time, end_time),"pie_chart":self.self_checked(request.user,start_time, end_time),"chart":calculate_stats(request.user,pk,schedule),
-        "services":self.services_data(request.user,start_time,end_time)
+        "services":self.services_data(request.user,start_time,end_time),"resources":self.resources_data(request.user,start_time,end_time)
         })
 
 
