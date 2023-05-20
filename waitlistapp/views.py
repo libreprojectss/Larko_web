@@ -703,6 +703,5 @@ class DownloadRecordsViews(APIView):
         # Create JSON response with Blob data
         json_data = json.dumps({'blob': excel_blob.decode('latin1')})
         response.write(json_data)
-        print(response)
         return response
 

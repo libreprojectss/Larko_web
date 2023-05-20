@@ -226,6 +226,6 @@ class AutoAttributesViews(APIView):
             profile.maximum_serve_per_day=int(request.data.get("maximum_serve_per_day"))
             profile.save()
         if request.data.get("auto_remove_after",None):
-            profile.maximum_serve_per_day=int(request.data.get("auto_remove_after"))
+            profile.auto_remove_after=int(request.data.get("auto_remove_after"))
             profile.save()
         return Response({"success":"Fields updated sucessfully"})
