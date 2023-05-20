@@ -4,13 +4,13 @@ from .serializers import *
 from time import sleep
 from corsheaders.defaults import default_headers
 from django.http import StreamingHttpResponse
-from account.models import User,Business_Profile
+from account.models import User,Business_Profile,OperationSchedule
 from django.utils import timezone
 from waitlistapp.models import *
 from .tools.renderers import WaitlistRenderer
 from .tools.helpers import send_email,send_sms,generate_token
 from .timefunc import *
-from datetime import date,timedelta
+from datetime import date,timedelta,time,datetime
 from rest_framework.response import Response 
 from rest_framework import status,serializers
 from rest_framework.permissions import BasePermission, IsAuthenticated
@@ -501,42 +501,68 @@ class ResourcesViews(APIView):
 class AnalyticsViews(APIView):
     renderer_classes=[WaitlistRenderer]
     permission_classes=[IsAuthenticated]
-    def calculate_values(self,start_time,end_time):
-        total_served = Waitlist.objects.filter(served_time__range=(start_time, end_time)).count()
-        total_entries = Waitlist.objects.filter(added_time__range=(start_time, end_time)).count()
+
+    def calculate_average_working_hours(self,schedule):
+        current_datetime = timezone.localtime(timezone.now())
+
+        current_day = current_datetime.strftime("%A").upper()
+
+        current_day_schedule = next(item for item in schedule if item["day"] == current_day)
+        start_time = time.fromisoformat(current_day_schedule["start_time"])
+        end_time = time.fromisoformat(current_day_schedule["end_time"])
+        print(start_time)
+        print(end_time)
+        current_date = timezone.now()
+
+        # Set the current date and time to the start and end times
+        start_datetime = timezone.make_aware(datetime.combine(current_date, start_time))
+        end_datetime = timezone.make_aware(datetime.combine(current_date, end_time))
+        # Calculate the time difference in hours
+        time_difference = end_datetime - start_datetime
+        time_difference_in_hours = time_difference.total_seconds() / 3600
+        return(time_difference_in_hours)
+    
+    def calculate_values(self,user,start_time,end_time):
+        total_served = Waitlist.objects.filter(user=user,served_time__range=(start_time, end_time)).count()
+        total_entries = Waitlist.objects.filter(user=user,added_time__range=(start_time, end_time)).count() #total entities
+        total_time = (end_time - start_time).total_seconds() / 3600
         if total_entries!=0:
             serve_rate = (total_served / total_entries) * 100
         else:
             serve_rate=0
-        waitlists= Waitlist.objects.exclude(serving_started_time=None).filter(serving_started_time__range=(start_time, end_time))
+        operaton_time=OperationSchedule.objects.get(business_profile=user.profile_of)
+        average_working_hours=self.calculate_average_working_hours(operaton_time.operation_time) #calculated average working hours
+        
+        arrival_rate=total_entries/average_working_hours
+        waitlists= Waitlist.objects.exclude(serving_started_time=None).filter(user=user,serving_started_time__range=(start_time, end_time))
         total_wait_time = sum([waitlist.serving_started_time - waitlist.added_time for waitlist in waitlists], timedelta())
         average_wait_time = total_wait_time / len(waitlists) if len(waitlists) > 0 else None
-        waitlists_served = Waitlist.objects.exclude(served_time=None).filter(served_time__range=(start_time, end_time))
+        waitlists_served = Waitlist.objects.exclude(served_time=None).filter(user=user,served_time__range=(start_time, end_time))
         total_serve_time = sum([waitlist.served_time - waitlist.time_added for waitlist in waitlists_served], timedelta())
         average_serve_time = total_serve_time / len(waitlists_served) if len(waitlists_served) > 0 else None
         cancelled=total_entries-waitlists.count()
         return({"total_served":total_served,"total_entries":total_entries,"serve_rate":serve_rate,"avg_wait_time":average_wait_time,"avg_serve_time":average_serve_time,"total_cancelled":cancelled})
 
-    def self_checked(self,start_time,end_time):
-        self_checked=Waitlist.objects.filter(added_time__range=(start_time, end_time),self_checkin=True).count()
-        total_entries = Waitlist.objects.filter(added_time__range=(start_time, end_time)).count()
+    def self_checked(self,user,start_time,end_time):
+        self_checked=Waitlist.objects.filter(user=user,added_time__range=(start_time, end_time),self_checkin=True).count()
+        total_entries = Waitlist.objects.filter(user=user,added_time__range=(start_time, end_time)).count()
         return({"self_checked":self_checked,"manually_added":total_entries-self_checked})
     
-    def resources_data(self, start_time, end_time):
+    def resources_data(self,user, start_time, end_time):
         resources_objs = Resources.objects.all()
         resources_dict = {}
         for resource_obj in resources_objs:
-            waitlist_qs = Waitlist.objects.filter(resource=resource_obj,served=True,added_time__range=(start_time, end_time))
+            waitlist_qs = Waitlist.objects.filter(user=user,resource=resource_obj,served=True,added_time__range=(start_time, end_time))
             waitlist_count = waitlist_qs.count()
             resources_dict[resource_obj.name] = waitlist_count
         return resources_dict
     
-    def services_data(self, start_time, end_time):
+    def services_data(self,user, start_time, end_time):
         services_objs = Services.objects.all()
         services_dict = {}
         for service_obj in services_objs:
-            waitlist_served = Waitlist.objects.filter(service=service_obj,served=True,added_time__range=(start_time, end_time))
-            waitlist_total = Waitlist.objects.filter(service=service_obj,added_time__range=(start_time, end_time))
+            waitlist_served = Waitlist.objects.filter(user=user,service=service_obj,served=True,added_time__range=(start_time, end_time))
+            waitlist_total = Waitlist.objects.filter(user=user,service=service_obj,added_time__range=(start_time, end_time))
             waitlist_count = waitlist_served.count()
             services_dict[services_obj.name] = waitlist_count
         return services_dict
@@ -561,7 +587,7 @@ class AnalyticsViews(APIView):
 
         else:
             return Response({"error":"Invalid url.Please check the url and try again."},status=status.HTTP_404_NOT_FOUND)
-        return Response({"statistics":self.calculate_values(start_time, end_time),"pie_chart":self.self_checked(start_time, end_time)})
+        return Response({"statistics":self.calculate_values(request.user,start_time, end_time),"pie_chart":self.self_checked(request.user,start_time, end_time)})
 
 
 
