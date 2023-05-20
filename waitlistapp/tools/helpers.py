@@ -2,7 +2,7 @@ from django.core.mail import send_mail
 from twilio.rest import Client
 from django.conf import settings
 import random
-
+import pandas as pd
 
 
 def send_email(message, to_email,subject="Larko reminder"):
@@ -31,3 +31,16 @@ def generate_token(waitlistid):
     token = str(waitlistid) + str(random_number)
     
     return token
+
+
+
+def prepare_excel_data(serialized_data):
+    # Retrieve queue entries from your waitlist model
+   
+    
+     # Customize with your field names
+
+    # Create a DataFrame using pandas
+    df = pd.DataFrame(serialized_data)  # Customize column names
+    print(df)
+    return df

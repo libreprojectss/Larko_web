@@ -1,14 +1,16 @@
 from django.shortcuts import render
 from rest_framework.views import APIView
 from .serializers import *
+import pandas as pd
 from time import sleep
+from io import BytesIO
 from corsheaders.defaults import default_headers
 from django.http import StreamingHttpResponse
 from account.models import User,Business_Profile,OperationSchedule
 from django.utils import timezone
 from waitlistapp.models import *
 from .tools.renderers import WaitlistRenderer
-from .tools.helpers import send_email,send_sms,generate_token
+from .tools.helpers import send_email,send_sms,generate_token,prepare_excel_data
 from .tools.calculate_stat import calculate_stats
 from .timefunc import *
 from datetime import date,timedelta,time,datetime
@@ -218,7 +220,6 @@ class WaitListView(APIView):
 
 class Servinglist(APIView):
     renderer_classes=[WaitlistRenderer]           
-
     permission_classes=[IsAuthenticated]
     def get(self,request,pk=None):
         user_objects=Waitlist.objects.filter(user=request.user,serving=True,served=False).annotate(
@@ -679,6 +680,26 @@ class Validate_customer(APIView):
         return Response({"error":"The provided token is not valid"},status=status.HTTP_400_BAD_REQUEST)
 
 
+class DownloadRecordsViews(APIView):
+    renderer_classes=[WaitlistRenderer]
+    permission_classes=[IsAuthenticated]     
 
+    def get(self,request):
+        waitlist=Waitlist.objects.filter(user=request.user)
+        serialized_data=WaitlistSerializer(waitlist,many=True)
+        df=prepare_excel_data(serialized_data.data)
 
-        
+        # Create an in-memory Excel file
+        excel_buffer = BytesIO()
+        with pd.ExcelWriter(excel_buffer, engine='xlsxwriter') as writer:
+            df.to_excel(writer, index=False, sheet_name='Queue Records')  # Customize sheet name
+
+        # Set up the response
+        response = Response(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = 'attachment; filename="queue_entries.xlsx"'
+
+        # Write the Excel file to the response
+        excel_buffer.seek(0)
+        response.write(excel_buffer.getvalue())
+        return response
+

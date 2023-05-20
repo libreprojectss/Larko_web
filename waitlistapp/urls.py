@@ -22,5 +22,6 @@ urlpatterns=[
     path("sendsms/<str:pk>/",NotifyByEmailSmsViews.as_view(),name="notify"),
     path("validatetoken/",Validate_customer.as_view(),name="validate"),
     path("validatetoken/<str:pk>/",Validate_customer.as_view(),name="validate"),
+    path('downloadrecords/',DownloadRecordsViews.as_view(),name="download records")
 
 ]
