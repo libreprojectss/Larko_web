@@ -544,6 +544,7 @@ class AnalyticsViews(APIView):
         total_serve_time = sum([waitlist.served_time - waitlist.added_time for waitlist in waitlists_served], timedelta())
         average_serve_time = total_serve_time / len(waitlists_served) if len(waitlists_served) > 0 else None
         auto_cancelled=Removed.objects.filter(user=user,added_time__range=(start_time, end_time),auto_removed=True).count()
+        
         return({"total_served":total_served,"total_entries":total_waitlist_entries,"serve_rate":serve_rate,"avg_arrival_rate":arrival_rate,"avg_wait_time":str(average_wait_time),"avg_serve_time":str(average_serve_time),"total_cancelled":cancelled,"auto_removed":auto_cancelled})
 
     
@@ -578,8 +579,9 @@ class AnalyticsViews(APIView):
 
     def get(self,request,pk):
         today = timezone.now()
+        user=request.user
         if pk=="today":
-         
+            
 
             start_time,end_time=get_day_range(today)
         elif pk=="week":
@@ -593,7 +595,8 @@ class AnalyticsViews(APIView):
 
         else:
             return Response({"error":"Invalid url.Please check the url and try again."},status=status.HTTP_404_NOT_FOUND)
-        return Response({"statistics":self.calculate_values(request.user,start_time, end_time),"pie_chart":self.self_checked(request.user,start_time, end_time),"chart":calculate_stats(request.user,pk)})
+        schedule=OperationSchedule.objects.get(business_profile=user.profile_of).operation_time
+        return Response({"statistics":self.calculate_values(request.user,start_time, end_time),"pie_chart":self.self_checked(request.user,start_time, end_time),"chart":calculate_stats(request.user,pk,schedule)})
 
 
 

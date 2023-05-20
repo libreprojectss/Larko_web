@@ -1,7 +1,7 @@
 from datetime import timedelta
 from django.utils import timezone
 from waitlistapp.models import Waitlist,Removed
-from datetime import datetime
+from datetime import datetime,time
 from django.db.models import Count
 
 def format_interval(interval, interval_start, interval_end):
@@ -16,6 +16,10 @@ def get_total_served_and_entries(user, start_time, end_time):
     total_served = Waitlist.objects.filter(user=user, served_time__range=(start_time, end_time)).count()
     total_entries = Waitlist.objects.filter(user=user, added_time__range=(start_time, end_time)).count()+Removed.objects.filter(user=user, added_time__range=(start_time, end_time)).count()
     return total_served, total_entries
+
+def convert_to_datetime(time_str, date_obj):
+    hour, minute = map(int, time_str.split(':'))
+    return datetime(date_obj.year, date_obj.month, date_obj.day, hour, minute)
 
 def get_time_intervals(start_time, end_time, interval):
     time_intervals = []
@@ -32,11 +36,12 @@ def get_time_intervals(start_time, end_time, interval):
             current_time = current_time.replace(month=current_time.month + 1, day=1, hour=0, minute=0, second=0)
     return time_intervals
 
-def calculate_stats(user,interval):
+def calculate_stats(user,interval,schedule):
     today = timezone.localtime(timezone.now()).date()
     if interval == 'today':
-        start_time = timezone.make_aware(datetime.combine(today, datetime.min.time()))
-        end_time = timezone.now()
+        day_index = today.weekday()
+        start_time = convert_to_datetime(schedule[day_index]["start_time"], today)
+        end_time = convert_to_datetime(schedule[day_index]["end_time"], today)
     elif interval == 'week':
         start_time = timezone.make_aware(datetime.combine(today - timedelta(days=today.weekday()), datetime.min.time()))
         end_time = timezone.now()
