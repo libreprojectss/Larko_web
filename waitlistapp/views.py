@@ -685,25 +685,28 @@ class DownloadRecordsViews(APIView):
     renderer_classes=[WaitlistRenderer]
     permission_classes=[IsAuthenticated]     
 
-    def get(self,request):
-        waitlist=Waitlist.objects.filter(user=request.user)
-        serialized_data=WaitlistSerializer(waitlist,many=True)
-        df=prepare_excel_data(serialized_data.data)
+  
 
-        # Create an in-memory Excel file
+    def get(self, request):
+        waitlist = Waitlist.objects.filter(user=request.user)
+        serialized_data = WaitlistSerializer(waitlist, many=True)
+        df = prepare_excel_data(serialized_data.data)
+
         excel_buffer = BytesIO()
         with pd.ExcelWriter(excel_buffer, engine='xlsxwriter') as writer:
-            df.to_excel(writer, index=False, sheet_name='Queue Records')  # Customize sheet name
-
-        excel_blob = excel_buffer.getvalue()
+            df.to_excel(writer, index=False, sheet_name='Queue Entries')  # Customize sheet name
 
         # Set up the response
-        response = HttpResponse(content_type='application/json')
+        response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
         response['Content-Disposition'] = 'attachment; filename="queue_entries.xlsx"'
+        excel_buffer.seek(0)
 
-        # Create JSON response with Blob data
-        json_data = json.dumps({'blob': excel_blob.decode('latin1')})
-        response.write(json_data)
+        # Attach the file to the response
+        response['Content-Transfer-Encoding'] = 'binary'
+        response['Access-Control-Expose-Headers'] = 'Content-Disposition'
+        # Adjust this to restrict the origin if needed
+        response.write(excel_buffer.getvalue())
         print(response)
+
         return response
 
