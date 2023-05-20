@@ -220,12 +220,12 @@ class AutoAttributesViews(APIView):
     
     def post(self,request):
         user=request.user
-        profie=user.profile_of
+        profile=user.profile_of
         if request.data.get("maximum_serve_per_day",None):
             
             profile.maximum_serve_per_day=int(request.data.get("maximum_serve_per_day"))
             profile.save()
         if request.data.get("auto_remove_after",None):
             profile.maximum_serve_per_day=int(request.data.get("auto_remove_after"))
-            profie.save()
+            profile.save()
         return Response({"success":"Fields updated sucessfully"})
