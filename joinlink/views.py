@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from rest_framework.views import APIView
 from account.renderers import UserRenderer
 from .helpers import encrypt_user_id,decrypt_user_id
-from waitlistapp.models import Waitlist,FieldList,Services,ValidationToken
+from waitlistapp.models import Waitlist,FieldList,Services,ValidationToken,Removed
 from rest_framework.response import Response 
 from waitlistapp.tools.helpers import send_sms,send_email,generate_token
 from rest_framework import status,serializers
@@ -145,6 +145,8 @@ class Public_link_Views(APIView):
         if user_info:
             customerid=decrypt_user_id(user_info,key)
             waitlist_profile=Waitlist.objects.get(id=customerid)
+            Removed.objects.create(user=waitlist_profile.user,added_time=waitlist_profile.added_time,self_cancelled=True)
+
             waitlist_profile.delete()
             response = Response({"message": "You have been removed from the waitlist."}, status=status.HTTP_200_OK)
             response.delete_cookie(cookie_name)

@@ -108,4 +108,11 @@ class First_on_queue(models.Model):
     waitlist=models.ForeignKey(Waitlist,on_delete=models.CASCADE,related_name="waitlist_for")
     started_time=models.DateTimeField(auto_now_add=True)
 
+class Removed(models.Model):
+    user=models.ForeignKey(User,on_delete=models.CASCADE,related_name="removed_user")
+    added_time=models.DateTimeField()
+    self_cancelled=models.BooleanField(default=False,blank=True)
+    auto_removed=models.BooleanField(default=False,blank=True)
+
+
 

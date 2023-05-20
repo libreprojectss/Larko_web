@@ -192,6 +192,7 @@ class WaitListView(APIView):
                 msg2=f"<h3 style='color:black'>Dear customer,</h3><p style='color:black'>We would like to inform that you have been removed from the waitlist of business <strong>{business_name}</strong></p><p style='color:black'>We appreciate your patience as we work to ensure that each customer receives the best possible service.</p><p style='color:black'>If you have any questions or concerns, please don't hesitate to contact us at <a href='mailto:larkoinc@gmail.com'>larkoinc@gmail.com</a>.</p><p style='color:black'>Best Regards,<br>Team Larko</p>"
                 subject=f"You have been removed from the queue"
                 thread1=threading.Thread(target=sendsms_thread,args=(waitlistobj,msg1,msg2,subject))
+                Removed.objects.create(user=request.user,added_time=waitlistobj.added_time)
                 waitlistobj.delete()
 
                 # user_objects=Waitlist.objects.filter(user=request.user).order_by('added_time')
@@ -531,17 +532,18 @@ class AnalyticsViews(APIView):
             serve_rate = (total_served / total_entries) * 100
         else:
             serve_rate=0
-        average_working_hours=end_time-start_time #calculated average working hours
-        
-        # arrival_rate=total_entries/average_working_hours
+        average_working_hours=(end_time-start_time).total_seconds() / 3600 #calculated average working hours
+        cancelled=Removed.objects.filter(user=user,added_time__range=(start_time, end_time)).count()
+        total_waitlist_entries=total_entries+cancelled
+        arrival_rate=total_entries/average_working_hours
         waitlists= Waitlist.objects.exclude(serving_started_time=None).filter(user=user,serving_started_time__range=(start_time, end_time))
         total_wait_time = sum([waitlist.serving_started_time - waitlist.added_time for waitlist in waitlists], timedelta())
         average_wait_time = total_wait_time / len(waitlists) if len(waitlists) > 0 else None
         waitlists_served = Waitlist.objects.exclude(served_time=None).filter(user=user,served_time__range=(start_time, end_time))
         total_serve_time = sum([waitlist.served_time - waitlist.added_time for waitlist in waitlists_served], timedelta())
         average_serve_time = total_serve_time / len(waitlists_served) if len(waitlists_served) > 0 else None
-        cancelled=total_entries-waitlists.count()
-        return({"total_served":total_served,"total_entries":total_entries,"serve_rate":serve_rate,"avg_wait_time":str(average_wait_time),"avg_serve_time":str(average_serve_time),"total_cancelled":cancelled})
+        auto_cancelled=Removed.objects.filter(user=user,added_time__range=(start_time, end_time),auto_removed=True).count()
+        return({"total_served":total_served,"total_entries":total_waitlist_entries,"serve_rate":serve_rate,"avg_arrival_rate":arrival_rate,"avg_wait_time":str(average_wait_time),"avg_serve_time":str(average_serve_time),"total_cancelled":cancelled,"auto_removed":auto_cancelled})
 
     def self_checked(self,user,start_time,end_time):
         self_checked=Waitlist.objects.filter(user=user,added_time__range=(start_time, end_time),self_checkin=True).count()

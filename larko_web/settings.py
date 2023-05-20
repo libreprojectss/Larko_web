@@ -106,7 +106,7 @@ CHANNEL_LAYERS = {
 # }
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
-
+TIME_ZONE = 'Asia/Kathmandu'
 DATABASES = {  
     'default': {  
         'ENGINE': 'django.db.backends.postgresql',  

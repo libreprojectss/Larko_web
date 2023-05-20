@@ -3,6 +3,7 @@ from channels.generic.websocket import AsyncWebsocketConsumer,AsyncJsonWebsocket
 import json,time,jwt
 from account.helpers import SaveLogs
 import asyncio
+from waitlistapp.models import Removed
 from django.utils import timezone
 from waitlistapp.views import sendsms_thread
 from datetime import date,timedelta,datetime
@@ -111,8 +112,9 @@ class WaitlistConsumer(WebsocketConsumer):
                         if time_difference > timedelta(minutes=30):
                                 Waitlist.objects.get(id=first_on_queue.waitlist.id).delete()
                                 business_name=profile.business_name
-                                SaveLogs(user,f"customer with id {first_on_queue.waitlist.id} first_name {first_on_queue.waitlist.first_name} is autoremoved","INFO")
-                                msg1=f"You have been auto removed from the queue cause.Our apologies on this behaviour but its our policy to serve users on time."
+                                SaveLogs(user,f"customer with id {first_on_queue.waitlist.id} first_name {first_on_queue.waitlist.first_name} is autoremoved","INFO").save()
+                                Removed.objects.create(user=user,added_time=first_on_queue.waitlist.added_time,auto_removed=True)
+                                msg1=f"You have been auto removed from the queue.Our apologies on this behaviour but its our policy to serve users on time."
                                 msg2 = f"""
                                 <h3 style='color: black;'>Dear customer,</h3>
                                 <p style='color: black;'>We regret to inform you that you have been automatically removed from the waitlist for business <strong>{business_name}</strong>.</p>
