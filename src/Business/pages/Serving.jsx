@@ -109,7 +109,7 @@ function Serving() {
                     <Nav />
                 </div>
                 <div className='mt-20 flex w-full justify-center ml-[5vw]'>
-                    <div className="px-2 py-3 w-[7%] text-teal-500 font-medium text-xs leading-tight rounded-xl  shadow-md bg-slate-100 mx-2 flex justify-around items-center space-x-1"> <BsFillPersonFill size='20' /><p className=''>1 </p></div>
+                    <div className="px-2 py-3 w-[7%] text-teal-500 font-medium text-xs leading-tight rounded-xl  shadow-md bg-slate-100 mx-2 flex justify-around items-center space-x-1"> <BsFillPersonFill size='20' /><p className='text-xl font-bold'>{data.length} </p></div>
                 </div>
                 <div className='h-full mt-4 flex flex-col justify-start '>
 
@@ -162,23 +162,7 @@ function Serving() {
                                                 <td className="py-4 font-semibold text-gray-900 ">
 
                                                     <BsFillCheckCircleFill size='20' color='green' style={{ marginRight: '12px', cursor: 'pointer' }} onClick={() => { served(value.id) }} />
-                                                    <div className='relative'>
-
-                                                        {
-                                                            toggle && <div className='bg-white w-32 h-auto  absolute top-8 left-0 border shadow-sm rounded-lg'>
-                                                                <div className='flex flex-col px-1 py-2 m-4 bg-transparent'>
-                                                                    <div className='flex justify-start items-start'>
-                                                                        <BiMoveVertical size='20' color='black' style={{ background: 'transparent' }} />
-                                                                        <p className='text-md font-semibold ml-2'>Move</p>
-                                                                    </div>
-                                                                    <div className='flex  justify-start mt-2'>
-                                                                        <AiFillDelete size='20' color='red' />
-                                                                        <p className='text-md font-semibold ml-2'>Remove</p>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        }
-                                                    </div>
+                                          
                                                 </td>
                                             </tr>
                                         )

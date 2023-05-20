@@ -1,18 +1,16 @@
-import React, { useState } from 'react'
+import { Fragment, useState, useEffect } from 'react'
+import { Dialog, Transition } from '@headlessui/react'
 import Nav from '../components/Nav'
 import Side from '../components/Side'
-import { useEffect } from 'react'
 import axios from 'axios'
 import { GetToken } from '../../context/Localstorage'
 import Resizer from "react-image-file-resizer";
 import { AiOutlineCamera } from 'react-icons/ai';
-import { AiFillBell, BsFillCheckCircleFill, BsThreeDots, BiMoveVertical, AiFillDelete, BsFillPersonFill, CiTimer } from 'react-icons/all'
 import { useNavigate } from 'react-router-dom'
 import { DeleteToken } from '../../context/Localstorage'
 import jwt_decode from "jwt-decode";
 
 function Resources() {
-    const [toggle, setToggle] = useState(false);
     const { access, refresh } = GetToken();
     const [data, setdata] = useState([]);
     const [adata, setadata] = useState([]);
@@ -258,7 +256,14 @@ function Resources() {
         setIsEmpty(true);
     };
 
-
+    function editController(id) {
+        setid(id);
+        setediton((pre) => !pre);
+    }
+    function deleteController(id) {
+        setid(id);
+        setdelton((pre) => !pre);
+    }
     return (
         <div className='h-full w-full'>
             <div className='flex'>
@@ -318,8 +323,8 @@ function Resources() {
                                                     <div className='hidden'>{value.name}</div>
                                                     <div className='hidden'>{value.description}</div>
                                                     <img src={'http://127.0.0.1:8000' + value.image} alt="No Image" className='hidden' />
-                                                    <button className='px-2 py-2 rounded-bl-xl rounded-tr-xl bg-blue-500 text-white ' onClick={editwow}>Edit</button>
-                                                    <button className='px-2 py-2 rounded-tl-xl rounded-br-xl bg-red-500 text-white ' onClick={delwow}>Delete</button>
+                                                    <button className='px-2 py-2 rounded-bl-xl rounded-tr-xl bg-blue-500 text-white ' onClick={() => editController(value.id)}>Edit</button>
+                                                    <button className='px-2 py-2 rounded-tl-xl rounded-br-xl bg-red-500 text-white ' onClick={() => deleteController(value.id)}>Delete</button>
                                                 </div>
                                             </div>
                                         )
@@ -327,101 +332,182 @@ function Resources() {
                                 }
                                 <div className='w-[80vw] flex items-center pl-[15vw]'>
                                     {
-                                        editon ?
-                                            <form className='w-[80%]' onSubmit={handlesubmit}>
-                                                {
-                                                    adata.map((value, index) => {
-                                                        if (value.id == id) {
+                                        editon &&
 
-                                                            return (
-                                                                <div key={index} className='w-full'>
-                                                                    <div className='w-full flex justify-between'>
-                                                                        <div className='flex flex-col w-[70%]'>
+                                        (
+                                            <Transition appear show={true} as={Fragment}>
+                                                <Dialog as="div" className="relative z-10" onClose={editController}>
+                                                    <Transition.Child
+                                                        as={Fragment}
+                                                        enter="ease-out duration-300"
+                                                        enterFrom="opacity-0"
+                                                        enterTo="opacity-100"
+                                                        leave="ease-in duration-200"
+                                                        leaveFrom="opacity-100"
+                                                        leaveTo="opacity-0"
+                                                    >
+                                                        <div className="fixed inset-0 bg-black bg-opacity-25" />
+                                                    </Transition.Child>
 
-                                                                            <label htmlFor="name" className="font-bold mt-3 ">Name *</label>
-                                                                            <input type="text" name="name" id="name" placeholder="Name" value={fetch.name} onChange={handle_change} className="pl-2 py-3 focus:outline-none bg-slate-200 rounded-md my-2" />
-
-                                                                            <label htmlFor="description" className="font-bold mt-3">Description *</label>
-                                                                            <input type="text" name="description" id="description" placeholder="Description" value={fetch.description} onChange={handle_change} className="pl-2 py-3 focus:outline-none bg-slate-200 rounded-md my-2" />
-
-                                                                        </div>
-                                                                        <div>
+                                                    <div className="fixed inset-0 overflow-y-auto">
+                                                        <div className="flex min-h-full items-center justify-center p-4 text-center">
+                                                            <Transition.Child
+                                                                as={Fragment}
+                                                                enter="ease-out duration-300"
+                                                                enterFrom="opacity-0 scale-95"
+                                                                enterTo="opacity-100 scale-100"
+                                                                leave="ease-in duration-200"
+                                                                leaveFrom="opacity-100 scale-100"
+                                                                leaveTo="opacity-0 scale-95"
+                                                            >
+                                                                <Dialog.Panel className="w-full max-w-3xl transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                                                                    <Dialog.Title
+                                                                        as="h3"
+                                                                        className="text-xl font-medium leading-6 text-gray-900 text-center mb-2"
+                                                                    >
+                                                                        Edite Business Services
+                                                                    </Dialog.Title>
+                                                                    <div className="mt-1 flex justify-center">
+                                                                        <form className='w-[80%]' onSubmit={handlesubmit}>
                                                                             {
-                                                                                !image ?
-                                                                                    <div className='h-[75%]'>
-                                                                                        <p className='mt-3 font-bold text-center'>
-                                                                                            Click to Upload Image
-                                                                                        </p>
-                                                                                        <div className='h-full border-2 border-dashed border-slate-300 rounded-xl mt-2'>
-                                                                                            <label htmlFor="image" className='h-full flex justify-center items-center hover:cursor-pointer'>
-                                                                                                {/* <p className='font-bold'>Click Here</p> */}
-                                                                                                <AiOutlineCamera size="6em" />
-                                                                                            </label>
-                                                                                            <input type="file" accept="image/*" name="image" id="image" onChange={handleChange} hidden />
-                                                                                        </div>
-                                                                                    </div>
-                                                                                    :
-                                                                                    <div className='h-[75%]'>
-                                                                                        <p className='mt-3 font-bold text-center'>
-                                                                                            Click to Change Image
-                                                                                        </p>
-                                                                                        <div className='h-full border-2 border-dashed border-slate-300 rounded-xl mt-2'>
-                                                                                            <label htmlFor="image" className='text-center h-full flex justify-center items-center hover:cursor-pointer p-5'>
-                                                                                                <img src={image} className='rounded-xl object-cover' height={110} width={150} alt='Image Not Uploaded Yet' />
-                                                                                            </label>
-                                                                                            <input type="file" accept="image/*" name="image" id="image" onChange={handleChange} hidden />
-                                                                                        </div>
-                                                                                    </div>
+                                                                                adata.map((value, index) => {
+                                                                                    if (value.id == id) {
+
+                                                                                        return (
+                                                                                            <div key={index} className='w-full'>
+                                                                                                <div className='w-full flex justify-between'>
+                                                                                                    <div className='flex flex-col w-[70%]'>
+
+                                                                                                        <label htmlFor="name" className="font-bold mt-3 ">Name *</label>
+                                                                                                        <input type="text" name="name" id="name" placeholder="Name" value={fetch.name} onChange={handle_change} className="pl-2 py-3 focus:outline-none bg-slate-200 rounded-md my-2" />
+
+                                                                                                        <label htmlFor="description" className="font-bold mt-3">Description *</label>
+                                                                                                        <input type="text" name="description" id="description" placeholder="Description" value={fetch.description} onChange={handle_change} className="pl-2 py-3 focus:outline-none bg-slate-200 rounded-md my-2" />
+
+                                                                                                    </div>
+                                                                                                    <div>
+                                                                                                        {
+                                                                                                            !image ?
+                                                                                                                <div className='h-[75%]'>
+                                                                                                                    <p className='mt-3 font-bold text-center'>
+                                                                                                                        Click to Upload Image
+                                                                                                                    </p>
+                                                                                                                    <div className='h-full border-2 border-dashed border-slate-300 rounded-xl mt-2'>
+                                                                                                                        <label htmlFor="image" className='h-full flex justify-center items-center hover:cursor-pointer'>
+                                                                                                                            {/* <p className='font-bold'>Click Here</p> */}
+                                                                                                                            <AiOutlineCamera size="6em" />
+                                                                                                                        </label>
+                                                                                                                        <input type="file" accept="image/*" name="image" id="image" onChange={handleChange} hidden />
+                                                                                                                    </div>
+                                                                                                                </div>
+                                                                                                                :
+                                                                                                                <div className='h-[75%]'>
+                                                                                                                    <p className='mt-3 font-bold text-center'>
+                                                                                                                        Click to Change Image
+                                                                                                                    </p>
+                                                                                                                    <div className='h-full border-2 border-dashed border-slate-300 rounded-xl mt-2'>
+                                                                                                                        <label htmlFor="image" className='text-center h-full flex justify-center items-center hover:cursor-pointer p-5'>
+                                                                                                                            <img src={image} className='rounded-xl object-cover' height={110} width={150} alt='Image Not Uploaded Yet' />
+                                                                                                                        </label>
+                                                                                                                        <input type="file" accept="image/*" name="image" id="image" onChange={handleChange} hidden />
+                                                                                                                    </div>
+                                                                                                                </div>
+                                                                                                        }
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                                <div className='w-full'>
+                                                                                                    {/* <input type="text" name="id" id="id" value={value.id} readonly className="pl-2 py-3 focus:outline-none bg-slate-200 rounded-md mb-2 w-full mt-5" /> */}
+
+                                                                                                    <p className='font-bold my-4'>Services</p>
+                                                                                                    {
+                                                                                                        data.map((value, ind) => {
+                                                                                                            return (
+                                                                                                                <p key={ind} className='pl-5'>
+                                                                                                                    <input type="checkbox" id={value.service_name} name='services' defaultChecked={d[index][ind]
+                                                                                                                    } value={value
+                                                                                                                        .id} className='scale-[150%]' />
+                                                                                                                    <label htmlFor={value
+                                                                                                                        .service_name} className='pl-3 font-bold'>{value.service_name}</label><br></br>
+                                                                                                                </p>
+                                                                                                            )
+                                                                                                        })
+
+                                                                                                    }
+                                                                                                    <br />
+                                                                                                    <input type="checkbox" name="is_available" id="is_available" defaultChecked={value.is_available} className='scale-[150%]' />
+                                                                                                    <label htmlFor='is_available' className='pl-3 font-bold'>Available</label><br></br>
+                                                                                                </div>
+                                                                                                <div className='flex space-x-2'>
+                                                                                                    <button type="submit" className='py-3 bg-[#4100FA] rounded-3xl text-white font-bold  mt-5 w-full'>Confirm</button>
+                                                                                                    <button className='py-3 bg-[#e3282b] rounded-3xl text-white font-bold  mt-5 w-full' onClick={() => setediton(false)}>Cancel</button>
+                                                                                                </div>
+                                                                                            </div>
+
+                                                                                        )
+                                                                                    }
+                                                                                })
                                                                             }
-                                                                        </div>
+                                                                        </form>
                                                                     </div>
-                                                                    <div className='w-full'>
-                                                                        {/* <input type="text" name="id" id="id" value={value.id} readonly className="pl-2 py-3 focus:outline-none bg-slate-200 rounded-md mb-2 w-full mt-5" /> */}
 
-                                                                        <p className='font-bold my-4'>Services</p>
-                                                                        {
-                                                                            data.map((value, ind) => {
-                                                                                return (
-                                                                                    <p key={ind} className='pl-5'>
-                                                                                        <input type="checkbox" id={value.service_name} name='services' defaultChecked={d[index][ind]
-                                                                                        } value={value
-                                                                                            .id} className='scale-[150%]' />
-                                                                                        <label htmlFor={value
-                                                                                            .service_name} className='pl-3 font-bold'>{value.service_name}</label><br></br>
-                                                                                    </p>
-                                                                                )
-                                                                            })
 
-                                                                        }
-                                                                        <br />
-                                                                        <input type="checkbox" name="is_available" id="is_available" defaultChecked={value.is_available} className='scale-[150%]' />
-                                                                        <label htmlFor='is_available' className='pl-3 font-bold'>Available</label><br></br>
-                                                                    </div>
-                                                                    <button type="submit" className='py-3 bg-[#4100FA] rounded-3xl text-white font-bold  mt-5 w-full'>Confirm</button>
-                                                                </div>
+                                                                </Dialog.Panel>
+                                                            </Transition.Child>
+                                                        </div>
+                                                    </div>
+                                                </Dialog>
+                                            </Transition>
+                                        )
 
-                                                            )
-                                                        }
-                                                    })
-                                                }
-                                            </form>
-                                            :
-                                            <div>
-
-                                            </div>
 
                                     }
                                     {
-                                        delton ?
-                                            <form className='w-[80%]' onSubmit={handsdown}>
-                                                <p className='text-center font-bold text-red-500'>Are you Sure to Delete?</p>
-                                                <input type="text" name="id" id="id" value={id} className="pl-2 py-3 focus:outline-none bg-slate-200 rounded-md my-2 w-full" />
-                                                <button type="submit" className="py-3 bg-[#4100FA] rounded-3xl text-white font-bold  mt-5 w-full">Confirm</button>
-                                            </form>
-                                            :
-                                            <div>
+                                        delton && (
+                                            <Transition appear show={true} as={Fragment}>
+                                                <Dialog as="div" className="relative z-10" onClose={deleteController}>
+                                                    <Transition.Child
+                                                        as={Fragment}
+                                                        enter="ease-out duration-300"
+                                                        enterFrom="opacity-0"
+                                                        enterTo="opacity-100"
+                                                        leave="ease-in duration-200"
+                                                        leaveFrom="opacity-100"
+                                                        leaveTo="opacity-0"
+                                                    >
+                                                        <div className="fixed inset-0 bg-black bg-opacity-25" />
+                                                    </Transition.Child>
 
-                                            </div>
+                                                    <div className="fixed inset-0 overflow-y-auto">
+                                                        <div className="flex min-h-full items-center justify-center p-4 text-center">
+                                                            <Transition.Child
+                                                                as={Fragment}
+                                                                enter="ease-out duration-300"
+                                                                enterFrom="opacity-0 scale-95"
+                                                                enterTo="opacity-100 scale-100"
+                                                                leave="ease-in duration-200"
+                                                                leaveFrom="opacity-100 scale-100"
+                                                                leaveTo="opacity-0 scale-95"
+                                                            >
+                                                                <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                                                               
+                                                                    <div className="mt-1 flex justify-center">
+                                                                        <form className='w-[80%]' onSubmit={handsdown}>
+                                                                            <p className='text-center font-bold text-red-500'>Are you Sure to Delete?</p>
+                                                                            <input type="text" name="id" id="id" value={id} className="pl-2 py-3 focus:outline-none bg-slate-200 rounded-md my-2 w-full" />
+                                                                            <div className='flex space-x-2'>
+                                                                                <button type="submit" className='py-3 bg-[#4100FA] rounded-3xl text-white font-bold  mt-5 w-full'>Confirm</button>
+                                                                                <button className='py-3 bg-[#e3282b] rounded-3xl text-white font-bold  mt-5 w-full' onClick={() => setdelton(false)}>Cancel</button>
+                                                                            </div>
+                                                                        </form>
+                                                                    </div>
+                                                                </Dialog.Panel>
+                                                            </Transition.Child>
+                                                        </div>
+                                                    </div>
+                                                </Dialog>
+                                            </Transition>
+                                        )
+
                                     }
                                 </div>
                             </div>

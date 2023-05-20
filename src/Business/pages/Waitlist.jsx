@@ -4,7 +4,7 @@ import { AiFillBell, BsFillCheckCircleFill, BsThreeDots, AiOutlineEdit, AiFillDe
 import { Dialog, Transition } from '@headlessui/react'
 import { toast } from 'react-toastify'
 import Notifier from '../../components/Notifier'
-import { Fragment, useState, useEffect, useRef } from 'react'
+import { Fragment, useState, useEffect } from 'react'
 import axios from 'axios';
 import { redirect, useNavigate } from 'react-router-dom'
 import { GetToken } from '../../context/Localstorage'
@@ -242,9 +242,9 @@ function Waitlist() {
                                         <div className='hover:bg-green-300 p-2 rounded-full'>
                                             <BsFillCheckCircleFill size='25' color='green' style={{ cursor: 'pointer' }} onClick={() => { complete(waitList[0]?.id) }} />
                                         </div>
-                                        <div className='hover:bg-blue-300 p-2 rounded-full'>
+                                        {/* <div className='hover:bg-blue-300 p-2 rounded-full'>
                                             <AiOutlineEdit size='25' color='blue' style={{ cursor: 'pointer' }} />
-                                        </div>
+                                        </div> */}
                                         <div className='hover:bg-red-300 p-2 rounded-full'>
                                             <AiFillDelete size='25' color='red' style={{ cursor: 'pointer' }} onClick={() => { del(waitList[0]?.id) }} />
                                         </div>
@@ -349,7 +349,7 @@ function Waitlist() {
 
                     <div className='fixed bottom-10 left-50 right-10 '>
                         <BsFillPlusCircleFill
-                            color='purple'
+                            color='#0000FF.'
                             size='45'
                             style={{ cursor: 'pointer' }}
                             onClick={toggleController}
@@ -363,7 +363,6 @@ function Waitlist() {
 }
 
 function MyModal({ passedFunction }) {
-    const reDirect = useNavigate();
     const [selectedField, setSelectedField] = useState(
         { field_list: '', services: '' }
     );
@@ -555,55 +554,5 @@ function MyModal({ passedFunction }) {
     )
 }
 
-// function SlideForm({ passedFunction }) {
-//     const access_token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjc4NTQzNzAwLCJpYXQiOjE2NzgzNzA5MDAsImp0aSI6IjJmYzBmNzVmNjYwYTRjOWNiYmU2ZDhlNTNiYWY2ZGZlIiwidXNlcl9pZCI6MX0.uYHH9x4c1D659wfvXjRIH4ugADJhTIthDSUbqnGlYYQ';
-//     const [selectedField, setSelectedField] = useState([]);
-//     const [inputs, setInputs] = useState([]);
-//     async function fetchData() {
-//         try {
-//             const response = await axios.get('http://127.0.0.1:8000/api/customer/allfields/', {
-//                 headers: {
-//                     'Authorization': `Bearer ${access_token}`
-//                 }
-//             });
-//             setSelectedField(response.data.fields);
 
-//         } catch (err) {
-//             console.log(err);
-//         }
-//     }
-//     useEffect(() => {
-//         fetchData();
-//     }, []);
-
-//     return (
-//         <div className='max-w-md  bg-white py-4 px-2 mt-8'>
-//             <div className='flex flex-col h-auto mx-4 px-4'>
-//                 <div className='text-center mb-3'>
-//                     <h1 className='text-2xl font-medium text-gray-800 mb-2'>Enter Customer details</h1>
-//                 </div>
-//                 <form onSubmit className=''>
-//                     {
-//                         selectedField.length > 0 ? selectedField.filter((field) => field.selected === true).map((field, index) => {
-//                             return (
-//                                 <div className="mb-2">
-//                                     <label className="block mb-2 text-md font-medium text-gray-800 ">{field.label}</label>
-//                                     <input type="text" className="bg-transparent border border-gray-500 text-gray-900 text-sm rounded-lg  block w-full p-2.5" placeholder={`${field.label}`} name={`${field.field_name}`} required />
-//                                 </div>
-//                             )
-//                         }):<p>Loading...</p>
-//                    }
-
-//                     <div className='flex justify-between my-4'>
-
-//                         <button className="text-gray-700 font-bold text-md sm:w-auto px-5 py-1.5 text-center border-2 rounded-lg"
-//                             onClick={passedFunction}
-//                         >Cancel</button>
-//                         <button type="submit" className="text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:outline-none focus:ring-purple-300 font-medium rounded-lg text-md w-full sm:w-auto px-5 py-1.5 text-center dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-800">Add</button>
-//                     </div>
-//                 </form>
-//             </div>
-//         </div>
-//     )
-// }
 export default Waitlist;

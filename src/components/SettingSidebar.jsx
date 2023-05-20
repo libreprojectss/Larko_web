@@ -15,21 +15,21 @@ function SettingSidebar() {
             display: "Waitlist",
             icon: <IoHandLeft size={30} />
         },
-        // {
-        //     path: "/settings/services",
-        //     display: "Services",
-        //     icon: <BsInputCursor size={30} />
-        // },
+        {
+            path: "/settings/services",
+            display: "Services",
+            icon: <BsInputCursor size={30} />
+        },
         {
             path: "/settings/inputfields",
             display: "Fields",
             icon: <BsInputCursor size={30} />
         },
-        // {
-        //     path: "/settings/resources",
-        //     display: "Resources",
-        //     icon: <BsInputCursor size={30} />
-        // }
+        {
+            path: "/settings/resources",
+            display: "Resources",
+            icon: <BsInputCursor size={30} />
+        }
 
     ];
     return (
