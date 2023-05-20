@@ -60,7 +60,7 @@ class Business_Profile_Views(APIView):
         print(type(request.data))
         serializeddata=Business_Profile_Serializer(data=request.data)
         if serializeddata.is_valid(raise_exception=True):
-            serializeddata.save(user=request.user)
+            serializeddata.ssave(user=request.user)
             return Response({"msg":"Business account created successfully"},status=status.HTTP_200_OK)
         return Response({"error":"failed to serialize the given data"},status=status.HTTP_403_FAILED)
     
@@ -217,3 +217,15 @@ class AutoAttributesViews(APIView):
         user=request.user
         profie=user.profile_of
         return Response({"maximum_serve_per_day":profie.maximum_serve_per_day,"auto_remove_after":profie.auto_remove_after})
+    
+    def post(self,request):
+        user=request.user
+        profie=user.profile_of
+        if request.data.get("maximum_serve_per_day",None):
+            
+            profile.maximum_serve_per_day=int(request.data.get("maximum_serve_per_day"))
+            profile.save()
+        if request.data.get("auto_remove_after",None):
+            profile.maximum_serve_per_day=int(request.data.get("auto_remove_after"))
+            profie.save()
+        return Response({"success":"Fields updated sucessfully"})

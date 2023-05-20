@@ -672,7 +672,7 @@ class Validate_customer(APIView):
 
 
                 validobj.delete()
-                return Response({"success":"Customer sucessfully validated"},status=status.HTTP_400_BAD_REQUEST)
+                return Response({"success":"Customer sucessfully validated"},status=status.HTTP_200_OK)
 
             except:
                 return Response({"error":"The provided token is not valid"},status=status.HTTP_400_BAD_REQUEST)
