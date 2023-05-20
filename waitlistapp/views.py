@@ -573,7 +573,7 @@ class AnalyticsViews(APIView):
             total_service_time = sum([waitlist.served_time - waitlist.serving_started_time for waitlist in waitlists_served], timedelta())
             average_service_duration = total_service_time / len(waitlists_served) if len(waitlists_served) > 0 else None
             waitlist_count = waitlists_served.count()
-            services_dict[service_obj.service_name] = {"served":waitlist_count,"avg_system_time":str(average_system_time),"average_service_duration":average_service_duration}
+            services_dict[service_obj.service_name] = {"served":waitlist_count,"avg_system_time":str(average_system_time),"average_service_duration":str(average_service_duration)}
         return services_dict
     
     
