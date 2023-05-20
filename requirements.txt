@@ -10,6 +10,7 @@ graphene
 gunicorn
 httplib2
 jsonschema
+pandas
 phonenumbers
 pillow
 pip-chill
@@ -25,3 +26,4 @@ simplejwt
 text-unidecode
 twilio
 uritemplate
+xlsxwriter

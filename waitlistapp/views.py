@@ -694,12 +694,15 @@ class DownloadRecordsViews(APIView):
         with pd.ExcelWriter(excel_buffer, engine='xlsxwriter') as writer:
             df.to_excel(writer, index=False, sheet_name='Queue Records')  # Customize sheet name
 
+        excel_blob = excel_buffer.getvalue()
+
         # Set up the response
-        response = Response(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response = Response(content_type='application/json')
         response['Content-Disposition'] = 'attachment; filename="queue_entries.xlsx"'
 
-        # Write the Excel file to the response
-        excel_buffer.seek(0)
-        response.write(excel_buffer.getvalue())
+        # Create JSON response with Blob data
+        json_data = json.dumps({'blob': excel_blob.decode('latin1')})
+        response.write(json_data)
+        print(response)
         return response
 
