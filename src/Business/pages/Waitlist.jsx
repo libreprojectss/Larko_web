@@ -136,7 +136,7 @@ function Waitlist() {
         validity()
         console.log(id)
         console.log(access_token)
-        axios.post(`http://127.0.0.1:8000/api/customer/serving/${id}/`, 1, {
+        axios.post(`http://127.0.0.1:8000/api/customer/serving/${id}/`, {
             "headers": {
                 "authorization": `Bearer ${access_token}`
             }
@@ -215,23 +215,23 @@ function Waitlist() {
 
                                 <div >
                                     <p className='text-md font-bold text-start'>Rank</p>
-                                    <p className='pt-1'>{waitList[0]?.rank}</p>
+                                    <p className='pt-1'>{waitList[0]?.rank || ""}</p>
                                 </div>
                                 <div>
                                     <p className='text-md font-bold text-start'>Name</p>
-                                    <p className='pt-1'>  {`${waitList[0]?.first_name + " " + waitList[0]?.last_name}`}</p>
+                                    <p className='pt-1'>  {waitList[0]?.first_name || " " }{waitList[0]?.last_name || ""}</p>
                                 </div>
                                 <div>
                                     <p className='text-md font-bold'>Service</p>
-                                    <p className='pt-1'>{waitList[0]?.service_name}</p>
+                                    <p className='pt-1'>{waitList[0]?.service_name || " "}</p>
                                 </div>
                                 <div>
                                     <p className='text-md font-bold'>Phone Number</p>
-                                    <p className='pt-1'>{waitList[0]?.phone_number}</p>
+                                    <p className='pt-1'>{waitList[0]?.phone_number || " "}</p>
                                 </div>
                                 <div>
                                     <p className='text-md font-bold'>Time Waited</p>
-                                    <p className='pt-1'>{`${waitList[0]?.wait_time.split(/(\d)/)[1]} days ${waitList[0]?.wait_time.split(/(\d)/)[3]} min`}</p>
+                                    <p className='pt-1'>{`${waitList[0]?.wait_time.split(/(\d)/)[1] || ""} days ${waitList[0]?.wait_time.split(/(\d)/)[3] || ""} min`}</p>
                                 </div>
                                 <div>
                                     <p className='text-md font-bold'>Actions</p>
@@ -267,16 +267,20 @@ function Waitlist() {
                                             Name
                                         </th>
 
-                                        <th scope="col" className="text-left  w-[20%]">
-                                            Service
-                                        </th>
                                         <th scope="col" className="text-left w-[19%]">
                                             Phone
                                         </th>
+                                        <th scope="col" className="text-left w-[19%]">
+                                            Email
+                                        </th>
+                                        <th scope="col" className="text-left  w-[20%]">
+                                            Service
+                                        </th>
+                                     
                                         <th scope="col" className="text-left  w-[15%]">
                                             Time waited
                                         </th>
-                                        <th scope="col" className="text-left  w-[20%]">
+                                        <th scope="col" className="text-left  w-[20%] pr-2">
                                             Actions
                                         </th>
 
@@ -286,52 +290,60 @@ function Waitlist() {
                                     {
                                         waitList.length > 0 ? (
                                             waitList.map((person, index) => (
-                                                <tr className="text-xs odd:bg-white even:bg-slate-100 " key={index} >
-                                                    <td className="tracking-tight pl-4 py-4 text-left font-semibold text-gray-900">
-                                                        {person.rank}
-                                                    </td>
-                                                    <td className={`tracking-tight flex   text-left font-semibold text-gray-900 ${person.validated ? "text-green-500 " : "text-red-500"}`}>
-                                                        <div className='py-3 rounded-full'>
-                                                            {
-                                                                person.self_checkin ?
-                                                                    <SlArrowRightCircle size='20' color='green' style={{ cursor: 'pointer' }} />
-                                                                    :
-                                                                    <FaRegDotCircle size='20' color='green' style={{ cursor: 'pointer' }} />
-                                                            }
-                                                        </div>
-                                                        <div className='py-[1.75vh] pl-2'>
-                                                            {`${person.first_name + " " + person.last_name}`}
-                                                        </div>
-                                                    </td>
+                                                    person.rank !== 1 && (
+                                                        <tr className="text-xs odd:bg-white even:bg-slate-100 " key={index} >
+                                                            <td className="tracking-tight pl-4 py-4 text-left font-semibold text-gray-900">
+                                                                {person.rank}
+                                                            </td>
+                                                            <td className={`tracking-tight flex   text-left font-semibold text-gray-900 ${person.validated ? "text-green-500 " : "text-red-500"}`}>
+                                                                <div className='py-3 rounded-full'>
+                                                                    {
+                                                                        person.self_checkin ?
+                                                                            <SlArrowRightCircle size='20' color='green' style={{ cursor: 'pointer' }} />
+                                                                            :
+                                                                            <FaRegDotCircle size='20' color='green' style={{ cursor: 'pointer' }} />
+                                                                    }
+                                                                </div>
+                                                                <div className='py-[1.75vh] pl-2'>
+                                                                    {`${person.first_name || "" + " " + person.last_name || ""}`}
+                                                                </div>
+                                                            </td>
 
-                                                    <td className="tracking-tight text-left font-semibold text-gray-900">
-                                                        {person.service}
-                                                    </td>
-                                                    <td className=" text-left font-semibold text-gray-900">
-                                                        {person.phone_number}
-                                                    </td>
-                                                    <td className=" text-left font-semibold text-gray-900">
-                                                        {person?.wait_time.split(/(\d)/)[1] + " " + "days " + person?.wait_time.split(/(\d)/)[3] + " " + "min"}
-                                                    </td>
 
-                                                    <td className="flex justify-start  font-semibold text-gray-900 ">
-                                                        <div className=' py-3 rounded-full'>
-                                                            <AiFillBell size='20' color='orange' style={{ cursor: 'pointer' }} onClick={() => { notify(person.id) }} />
-                                                        </div>
-                                                        <div className=' px-2 py-3 rounded-full'>
-                                                            <BsFillCheckCircleFill size='18' color='green' style={{ cursor: 'pointer' }} onClick={() => { complete(person.id) }} />
-                                                        </div>
-                                                        <div className=' p-2  py-3 rounded-full'>
+                                                            <td className=" text-left font-semibold text-gray-900">
+                                                                {person.phone_number || "-"}
+                                                            </td>
+
+                                                            <td className=" text-left font-semibold text-gray-900">
+                                                                {person.email || "-"}
+                                                            </td>
+                                                            <td className="tracking-tight text-left font-semibold text-gray-900">
+                                                                {person.service}
+                                                            </td>
+                                                            <td className=" text-left font-semibold text-gray-900">
+                                                                {person?.wait_time.split(/(\d)/)[1] + " " + "days " + person?.wait_time.split(/(\d)/)[3] + " " + "min"}
+                                                            </td>
+
+                                                            <td className="flex justify-start  font-semibold text-gray-900 ">
+                                                                <div className=' py-3 rounded-full'>
+                                                                    <AiFillBell size='22' color='orange' style={{ cursor: 'pointer' }} onClick={() => { notify(person.id) }} />
+                                                                </div>
+                                                                <div className=' px-2 py-3 rounded-full'>
+                                                                    <BsFillCheckCircleFill size='22' color='green' style={{ cursor: 'pointer' }} onClick={() => { complete(person.id) }} />
+                                                                </div>
+                                                                {/* <div className=' p-2  py-3 rounded-full'>
                                                             <AiOutlineEdit size='19' color='blue' style={{ cursor: 'pointer' }} />
-                                                        </div>
-                                                        <div className=' p-2 py-3 rounded-full'>
-                                                            <AiFillDelete size='19' color='red' style={{ cursor: 'pointer' }} onClick={() => { del(person.id) }} />
-                                                        </div>
+                                                        </div> */}
+                                                                <div className=' p-2 py-3 rounded-full'>
+                                                                    <AiFillDelete size='22' color='red' style={{ cursor: 'pointer' }} onClick={() => { del(person.id) }} />
+                                                                </div>
 
 
 
-                                                    </td>
-                                                </tr>
+                                                            </td>
+                                                        </tr>
+                                                   )
+                                               
                                             ))
                                         ) :
                                             <tr></tr>
@@ -349,7 +361,7 @@ function Waitlist() {
 
                     <div className='fixed bottom-10 left-50 right-10 '>
                         <BsFillPlusCircleFill
-                            color='#0000FF.'
+                            color='#0000FF'
                             size='45'
                             style={{ cursor: 'pointer' }}
                             onClick={toggleController}
@@ -429,6 +441,7 @@ function MyModal({ passedFunction }) {
             }
         })
             .then((resp) => {
+                passedFunction(false)
                 console.log(resp)
                 console.log(formdata)
             }

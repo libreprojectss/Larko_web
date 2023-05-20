@@ -124,13 +124,19 @@ function Serving() {
                                         Name
                                     </th>
                                     <th scope="col" className="text-left w-[19%]">
+                                        Email
+                                    </th>
+                                    <th scope="col" className="text-left w-[19%]">
+                                        Phone number
+                                    </th>
+                                    <th scope="col" className="text-left w-[20%]">
                                         Counter
                                     </th>
                                     <th scope="col" className="text-left w-[20%]">
                                         Service
                                     </th>
                                     <th scope="col" className="text-left w-[20%]">
-                                        Served
+                                        Waited
                                     </th>
                                     <th scope="col" className="text-left w-[20%]">
                                         Action
@@ -151,13 +157,19 @@ function Serving() {
                                                 </td>
 
                                                 <td className="tracking-tight font-semibold text-gray-900">
-                                                    Counter 45
+                                                    
                                                 </td>
                                                 <td className="font-semibold text-gray-900">
-                                                    Presentation
+                                                    
                                                 </td>
                                                 <td className=" font-semibold text-gray-900 ">
-                                                    5 min
+                                                   
+                                                </td>
+                                                <td className=" font-semibold text-gray-900 ">
+                                                   
+                                                </td>
+                                                <td className=" font-semibold text-gray-900 ">
+                                                   
                                                 </td>
                                                 <td className="py-4 font-semibold text-gray-900 ">
 
