@@ -24,7 +24,7 @@ def convert_to_datetime(time_str, date_obj):
 def get_time_intervals(start_time, end_time, interval):
     time_intervals = []
     current_time = start_time
-    while current_time < end_time:
+    while current_time <= end_time:
         time_intervals.append(current_time)
         if interval == 'today':
             current_time += timedelta(hours=1)

@@ -4,6 +4,7 @@ from .serializers import *
 import pandas as pd
 from time import sleep
 from io import BytesIO
+from django.http import HttpResponse
 from corsheaders.defaults import default_headers
 from django.http import StreamingHttpResponse
 from account.models import User,Business_Profile,OperationSchedule
@@ -697,11 +698,12 @@ class DownloadRecordsViews(APIView):
         excel_blob = excel_buffer.getvalue()
 
         # Set up the response
-        response = Response(content_type='application/json')
+        response = HttpResponse(content_type='application/json')
         response['Content-Disposition'] = 'attachment; filename="queue_entries.xlsx"'
 
         # Create JSON response with Blob data
         json_data = json.dumps({'blob': excel_blob.decode('latin1')})
         response.write(json_data)
+        print(response)
         return response
 
