@@ -31,6 +31,7 @@ class Services(models.Model):
 class Resources(models.Model):
     user=models.ForeignKey(User,on_delete=models.CASCADE,related_name="resources_for",default=None)
     services=models.ManyToManyField(Services)
+    currently_serving=models.ForeignKey('Waitlist',on_delete=models.SET_NULL,related_name="currently_served_waitlist",default=None,null=True) #string representation due to circular references
     name=models.CharField(max_length=255)
     image=models.ImageField(upload_to='resource_images/',default=None)
     is_available=models.BooleanField(default=True,null=False)

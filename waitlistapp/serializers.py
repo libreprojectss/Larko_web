@@ -102,18 +102,44 @@ class ServicesNameSerializer(serializers.ModelSerializer):
 
 
 class ResourcesSerializer(serializers.ModelSerializer):
+    currently_serving = serializers.SerializerMethodField()
+
     class Meta:
-        model=Resources
-        fields="__all__"
+        model = Resources
+        fields = ('id','services','currently_serving',
+                  'name', 'image', 'is_available', 'is_free', 'description')
+        
+    def get_currently_serving(self, obj):
+            waitlist = obj.currently_serving
+            if waitlist:
+                currently_serving={"service_name":"","name":"","serving_for":""}
+                service = waitlist.service
+                if service:
+                    currently_serving["service_name"]=service.service_name
+                currently_serving_name =""
+                if waitlist.first_name and waitlist.last_name:
+                    currently_serving_name = f"{waitlist.first_name} {waitlist.last_name}"
+                elif waitlist.first_name:
+                    currently_serving_name = waitlist.first_name
+                elif waitlist.last_name:
+                    currently_serving_name = waitlist.last_name
+
+                currently_serving["name"] = currently_serving_name
+
+                currently_serving["serving_for"]=waitlist.burst_time()
+                return currently_serving
+            return ""
+
+    
     def create(self, validated_data):
-        servicelist=validated_data.pop("services", [])
-        print(servicelist)
+        servicelist = validated_data.pop("services", [])
         validated_data['is_available'] = True
         validated_data['is_free'] = True
         resource = Resources.objects.create(**validated_data)
         resource.services.set(servicelist)
 
         return resource
+
     
 
         

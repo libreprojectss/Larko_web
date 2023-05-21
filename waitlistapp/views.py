@@ -40,14 +40,14 @@ def allocate_resource_thread(waitlistobj,user):
         if waitlistobj.service:
             resources = resources.filter(service__in=[waitlistobj.service])
             waitlistobj.resource = resources[0]
-            resources[0].is_free = False
-            resources[0].save()
+            waitlistobj.save()
+            Resources.objects.filter(id=resources[0].id).update(is_free=False,currently_serving=waitlistobj)
             print("resource alloted")
 
         else:
-            waitlistobj=resource[0]
-            resource[0].is_free = False
-            resource[0].save()
+            waitlistobj.resource=resource[0]
+            waitlistobj.save()
+            Resources.objects.filter(id=resource[0].id).update(is_free=False,currently_serving=waitlistobj)
             print("resource alloted")
 
             
@@ -302,8 +302,9 @@ class Servedlist(APIView):
         serveobj.served_time=timezone.now()
         serveobj.served=True
         serveobj.save()
+        print(serveobj.resource)
         if serveobj.resource:
-            serveobj.resource.update(is_free=True)
+            Resources.objects.filter(id=serveobj.resource.id).update(is_free=True,currently_serving=None)
         business=Business_Profile.objects.get(user=request.user)
         msg1=f"You have been served by {business.business_name}.Thank you for using our services."
         msg2=f"<h3 style='color:black'>Dear customer,</h3><p style='color:black'>You have been served by <strong>{business.business_name}</strong></p><p style='color:black'>We appreciate your patience as we work to ensure that each customer receives the best possible service.</p><p style='color:black'>If you have any questions or concerns, please don't hesitate to contact us at <a href='mailto:larkoinc@gmail.com'>larkoinc@gmail.com</a>.</p><p style='color:black'>Best Regards,<br>Team Larko</p>"
