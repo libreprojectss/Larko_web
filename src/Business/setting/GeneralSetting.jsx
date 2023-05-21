@@ -5,22 +5,48 @@ import Nav from '../components/Nav'
 import SettingSidebar from '../../components/SettingSidebar'
 import Editbusinessform from '../../Start/components/Editbusinessform'
 import axios from 'axios'
-import { Link } from 'react-router-dom'
+import { Link,useNavigate } from 'react-router-dom'
 import { GetToken } from '../../context/Localstorage'
 
 const { access } = GetToken();
 const access_token = access;
 
 function ShowProfile() {
+    const navigate = useNavigate();
     const [openForm, setStatus] = useState(false);
-    const [isEnable, setEnable] = useState(false);
     const [businessProfile, setBusinessProfile] = useState();
     const [loading, setLoading] = useState(true);
+    function updateBusiness() {
+       businessProfile.data.open_now ? 
 
+        axios.get(`http://127.0.0.1:8000/api/user/openclosebusiness/0`,
+            {
+                headers: {
+                    'Authorization': `Bearer ${access_token}`
+                }
+
+            })
+            .then((response) => {
+
+                navigate(0);
+            }).catch(err => console.log(err))
+           :
+           axios.get(`http://127.0.0.1:8000/api/user/openclosebusiness/1`,
+               {
+                   headers: {
+                       'Authorization': `Bearer ${access_token}`
+                   }
+
+               })
+               .then((response) => {
+
+                   navigate(0);
+               }).catch(err => console.log(err))
+    }
  
     function handleLink() {
-        setEnable(!isEnable);
-     
+   
+        updateBusiness();
     }
 
     async function fetchData() {
@@ -41,18 +67,20 @@ function ShowProfile() {
         fetchData();
     }, []);
 
-    if (loading) return <div className=' w-3/4 absolute left-50 right-0 my-20 mr-8'>Loading...</div>;
+    if (loading) return <div className='mt-8'>Loading...</div>;
+   
     return (
         <>
+  
             {
 
-                <div className=' mx-2 w-[30vw] bg-slate-100 rounded-xl shadow-md p-4'>
+                <div className=' mx-2 w-[50vw] bg-slate-100 rounded-xl shadow-md p-4'>
                     <div className='my-2'>
                         <label class="relative inline-flex items-center justify-center cursor-pointer">
                             <input
                                 type="checkbox"
                                 className="sr-only peer"
-                                checked={isEnable}
+                                checked={businessProfile.data.open_now}
                                 readOnly
                             />
 
@@ -60,7 +88,7 @@ function ShowProfile() {
                                 onClick={
                                     handleLink
                                 }
-                                className="w-11 h-6 bg-gray-200 rounded-full peer  peer-focus:ring-green-300  peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"
+                                className="w-11 h-6 bg-gray-200 rounded-full peer  peer-focus:ring-green-300  peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"
                             ></div>
                             <span class="ml-3 text-md font-bold text-gray-900 dark:text-gray-300">Open Your Business</span>
                         </label>

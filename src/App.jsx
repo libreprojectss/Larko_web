@@ -43,14 +43,13 @@ const queue_cookie = Cookie.get('queue_cookie')
           <Route path='serving' element={<Serving />} />
           <Route path='services' element={<Services />} />
           <Route path='resources' element={<Resources />} />
-          <Route path='settings' element={<Settings />} />
           <Route path='analytic' element={<Analytic />} />
           <Route path='settings/general' element={<GeneralSetting />} />
           <Route path='settings/waitlist' element={<Waitlistsetting />} />
           <Route path='settings/services' element={<Servicessetting />} />
           <Route path='settings/resources' element={<Resourcessetting />} />
           <Route path='settings/inputfields' element={<Settings />} />
-          <Route path='editbusinessform' element={<Editbusinessform />} />
+         
         </Route>
         <Route path='/lastform' element={<PrivateRoute3 />}>
           <Route path='' element={<Lastform />} />

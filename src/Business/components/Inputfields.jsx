@@ -29,7 +29,7 @@ function Inputfields() {
     }
     useEffect(() => {
         fetchData();
-    }, []);
+    }, [isEnable]);
     if (loading) {
         return <div className=' w-3/4 absolute left-50 right-0 my-20'>
             <div className='flex justify-center items-center'>
@@ -89,12 +89,12 @@ function Inputfields() {
 
 function Toggle({ isEnable, setEnable, label, required, selected, field_name }) {
     const reload = useNavigate();
-    function updateToggle() {
+    function updateToggle(updatedSelected) {
         axios.put('http://127.0.0.1:8000/api/customer/allfields/',
             {
                 label: label,
                 required: required,
-                selected: isEnable,
+                selected: updatedSelected,
                 field_name: field_name
             },
             {
@@ -103,11 +103,12 @@ function Toggle({ isEnable, setEnable, label, required, selected, field_name }) 
                 }
 
             })
-            .then((response) => reload(0)).catch(err => console.log(err));
+            .then((response) => setEnable(!isEnable)).catch(err => console.log(err));
     }
     function handleToggle() {
-        setEnable(!isEnable);
-        updateToggle();
+        
+        const updatedSelected = !selected;
+        updateToggle(updatedSelected);
         // console.log(label,required,isEnable,field_name)
     }
     return (
