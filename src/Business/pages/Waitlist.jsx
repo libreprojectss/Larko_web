@@ -104,32 +104,27 @@ function Waitlist() {
 
 
     useEffect(() => {
-        const fetchData = async () => {
-            const socket = new WebSocket(`ws://127.0.0.1:8000/ws/waitlist/?access_token=${access}`);
+        const socket = new WebSocket(`ws://127.0.0.1:8000/ws/waitlist/?access_token=${access}`); // Replace with your server URL
 
-            // Connection opened
-            socket.onopen = () => {
-
-            };
-
-            // Connection closed
-            socket.onclose = () => {
-
-            };
-
-            // Listen for messages
-            socket.onmessage = (event) => {
-                const message = event.data;
-                setWaitlist(JSON.parse(message))
-            };
-
-            // Clean up the WebSocket connection
-            return () => {
-                socket.close();
-            };
+        // WebSocket event listeners
+        socket.onopen = () => {
+            console.log('WebSocket connection established');
         };
-        fetchData();
-    }, [])
+
+        socket.onmessage = (event) => {
+            console.log('Received message:', event.data);
+            setWaitlist(JSON.parse(event.data))
+        };
+
+        socket.onclose = () => {
+            console.log('WebSocket connection closed');
+        };
+
+        // Clean up WebSocket connection on component unmount
+        return () => {
+            socket.close();
+        }
+    }, [change])
 
 
     const complete = (id) => {
@@ -209,7 +204,7 @@ function Waitlist() {
                         <div className="px-2 py-3 w-[7%] text-teal-500 font-medium text-xs leading-tight uppercase rounded-xl shadow-md  bg-slate-100 mx-2 flex justify-around items-center space-x-1"><CiTimer size='20' /><p className='text-md'>5 min</p></div>
                     </div>
                     <div className='ml-[20vw] my-4'>
-                        <div className='w-[74vw] flex flex-col  bg-blue-200 shadow-blue-100 shadow-md rounded-xl py-2 px-4 text-black'>
+                        <div className='w-[74vw] flex flex-col  bg-slate-100 shadow-blue-100 shadow-md rounded-xl py-2 px-4 text-black'>
                             <h1 className='my-2 text-2xl font-bold text-center text-black'>Next in Queue</h1>
                             <div className='flex justify-between space-x-4 mt-2'>
 
@@ -305,7 +300,7 @@ function Waitlist() {
                                                     </td>
 
                                                     <td className="tracking-tight text-left font-semibold text-gray-900">
-                                                        {person.service}
+                                                        {person.service_name}
                                                     </td>
                                                     <td className=" text-left font-semibold text-gray-900">
                                                         {person.phone_number}
@@ -327,8 +322,6 @@ function Waitlist() {
                                                         <div className=' p-2 py-3 rounded-full'>
                                                             <AiFillDelete size='19' color='red' style={{ cursor: 'pointer' }} onClick={() => { del(person.id) }} />
                                                         </div>
-
-
 
                                                     </td>
                                                 </tr>

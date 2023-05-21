@@ -109,7 +109,7 @@ function Serving() {
                     <Nav />
                 </div>
                 <div className='mt-20 flex w-full justify-center ml-[5vw]'>
-                    <div className="px-2 py-3 w-[7%] text-teal-500 font-medium text-xs leading-tight rounded-xl  shadow-md bg-slate-100 mx-2 flex justify-around items-center space-x-1"> <BsFillPersonFill size='20' /><p className=''>1 </p></div>
+                    <div className="px-2 py-3 w-[7%] text-teal-500 font-medium text-xs leading-tight rounded-xl  shadow-md bg-slate-100 mx-2 flex justify-around items-center space-x-1"> <BsFillPersonFill size='20' /><p className=''>{data.length} </p></div>
                 </div>
                 <div className='h-full mt-4 flex flex-col justify-start '>
 
@@ -157,7 +157,7 @@ function Serving() {
                                                     Presentation
                                                 </td>
                                                 <td className=" font-semibold text-gray-900 ">
-                                                    5 min
+                                                    {value.burst_time}
                                                 </td>
                                                 <td className="py-4 font-semibold text-gray-900 ">
 

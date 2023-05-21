@@ -14,6 +14,7 @@ import { Cell, } from 'recharts';
 import { BarChart, Bar, ResponsiveContainer } from 'recharts';
 import { PieChart, Pie, } from 'recharts';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, } from 'recharts';
+import { exportToExcel } from "react-json-to-excel";
 
 
 
@@ -97,8 +98,9 @@ function Analytic() {
     const test2 = data.pie_chart;
     const test3 = data.chart
     const test4 = data.services
+    const test5 = data.resources
 
-    console.log(test4)
+    console.log(data)
 
     let timeString = test1.avg_wait_time;
     let [hour, minute] = [0, 0];
@@ -131,7 +133,7 @@ function Analytic() {
 
 
     const box = [
-        { name: 'Serve Rate', value: `${test1.serve_rate} %`, icon: <FaHandsHelping size={40} /> },
+        { name: 'Serve Rate', value: `${(test1.serve_rate)} %`, icon: <FaHandsHelping size={40} /> },
         { name: 'Arrival Rate', value: `${(test1.avg_arrival_rate * 100).toFixed(2)} %`, icon: <GiDropEarrings size={40} /> },
         { name: 'Wait Time', value: `${hour} hr ${minute} min`, icon: <GiSandsOfTime size={40} /> },
         { name: 'Serve Time', value: `${test1.avg_serve_time}`, icon: <GiSandsOfTime size={40} /> },
@@ -221,7 +223,24 @@ function Analytic() {
             }
             )
     }
-
+    const [down, setdown] = useState([])
+    function download() {
+        console.log("hello");
+        axios.get('http://localhost:8000/api/customer/downloadrecords/', {
+            headers: {
+                authorization: `Bearer ${access}`,
+            },
+        })
+            .then((response) => {
+                // console.log(response.data)
+                let ht = response.data
+                console.log(ht)
+                exportToExcel(ht, 'data')
+            })
+            .catch((error) => {
+                console.log(error)
+            });
+    }
 
 
     return (
@@ -237,17 +256,18 @@ function Analytic() {
                         <Nav />
                     </div>
                     <div className='mt-20 flex w-full justify-center'>
-                        <div className="px-6 py-2.5 bg-transparent text-gray-500 font-medium text-xs leading-tight uppercase rounded-md  mx-2 flex  justify-center items-center space-x-1">
+                        <div className="px-6 py-2.5 text-gray-500 font-medium text-xs leading-tight uppercase rounded-md  mx-2 flex  justify-center items-center space-x-1">
                         </div>
 
                     </div>
                     <div className='h-full mt-4 flex flex-col justify-start '>
-                        <div className='ml-[20vw]'>
-                            <select name="service" id="service" className='bg-slate-200 text-gray-900 rounded-xl focus:outline-none  block w-[74vw] py-3 pl-2 font-bold text-md' onChange={(e) => { get_data_accordingly(e) }}>
+                        <div className='ml-[20vw] flex justify-between items-center mr-[5vw]'>
+                            <select name="service" id="service" className='bg-slate-200 text-gray-900 rounded-xl focus:outline-none  block w-[16vw] py-3 pl-2 font-bold text-md' onChange={(e) => { get_data_accordingly(e) }}>
                                 <option value="today">Today</option>
                                 <option value="week">Week</option>
                                 <option value="month">Month</option>
                             </select>
+                            <button className='bg-blue-500 rounded-xl py-3 px-6 text-white w-[16vw]' onClick={download}> Download Report</button>
                         </div>
                         <div className='ml-[20vw] mr-[5vw] flex flex-col justify-around mt-7'>
                             <div className="grid lg:grid-cols-4 gap-x-8 gap-y-6">
@@ -359,11 +379,33 @@ function Analytic() {
                                     }
                                 </tbody>
                             </table>
-                        </div>
+                            <div className='mt-7'>
+                                <table className='w-[74vw]'>
+                                    <thead className="text-sm text-gray-500 font-thin  bg-white border-slate-400">
+                                        <tr className='bg-slate-100'>
+                                            <th scope="col" className="pl-2 py-4 text-left w-[50%]">Resource</th>
+                                            <th scope="col" className="py-4 text-left w-[50%]">Clients</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {test5 ? Object.entries(test5).map(([key, value]) => (
+                                            <tr key={key} className="text-xs odd:bg-white even:bg-slate-100 ">
+                                                <td className="tracking-tight pl-2 py-4 text-left font-semibold text-gray-900">{key}</td>
+                                                <td >{value}</td>
+                                            </tr>
+                                        )) :
+                                            ''
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
 
+                        </div>
                     </div>
                 </section>
+
             </div >
+
         </div >
     )
 }

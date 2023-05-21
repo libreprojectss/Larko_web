@@ -205,7 +205,7 @@ function Services() {
 
     return (
         <div className='h-full w-full'>
-            <div className='flex'>
+            <div className='flex relative'>
                 <div className='w-1/8 h-[100vh] fixed z-10'>
                     <Side />
                 </div>
@@ -214,7 +214,7 @@ function Services() {
                         <Nav />
                     </div>
                     <div className='mt-20 flex w-full justify-center'>
-                        <div className="px-6 py-2.5 bg-transparent text-gray-500 font-medium text-xs leading-tight uppercase rounded-md  mx-2 flex  justify-center items-center space-x-1">
+                        <div className="px-6 py-2.5 text-gray-500 font-medium text-xs leading-tight uppercase rounded-md  mx-2 flex  justify-center items-center space-x-1">
                         </div>
 
                     </div>
@@ -357,7 +357,9 @@ function Services() {
                             </div>
                         </div>
                     </div>
+
                 </section>
+
             </div>
         </div>
     )
