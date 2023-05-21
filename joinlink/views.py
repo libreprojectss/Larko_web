@@ -52,7 +52,12 @@ class Public_link_Views(APIView):
                 customerid=decrypt_user_id(user_info,key)
             except:
                 return Response({"error":"The request cannot be processed because the validation token is not correct"},status=status.HTTP_400_BAD_REQUEST)
-            waitlist_profile=Waitlist.objects.get(id=customerid)
+            print(customerid)
+            try:
+                waitlist_profile=Waitlist.objects.get(id=customerid)
+            except Exception as e:
+                print(e)
+                return Response("some error occured")
             if waitlist_profile.serving and not waitlist_profile.served:
                 return Response({"joined":True,"status":"You are being served","serving time":waitlist_profile.burst_time,"business_name":profile.business_name,"waitlist_count":waitlist_count})
             elif not waitlist_profile.serving and not waitlist_profile.served:
