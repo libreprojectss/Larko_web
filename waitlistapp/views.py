@@ -325,6 +325,7 @@ class AllFieldsView(APIView):
     def get(self,request):
         fields=FieldList.objects.get(user=request.user)
         serializeddata=FieldlistSerializer(fields)
+        print(serializeddata.data)
         return Response(serializeddata.data)
     def put(self,request):
         serializeddata=FieldsSerializer(data=request.data)
@@ -462,12 +463,10 @@ class ResourcesViews(APIView):
         serializer=ResourcesSerializer(objectlist,many=True)
         return Response(serializer.data)
     def post(self,request,pk=None):
-
-        servicelist=request.data["services"] if request.data["services"] else []
-        print(servicelist)
+        
         
         serializer=ResourcesSerializer(data=request.data)
-       
+        servicelist = request.data.get("services", [])
         if serializer.is_valid(raise_exception=True):
             obj=serializer.save(user=request.user)
             # for i in servicelist:
