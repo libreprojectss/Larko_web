@@ -119,28 +119,28 @@ function Serving() {
                         <table className="w-full ">
                             <thead className="text-sm text-gray-500 font-thin  bg-white ">
                                 <tr className='bg-slate-100'>
-                                    <th scope="col" className="pl-4 py-4 text-left w-[6%]">
+                                    <th scope="col" className="pl-4 py-4 text-left w-[5%]">
                                         SN
                                     </th>
-                                    <th scope="col" className="text-left w-[20%]">
+                                    <th scope="col" className="text-left w-[15%]">
                                         Name
                                     </th>
-                                    <th scope="col" className="text-left w-[19%]">
+                                    <th scope="col" className="text-left w-[15%]">
                                         Email
                                     </th>
-                                    <th scope="col" className="text-left w-[19%]">
+                                    <th scope="col" className="text-left w-[15%]">
                                         Phone number
                                     </th>
-                                    <th scope="col" className="text-left w-[20%]">
+                                    <th scope="col" className="text-left w-[15%]">
                                         Counter
                                     </th>
-                                    <th scope="col" className="text-left w-[20%]">
+                                    <th scope="col" className="text-left w-[15%]">
                                         Service
                                     </th>
-                                    <th scope="col" className="text-left w-[20%]">
-                                        Waited
+                                    <th scope="col" className="text-left w-[15%]">
+                                        Service Time
                                     </th>
-                                    <th scope="col" className="text-left w-[20%]">
+                                    <th scope="col" className="text-left w-[5%]">
                                         Action
                                     </th>
 
@@ -152,23 +152,25 @@ function Serving() {
                                         return (
                                             <tr className=" odd:bg-white even:bg-slate-100 text-xs " >
                                                 <td className="tracking-tight pl-4 py-4 font-semibold text-gray-900">
-                                                    {value.rank}
+                                                    {value.rank || " "}
                                                 </td>
                                                 <td className="tracking-tight font-semibold text-gray-900">
-                                                    {`${value.first_name + " " + value.last_name}`}
+                                                    {`${value.first_name || " " + " " + value.last_name || " "}`}
                                                 </td>
-
                                                 <td className="tracking-tight font-semibold text-gray-900">
-
+                                                    {value.email || " "}
                                                 </td>
                                                 <td className="font-semibold text-gray-900">
-
+                                                    {value.phone_number || " "}
                                                 </td>
                                                 <td className=" font-semibold text-gray-900 ">
-                                                    {value.burst_time}
+                                                    {value?.burst_time.split(/(\d)/)[1] + " " + "days " + value?.burst_time.split(/(\d)/)[3] + " " + "min" || " "}
                                                 </td>
                                                 <td className=" font-semibold text-gray-900 ">
-
+                                                    {value.resource || ""}
+                                                </td>
+                                                <td className=" font-semibold text-gray-900 ">
+                                                    {value.service_name || ""}
                                                 </td>
                                                 <td className="py-4 font-semibold text-gray-900 ">
 
