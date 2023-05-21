@@ -7,6 +7,7 @@ import { GetToken } from '../../context/Localstorage';
 
 const { access } = GetToken();
 const access_token = access;
+// "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjc4NzI3NTYwLCJpYXQiOjE2Nzg1NTQ3NjAsImp0aSI6ImNlMzViOTA5YTFlNDQ5ZjJhZmIzYmNiMzljNzliZjNmIiwidXNlcl9pZCI6MX0.68tdMyOLR0IvLrKng1ff5r619GO7wd0zDT4RdvBCEVU"
 function Inputfields() {
     const [inputFields, setInputFields] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -28,7 +29,7 @@ function Inputfields() {
     }
     useEffect(() => {
         fetchData();
-    }, []);
+    }, [isEnable]);
     if (loading) {
         return <div className=' w-3/4 absolute left-50 right-0 my-20'>
             <div className='flex justify-center items-center'>
@@ -87,13 +88,13 @@ function Inputfields() {
 }
 
 function Toggle({ isEnable, setEnable, label, required, selected, field_name }) {
-    const navigate = useNavigate();
-    function updateToggle() {
+    const reload = useNavigate();
+    function updateToggle(updatedSelected) {
         axios.put('http://127.0.0.1:8000/api/customer/allfields/',
             {
                 label: label,
                 required: required,
-                selected: isEnable,
+                selected: updatedSelected,
                 field_name: field_name
             },
             {
@@ -102,11 +103,12 @@ function Toggle({ isEnable, setEnable, label, required, selected, field_name }) 
                 }
 
             })
-            .then((response) => navigate(0)).catch(err => console.log(err));
+            .then((response) => setEnable(!isEnable)).catch(err => console.log(err));
     }
     function handleToggle() {
-        setEnable(!isEnable);
-        updateToggle();
+        
+        const updatedSelected = !selected;
+        updateToggle(updatedSelected);
         // console.log(label,required,isEnable,field_name)
     }
     return (
