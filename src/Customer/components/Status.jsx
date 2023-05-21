@@ -1,14 +1,16 @@
 import axios from 'axios'
 import React, { useState } from 'react'
+import Cookie from 'js-cookie';
 
-function Status({id}) {
+function Status({ id }) {
     const [msg, setMsg] = useState({});
+    const queue_cookie = Cookie.get('queue_cookies');
     function removeFromQueue() {
-        axios.delete(`http://127.0.0.1:8000/api/joinwaitlist/${id}/`).then(res => setMsg(res.message)).catch((err) => console.log(err));
+        axios.post(`http://127.0.0.1:8000/api/publiclink/removedata/${id}/`, { validation_token: queue_cookie }).then(res => setMsg(res.message)).catch((err) => console.log(err));
     }
     return (
         <>
- 
+
             <div className='mt-6'>
                 <button
                     onClick={removeFromQueue}

@@ -134,7 +134,7 @@ function Services() {
         );
     };
     function handlesubmit(e) {
-        // e.preventDefault();
+        e.preventDefault();
         validity()
         const formdata = new FormData(e.target);
         // for (const key of formdata.keys()) {
@@ -155,10 +155,11 @@ function Services() {
                 }
                 else {
                     console.log(resp);
+                    setediton(false)
                     seterrors({})
                     e.target.reset()
                     setImage('')
-                    setediton(false)
+
                     setchange(!change)
 
                 }
