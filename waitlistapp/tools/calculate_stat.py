@@ -38,8 +38,9 @@ def get_time_intervals(start_time, end_time, interval):
 
 def calculate_stats(user,interval,schedule):
     today = timezone.localtime(timezone.now()).date()
+    print(f"index is {today.weekday()}")
     if interval == 'today':
-        day_index = today.weekday()
+        day_index = (today.weekday()+1)%7
         start_time = convert_to_datetime(schedule[day_index]["start_time"], today)
         end_time = convert_to_datetime(schedule[day_index]["end_time"], today)
     elif interval == 'week':

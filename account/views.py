@@ -85,9 +85,9 @@ class CheckBusinessName(APIView):
 
 
 
-
 class ChangePasswordViews(APIView):
     renderer_classes=[UserRenderer]
+        
     def post(self,request):
         serializeddata=ChangePasswordSerializer(data=request.data,context={"user":request.user})
         if serializeddata.is_valid(raise_exception=True):
@@ -98,6 +98,7 @@ class SendPasswordResetEmailViews(APIView):
     def post(self,request):
         serializeddata=SendPasswordResetEmailSerializer(data=request.data)
         serializeddata.is_valid(raise_exception=True)
+        
         return Response({"msg":"Please check your email for password reset."},status=status.HTTP_200_OK)
 
 class OpenCloseBusiness(APIView):

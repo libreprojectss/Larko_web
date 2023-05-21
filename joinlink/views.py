@@ -151,7 +151,7 @@ class RemoveFromQueue(APIView):
         key=public_link_profile.fernet_key
         if user_info:
             customerid=decrypt_user_id(user_info,key)
-            print(id)
+            print(customerid)
             try:
                 waitlist_profile=Waitlist.objects.get(id=customerid)
             except:

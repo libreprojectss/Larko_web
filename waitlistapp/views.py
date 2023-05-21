@@ -197,6 +197,21 @@ class WaitListView(APIView):
                 subject=f"You have been removed from the queue"
                 thread1=threading.Thread(target=sendsms_thread,args=(waitlistobj,msg1,msg2,subject))
                 thread1.start()
+                fmsg1 = f"<h3 style='color:black'>Hello,</h3><p style='color:black'>It's your turn to be served at <strong>{business_name}</strong>!</p><h2 style='color:black'>Please proceed to the front of the queue.</h2><p style='color:black'>We hope you enjoy your experience with us, and thank you for your patience while waiting.</p><p style='color:black'>If you have any questions or concerns, please don't hesitate to contact us at <a href='mailto:larkoinc@gmail.com'>larkoinc@gmail.com</a>.</p><p style='color:black'>Best Regards,<br>Team Larko</p>"
+                fmsg2=f"Its your turn at the queue of {business_name}.Please proceed to the front of the queue."
+                fsubject=f"You are next in the queue at {business_name}"
+                smsg1 = f"<h3 style='color:black'>Hello,</h3><p style='color:black'>This is a notification from <strong>{business_name}</strong>.</p><h2 style='color:black'>You are currently second in line and will be served soon!</h2><p style='color:black'>Please be ready and arrive on time to ensure a smooth experience for you and our other customers.</p><p style='color:black'>If you have any questions or concerns, please don't hesitate to contact us at <a href='mailto:larkoinc@gmail.com'>larkoinc@gmail.com</a>.</p><p style='color:black'>Thank you for your patience, and we look forward to serving you soon.</p><p style='color:black'>Best Regards,<br>Team Larko</p>"
+                smsg2=f"Reminder: You are second in line at {business_name}. Please be ready to be served soon. Thank you!"
+                ssubject=f"You are second in line at {business_name}"
+                ordered=Waitlist.objects.filter(user=request.user,served=False,serving=False).order_by('added_time')
+                if len(ordered)!=0:
+                    waitlistobj=ordered[0]
+                    smsthread=threading.Thread(target=sendsms_thread,args=(waitlistobj,fmsg2,fmsg1,fsubject))
+                    smsthread.start()
+                if len(ordered)>1:
+                    waitlistobj=ordered[1]
+                    smsthread=threading.Thread(target=sendsms_thread,args=(waitlistobj,smsg2,smsg1,ssubject))
+                    smsthread.start()
                 Removed.objects.create(user=request.user,added_time=waitlistobj.added_time)
                 waitlistobj.delete()
 
@@ -259,7 +274,7 @@ class Servinglist(APIView):
         smsg1 = f"<h3 style='color:black'>Hello,</h3><p style='color:black'>This is a notification from <strong>{business_name}</strong>.</p><h2 style='color:black'>You are currently second in line and will be served soon!</h2><p style='color:black'>Please be ready and arrive on time to ensure a smooth experience for you and our other customers.</p><p style='color:black'>If you have any questions or concerns, please don't hesitate to contact us at <a href='mailto:larkoinc@gmail.com'>larkoinc@gmail.com</a>.</p><p style='color:black'>Thank you for your patience, and we look forward to serving you soon.</p><p style='color:black'>Best Regards,<br>Team Larko</p>"
         smsg2=f"Reminder: You are second in line at {business_name}. Please be ready to be served soon. Thank you!"
         ssubject=f"You are second in line at {business_name}"
-        ordered=Waitlist.objects.filter(user=request.user).order_by('added_time')
+        ordered=Waitlist.objects.filter(user=request.user,served=False,serving=False).order_by('added_time')
         if len(ordered)!=0:
             waitlistobj=ordered[0]
             smsthread=threading.Thread(target=sendsms_thread,args=(waitlistobj,fmsg2,fmsg1,fsubject))
@@ -667,8 +682,8 @@ class Validate_customer(APIView):
                 validobj=ValidationToken.objects.filter(token=request.data["queue_token"])[0]
                 waitistobj=validobj.waitlist
                 if waitistobj.user==request.user:
-                    validobj.waitlist.validated=True
-                    validobj.save()
+                    Waitlist.objects.filter(id=validobj.waitlist.id).update(validated=True)
+                
                 else:
                     return Response({"error":"The provided token is not valid"},status=status.HTTP_400_BAD_REQUEST)
 
