@@ -37,7 +37,7 @@ class Resources(models.Model):
     is_free=models.BooleanField(default=True,null=False)
     description=models.CharField(max_length=255,blank=True)
     def __str__(self):
-        return self.service_name
+        return self.name
 
 
 class Waitlist(models.Model):

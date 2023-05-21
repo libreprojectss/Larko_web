@@ -106,9 +106,13 @@ class ResourcesSerializer(serializers.ModelSerializer):
         model=Resources
         fields="__all__"
     def create(self, validated_data):
+        servicelist=validated_data.pop("services", [])
+        print(servicelist)
         validated_data['is_available'] = True
         validated_data['is_free'] = True
         resource = Resources.objects.create(**validated_data)
+        resource.services.set(servicelist)
+
         return resource
     
 

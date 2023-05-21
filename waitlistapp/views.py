@@ -473,7 +473,6 @@ class ResourcesViews(APIView):
             #     i=Services.objects.get(id=int(i))
             
 
-            obj.services.set(servicelist)
             user=request.user
             objectlist=user.resources_for.all()
             serializer=ResourcesSerializer(objectlist,many=True)
