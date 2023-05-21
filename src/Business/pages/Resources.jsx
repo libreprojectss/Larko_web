@@ -162,7 +162,7 @@ function Resources() {
         fetch.name = e.target.parentNode.children[0].innerText
         fetch.description = e.target.parentNode.children[1].innerText
         setImage(e.target.parentNode.children[2].src)
-        // console.log(id);
+        // console.log(id); {
         setediton(true)
         setdelton(false)
         // console.log(editon);
