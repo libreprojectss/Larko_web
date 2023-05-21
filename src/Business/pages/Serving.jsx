@@ -124,13 +124,19 @@ function Serving() {
                                         Name
                                     </th>
                                     <th scope="col" className="text-left w-[19%]">
+                                        Email
+                                    </th>
+                                    <th scope="col" className="text-left w-[19%]">
+                                        Phone number
+                                    </th>
+                                    <th scope="col" className="text-left w-[20%]">
                                         Counter
                                     </th>
                                     <th scope="col" className="text-left w-[20%]">
                                         Service
                                     </th>
                                     <th scope="col" className="text-left w-[20%]">
-                                        Served
+                                        Waited
                                     </th>
                                     <th scope="col" className="text-left w-[20%]">
                                         Action
@@ -151,10 +157,10 @@ function Serving() {
                                                 </td>
 
                                                 <td className="tracking-tight font-semibold text-gray-900">
-                                                    Counter 45
+                                                    
                                                 </td>
                                                 <td className="font-semibold text-gray-900">
-                                                    Presentation
+                                                    
                                                 </td>
                                                 <td className=" font-semibold text-gray-900 ">
                                                     {value.burst_time}
@@ -162,23 +168,7 @@ function Serving() {
                                                 <td className="py-4 font-semibold text-gray-900 ">
 
                                                     <BsFillCheckCircleFill size='20' color='green' style={{ marginRight: '12px', cursor: 'pointer' }} onClick={() => { served(value.id) }} />
-                                                    <div className='relative'>
-
-                                                        {
-                                                            toggle && <div className='bg-white w-32 h-auto  absolute top-8 left-0 border shadow-sm rounded-lg'>
-                                                                <div className='flex flex-col px-1 py-2 m-4 bg-transparent'>
-                                                                    <div className='flex justify-start items-start'>
-                                                                        <BiMoveVertical size='20' color='black' style={{ background: 'transparent' }} />
-                                                                        <p className='text-md font-semibold ml-2'>Move</p>
-                                                                    </div>
-                                                                    <div className='flex  justify-start mt-2'>
-                                                                        <AiFillDelete size='20' color='red' />
-                                                                        <p className='text-md font-semibold ml-2'>Remove</p>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        }
-                                                    </div>
+                                          
                                                 </td>
                                             </tr>
                                         )

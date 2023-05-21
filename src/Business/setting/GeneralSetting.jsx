@@ -3,7 +3,7 @@ import { Dialog, Transition } from '@headlessui/react'
 import Side from '../components/Side'
 import Nav from '../components/Nav'
 import SettingSidebar from '../../components/SettingSidebar'
-import { DataContext } from '../../context/DataContext'
+import Editbusinessform from '../../Start/components/Editbusinessform'
 import axios from 'axios'
 import { Link } from 'react-router-dom'
 import { GetToken } from '../../context/Localstorage'
@@ -17,19 +17,12 @@ function ShowProfile() {
     const [businessProfile, setBusinessProfile] = useState();
     const [loading, setLoading] = useState(true);
 
-    function updateBusinessOpen() {
-
-    }
+ 
     function handleLink() {
-        setStatus(!isEnable);
-        updateBusinessOpen();
+        setEnable(!isEnable);
+     
     }
-    function handleSubmit() {
 
-    }
-    function handleChange() {
-
-    }
     async function fetchData() {
         try {
             const response = await axios.get('http://127.0.0.1:8000/api/user/businessprofile/', {
@@ -72,13 +65,39 @@ function ShowProfile() {
                             <span class="ml-3 text-md font-bold text-gray-900 dark:text-gray-300">Open Your Business</span>
                         </label>
                     </div>
-                    <div className='my-3'>
-                        <h1 className='text-lg font-semibold text-gray-900'>Business name</h1>
-                        <p className='text-md font-medium text-gray-600'>{businessProfile.data.business_name}</p>
-                    </div>
-                    <div className='my-3'>
-                        <h1 className='text-lg font-semibold text-gray-900'>Category</h1>
-                        <p className='text-md font-medium text-gray-600'>{businessProfile.data.category}</p>
+                    <div className='flex justify-between'>
+                        <div>
+                            <div className='my-2'>
+                                <h1 className='text-lg font-semibold text-gray-900'>Business name</h1>
+                                <p className='text-md font-medium text-gray-600'>{businessProfile.data.business_name}</p>
+                            </div>
+                            <div className='my-2'>
+                                <h1 className='text-lg font-semibold text-gray-900'>Category</h1>
+                                <p className='text-md font-medium text-gray-600'>{businessProfile.data.category}</p>
+                            </div>
+                            <div className='my-2'>
+                                <h1 className='text-lg font-semibold text-gray-900'>Business Title</h1>
+                                <p className='text-md font-medium text-gray-600'>{businessProfile.data.business_title}</p>
+                            </div>
+
+                        </div>
+                        <div>
+                            {businessProfile.data.business_phone_number && <div className='my-2'>
+                                <h1 className='text-lg font-semibold text-gray-900'>Contact Number</h1>
+                                <p className='text-md font-medium text-gray-600'>{businessProfile.data.business_phone_number}</p>
+                            </div>}
+                            {businessProfile.data.business_website && <div className='my-2'>
+                                <h1 className='text-lg font-semibold text-gray-900'>Our Website</h1>
+                                <p className='text-md font-medium text-gray-600'>{businessProfile.data.business_website}</p>
+                            </div>
+                            }
+                            {
+                                businessProfile.data.business_address && <div className='my-2'>
+                                    <h1 className='text-lg font-semibold text-gray-900'>Location</h1>
+                                    <p className='text-md font-medium text-gray-600'>{businessProfile.data.business_address}</p>
+                                </div>
+                            }
+                        </div>
                     </div>
                     <div className='my-3'>
                         <h1 className='text-lg font-semibold text-gray-900'>Public link</h1>
@@ -120,39 +139,11 @@ function ShowProfile() {
                                             leaveFrom="opacity-100 scale-100"
                                             leaveTo="opacity-0 scale-95"
                                         >
-                                            <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
-                                                <Dialog.Title
-                                                    as="h3"
-                                                    className="text-lg font-medium leading-6 text-gray-900"
-                                                >
-                                                    Fill customer details
-                                                </Dialog.Title>
-                                                <div className="mt-2">
-                                                    <form onSubmit={handleSubmit}>
-                                                        <div className="mb-2">
-                                                            <label className="block mb-2 text-md font-medium text-gray-800 ">Business Name</label>
-                                                            <input
-                                                                type="text"
-                                                                className="bg-transparent border border-gray-500 text-gray-900 text-sm rounded-lg  block w-full p-2.5"
-                                                                placeholder="Business name"
-                                                                name='business_name'
-                                                                onChange={handleChange}
-                                                            />
-                                                        </div>
-
-                                                        <div className='flex justify-between my-4'>
-
-                                                            <button className="text-gray-700 font-bold text-md sm:w-auto px-5 py-1.5 text-center border-2 rounded-lg"
-                                                                onClick={() => setStatus(false)}
-                                                            >Cancel</button>
-                                                            <button type="submit"
-                                                                className="text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:outline-none focus:ring-purple-300 font-medium rounded-lg text-md w-full sm:w-auto px-5 py-1.5 text-center dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-800"
-                                                            >Submit</button>
-                                                        </div>
-                                                    </form>
+                                            <Dialog.Panel className=" max-w-xl transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                                             
+                                                <div className='flex justify-center'>
+                                                    <Editbusinessform onChangeFormStatus={(status)=>setStatus(status) } />
                                                 </div>
-
-
                                             </Dialog.Panel>
                                         </Transition.Child>
                                     </div>
