@@ -98,7 +98,7 @@ class Public_link_Views(APIView):
                 except:
                     return Response({"error":"This is old waitlist please delete this and create a new one"},status=status.HTTP_400_BAD_REQUEST)
                 user=public_link_profile.profile.user
-                ordered=Waitlist.objects.filter(user=user,serving=True,served=True).order_by('added_time')
+                ordered=Waitlist.objects.filter(user=user,serving=False,served=False).order_by('added_time')
                 rank=list(ordered).index(waitlist_profile)+1
                 return Response({"status":"You are on the queue","waited_for":waitlist_profile.wait_time(),"rank":rank,"personalInfo":serialized.data,"queue_token":queue_token})
             else:
@@ -139,7 +139,9 @@ class Public_link_Views(APIView):
             
             return Response({"error":"There is problem in validating the data.Please check the inputs"},status=status.HTTP_502_BAD_GATEWAY)
 
-    def delete(self,request,pk):
+class RemoveFromQueue(APIView):
+    renderer_classes=[UserRenderer]
+    def post(self,request,pk):
         cookie_name = 'queue_cookie'
         try:
             public_link_profile=Public_link.objects.get(public_id=pk)
