@@ -131,7 +131,7 @@ function Waitlist() {
         validity()
         console.log(id)
         console.log(access_token)
-        axios.post(`http://127.0.0.1:8000/api/customer/serving/${id}/`,1, {
+        axios.post(`http://127.0.0.1:8000/api/customer/serving/${id}/`, 1, {
             "headers": {
                 "authorization": `Bearer ${access_token}`
             }
@@ -170,7 +170,7 @@ function Waitlist() {
         validity()
         console.log(id)
         console.log(access_token)
-        axios.delete(`http://127.0.0.1:8000/api/customer/waitlist/${id}/`,{
+        axios.delete(`http://127.0.0.1:8000/api/customer/waitlist/${id}/`, {
             "headers": {
                 "authorization": `Bearer ${access_token}`
             }
@@ -205,46 +205,57 @@ function Waitlist() {
                     </div>
                     <div className='ml-[20vw] my-4'>
                         <div className='w-[74vw] flex flex-col  bg-slate-100 shadow-blue-100 shadow-md rounded-xl py-2 px-4 text-black'>
-                            <h1 className='my-2 text-2xl font-bold text-center text-black'>Next in Queue</h1>
-                            <div className='flex justify-between space-x-4 mt-2'>
 
-                                <div >
-                                    <p className='text-md font-bold text-start'>Rank</p>
-                                    <p className='pt-1'>{waitList[0]?.rank || ""}</p>
-                                </div>
-                                <div>
-                                    <p className='text-md font-bold text-start'>Name</p>
-                                    <p className='pt-1'>  {waitList[0]?.first_name || " " }{waitList[0]?.last_name || ""}</p>
-                                </div>
-                                <div>
-                                    <p className='text-md font-bold'>Service</p>
-                                    <p className='pt-1'>{waitList[0]?.service_name || " "}</p>
-                                </div>
-                                <div>
-                                    <p className='text-md font-bold'>Phone Number</p>
-                                    <p className='pt-1'>{waitList[0]?.phone_number || " "}</p>
-                                </div>
-                                <div>
-                                    <p className='text-md font-bold'>Time Waited</p>
-                                    <p className='pt-1'>{`${waitList[0]?.wait_time.split(/(\d)/)[1] || ""} days ${waitList[0]?.wait_time.split(/(\d)/)[3] || ""} min`}</p>
-                                </div>
-                                <div>
-                                    <p className='text-md font-bold'>Actions</p>
-                                    <div className='flex font-semibold text-gray-900 '>
-                                        <div className='hover:bg-yellow-300 p-2 rounded-full'>
-                                            <AiFillBell size='25' color='orange' style={{ cursor: 'pointer' }} onClick={() => { notify(waitList[0]?.id) }} />
-                                        </div>
-                                        <div className='hover:bg-green-300 p-2 rounded-full'>
-                                            <BsFillCheckCircleFill size='25' color='green' style={{ cursor: 'pointer' }} onClick={() => { complete(waitList[0]?.id) }} />
-                                        </div>
-                                        {/* <div className='hover:bg-blue-300 p-2 rounded-full'>
+                            <div >
+                                {
+                                    waitList.length > 0 ? (
+                                        waitList.map((person, index) => (
+                                            person.rank === 1 && (
+                                                <div className='flex flex-col justify-center space-x-4 mt-2'>
+                                                    <h1 className='my-2 text-2xl font-bold text-center text-black'>Next in Queue</h1>
+                                                    <div className='flex justify-between'>
+                                                        <div >
+                                                            <p className='text-md font-bold text-start'>Rank</p>
+                                                            <p className='pt-1'>{person.rank || ""}</p>
+                                                        </div>
+                                                        <div>
+                                                            <p className='text-md font-bold text-start'>Name</p>
+                                                            <p className='pt-1'>  {person.first_name || " "}{waitList[0]?.last_name || ""}</p>
+                                                        </div>
+                                                        <div>
+                                                            <p className='text-md font-bold'>Service</p>
+                                                            <p className='pt-1'>{person.service_name || " "}</p>
+                                                        </div>
+                                                        <div>
+                                                            <p className='text-md font-bold'>Phone Number</p>
+                                                            <p className='pt-1'>{person.phone_number || " "}</p>
+                                                        </div>
+                                                        <div>
+                                                            <p className='text-md font-bold'>Time Waited</p>
+                                                            <p className='pt-1'>{`${person.wait_time.split(/(\d)/)[1] || ""} days ${waitList[0]?.wait_time.split(/(\d)/)[3] || ""} min`}</p>
+                                                        </div>
+                                                        <div>
+                                                            <p className='text-md font-bold'>Actions</p>
+                                                            <div className='flex font-semibold text-gray-900 '>
+                                                                <div className='hover:bg-yellow-300 p-2 rounded-full'>
+                                                                    <AiFillBell size='25' color='orange' style={{ cursor: 'pointer' }} onClick={() => { notify(person.id) }} />
+                                                                </div>
+                                                                <div className='hover:bg-green-300 p-2 rounded-full'>
+                                                                    <BsFillCheckCircleFill size='25' color='green' style={{ cursor: 'pointer' }} onClick={() => { complete(person.id) }} />
+                                                                </div>
+                                                                {/* <div className='hover:bg-blue-300 p-2 rounded-full'>
                                             <AiOutlineEdit size='25' color='blue' style={{ cursor: 'pointer' }} />
                                         </div> */}
-                                        <div className='hover:bg-red-300 p-2 rounded-full'>
-                                            <AiFillDelete size='25' color='red' style={{ cursor: 'pointer' }} onClick={() => { del(waitList[0]?.id) }} />
-                                        </div>
-                                    </div>
-                                </div>
+                                                                <div className='hover:bg-red-300 p-2 rounded-full'>
+                                                                    <AiFillDelete size='25' color='red' style={{ cursor: 'pointer' }} onClick={() => { del(waitList[0]?.id) }} />
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ))
+                                        )) : <h1 className='my-2 text-2xl font-bold text-center text-black'>No any person on Queue</h1>
+                                }
 
                             </div>
                         </div>
@@ -271,7 +282,7 @@ function Waitlist() {
                                         <th scope="col" className="text-left  w-[20%]">
                                             Service
                                         </th>
-                                     
+
                                         <th scope="col" className="text-left  w-[15%]">
                                             Time waited
                                         </th>
@@ -285,60 +296,60 @@ function Waitlist() {
                                     {
                                         waitList.length > 0 ? (
                                             waitList.map((person, index) => (
-                                                    person.rank !== 1 && (
-                                                        <tr className="text-xs odd:bg-white even:bg-slate-100 " key={index} >
-                                                            <td className="tracking-tight pl-4 py-4 text-left font-semibold text-gray-900">
-                                                                {person.rank}
-                                                            </td>
-                                                            <td className={`tracking-tight flex   text-left font-semibold text-gray-900 ${person.validated ? "text-green-500 " : "text-red-500"}`}>
-                                                                <div className='py-3 rounded-full'>
-                                                                    {
-                                                                        person.self_checkin ?
-                                                                            <SlArrowRightCircle size='20' color='green' style={{ cursor: 'pointer' }} />
-                                                                            :
-                                                                            <FaRegDotCircle size='20' color='green' style={{ cursor: 'pointer' }} />
-                                                                    }
-                                                                </div>
-                                                                <div className='py-[1.75vh] pl-2'>
-                                                                    {`${person.first_name || "" + " " + person.last_name || ""}`}
-                                                                </div>
-                                                            </td>
+                                                person.rank !== 1 && (
+                                                    <tr className="text-xs odd:bg-white even:bg-slate-100 " key={index} >
+                                                        <td className="tracking-tight pl-4 py-4 text-left font-semibold text-gray-900">
+                                                            {person.rank}
+                                                        </td>
+                                                        <td className={`tracking-tight flex   text-left font-semibold text-gray-900 ${person.validated ? "text-green-500 " : "text-red-500"}`}>
+                                                            <div className='py-3 rounded-full'>
+                                                                {
+                                                                    person.self_checkin ?
+                                                                        <SlArrowRightCircle size='20' color='green' style={{ cursor: 'pointer' }} />
+                                                                        :
+                                                                        <FaRegDotCircle size='20' color='green' style={{ cursor: 'pointer' }} />
+                                                                }
+                                                            </div>
+                                                            <div className='py-[1.75vh] pl-2'>
+                                                                {`${person.first_name || "" + " " + person.last_name || ""}`}
+                                                            </div>
+                                                        </td>
 
 
-                                                            <td className=" text-left font-semibold text-gray-900">
-                                                                {person.phone_number || "-"}
-                                                            </td>
+                                                        <td className=" text-left font-semibold text-gray-900">
+                                                            {person.phone_number || "-"}
+                                                        </td>
 
-                                                            <td className=" text-left font-semibold text-gray-900">
-                                                                {person.email || "-"}
-                                                            </td>
-                                                            <td className="tracking-tight text-left font-semibold text-gray-900">
-                                                                {person.service}
-                                                            </td>
-                                                            <td className=" text-left font-semibold text-gray-900">
-                                                                {person?.wait_time.split(/(\d)/)[1] + " " + "days " + person?.wait_time.split(/(\d)/)[3] + " " + "min"}
-                                                            </td>
+                                                        <td className=" text-left font-semibold text-gray-900">
+                                                            {person.email || "-"}
+                                                        </td>
+                                                        <td className="tracking-tight text-left font-semibold text-gray-900">
+                                                            {person.service}
+                                                        </td>
+                                                        <td className=" text-left font-semibold text-gray-900">
+                                                            {person?.wait_time.split(/(\d)/)[1] + " " + "days " + person?.wait_time.split(/(\d)/)[3] + " " + "min"}
+                                                        </td>
 
-                                                            <td className="flex justify-start  font-semibold text-gray-900 ">
-                                                                <div className=' py-3 rounded-full'>
-                                                                    <AiFillBell size='22' color='orange' style={{ cursor: 'pointer' }} onClick={() => { notify(person.id) }} />
-                                                                </div>
-                                                                <div className=' px-2 py-3 rounded-full'>
-                                                                    <BsFillCheckCircleFill size='22' color='green' style={{ cursor: 'pointer' }} onClick={() => { complete(person.id) }} />
-                                                                </div>
-                                                                {/* <div className=' p-2  py-3 rounded-full'>
+                                                        <td className="flex justify-start  font-semibold text-gray-900 ">
+                                                            <div className=' py-3 rounded-full'>
+                                                                <AiFillBell size='22' color='orange' style={{ cursor: 'pointer' }} onClick={() => { notify(person.id) }} />
+                                                            </div>
+                                                            <div className=' px-2 py-3 rounded-full'>
+                                                                <BsFillCheckCircleFill size='22' color='green' style={{ cursor: 'pointer' }} onClick={() => { complete(person.id) }} />
+                                                            </div>
+                                                            {/* <div className=' p-2  py-3 rounded-full'>
                                                             <AiOutlineEdit size='19' color='blue' style={{ cursor: 'pointer' }} />
                                                         </div> */}
-                                                                <div className=' p-2 py-3 rounded-full'>
-                                                                    <AiFillDelete size='22' color='red' style={{ cursor: 'pointer' }} onClick={() => { del(person.id) }} />
-                                                                </div>
+                                                            <div className=' p-2 py-3 rounded-full'>
+                                                                <AiFillDelete size='22' color='red' style={{ cursor: 'pointer' }} onClick={() => { del(person.id) }} />
+                                                            </div>
 
 
 
-                                                            </td>
-                                                        </tr>
-                                                   )
-                                               
+                                                        </td>
+                                                    </tr>
+                                                )
+
                                             ))
                                         ) :
                                             <tr></tr>

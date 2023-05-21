@@ -1,10 +1,9 @@
-import React from 'react'
+import { Fragment, useState, useEffect } from 'react'
+import { Dialog, Transition } from '@headlessui/react'
 import Side from '../components/Side'
 import Nav from '../components/Nav'
 import SettingSidebar from '../../components/SettingSidebar'
-import { useState } from 'react'
 import axios from 'axios'
-import { useEffect } from 'react'
 import { GetToken } from '../../context/Localstorage'
 import jwt_decode from "jwt-decode";
 
@@ -362,44 +361,80 @@ function Component() {
             </div>
           </div>
           {
-            modal &&
-            <div className='pt-5'>
-              <form onSubmit={handlechange} className='p-5 bg-slate-100 shadow-md rounded-xl w-[32vw]'>
-                {
-                  fetch.map((value, index) => {
-                    return (
-                      <div key={index} className='flex '>
+            modal && (
+              <Transition appear show={true} as={Fragment}>
+                <Dialog as="div" className="relative z-10" onClose={()=>setmodal(false)}>
+                  <Transition.Child
+                    as={Fragment}
+                    enter="ease-out duration-300"
+                    enterFrom="opacity-0"
+                    enterTo="opacity-100"
+                    leave="ease-in duration-200"
+                    leaveFrom="opacity-100"
+                    leaveTo="opacity-0"
+                  >
+                    <div className="fixed inset-0 bg-black bg-opacity-25" />
+                  </Transition.Child>
 
-                        <div className='w-[20vw] pt-3 '>
-                          <input type="checkbox" name="holiday" id="holiday" className='scale-150 mr-2' defaultChecked={value.holiday} />
-                          <input type="text" name="day" id="day" value={value.day} readonly className='focus:outline-none font-bold fill-transparent bg-slate-100' />
-                        </div>
-                        <div className='w-[10vw]'>
-                          <select name="start_time" id="start_time" className='ml-2 pl-2 py-1 focus:outline-none bg-slate-200 rounded-md my-2'>
-                            {
-                              moveString(from, `${value.start_time}`) &&
-                              from.map((data, index) => {
-                                return (<option key={index} value={`${data}`}>{data}</option>)
+                  <div className="fixed inset-0 overflow-y-auto">
+                    <div className="flex min-h-full items-center justify-center p-4 text-center">
+                      <Transition.Child
+                        as={Fragment}
+                        enter="ease-out duration-300"
+                        enterFrom="opacity-0 scale-95"
+                        enterTo="opacity-100 scale-100"
+                        leave="ease-in duration-200"
+                        leaveFrom="opacity-100 scale-100"
+                        leaveTo="opacity-0 scale-95"
+                      >
+                        <Dialog.Panel className=" max-w-2xl transform overflow-hidden rounded-2xl bg-slate-100 p-6 text-left align-middle shadow-xl transition-all">
+
+                          <div className="mt-1 flex justify-center">
+                           
+                              <form onSubmit={handlechange} className=''>
+                              {
+                              fetch.map((value, index) => {
+                                return (
+                                  <div key={index} className='flex '>
+
+                                    <div className='w-full pt-3 '>
+                                      <input type="checkbox" name="holiday" id="holiday" className='scale-150 mr-2' defaultChecked={value.holiday} />
+                                      <input type="text" name="day" id="day" value={value.day} readonly className='focus:outline-none font-bold fill-transparent bg-slate-100' />
+                                    </div>
+                                    <div className=''>
+                                      <select name="start_time" id="start_time" className='ml-2 pl-2 py-1 focus:outline-none bg-slate-200 rounded-md my-2'>
+                                        {
+                                          moveString(from, `${value.start_time}`) &&
+                                          from.map((data, index) => {
+                                            return (<option key={index} value={`${data}`}>{data}</option>)
+                                          })
+                                        }
+                                      </select>
+                                      <select name="end_time" id="end_time" className='ml-2 pl-2 py-1 focus:outline-none bg-slate-200 rounded-md my-2'>
+                                        {
+                                          moveString(to, `${value.end_time}`) &&
+                                          to.map((data, index) => {
+                                            return (<option key={index} value={`${data}`}>{data}</option>)
+                                          })
+                                        }
+                                      </select>
+                                    </div>
+
+                                  </div>
+                                )
                               })
                             }
-                          </select>
-                          <select name="end_time" id="end_time" className='ml-2 pl-2 py-1 focus:outline-none bg-slate-200 rounded-md my-2'>
-                            {
-                              moveString(to, `${value.end_time}`) &&
-                              to.map((data, index) => {
-                                return (<option key={index} value={`${data}`}>{data}</option>)
-                              })
-                            }
-                          </select>
-                        </div>
-
-                      </div>
-                    )
-                  })
-                }
-                <button type="submit" className='py-3 bg-[#4100FA] rounded-xl text-white font-bold  mt-5 w-full'>Confirm</button>
-              </form>
-            </div>
+                            <button type="submit" className='py-3 bg-[#4100FA] rounded-xl text-white font-bold  mt-5 w-full'>Confirm</button>
+                          </form>
+                          </div>
+                        </Dialog.Panel>
+                      </Transition.Child>
+                    </div>
+                  </div>
+                </Dialog>
+              </Transition>
+            )
+            
           }
 
         </div>

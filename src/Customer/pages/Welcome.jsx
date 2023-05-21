@@ -8,8 +8,10 @@ function Welcome() {
     const [joinList, setJoinList] = useState(null);
     const navigate = useNavigate();
     const queue_cookie = Cookie.get('queue_cookies');
+    
+ 
     useEffect(() => {
-       
+      
         queue_cookie ? axios.post(`http://127.0.0.1:8000/api/joinwaitlist/${id}/`, { validation_token: queue_cookie }).then((res) => {
             console.log(res)
         }).catch(err => console.log(err)) :
@@ -28,10 +30,11 @@ function Welcome() {
                 <div className='flex flex-col justify-center items-center my-24'>
                     <div className='text-center mb-8'>
                         <h1 className='text-2xl font-bold text-gray-800 mb-2'>Welcome to {joinList?.business_name}</h1>
-                            {
+                            <p className='text-xl font-semibold text-gray-700'>Join our<span className='font-bold text-blue-800'> Queue</span> </p> 
+                            {/* {
 
                             joinList?.waitlist_count > 0 ? <p className='text-xl font-semibold text-gray-700'>{joinList?.waitlist_count} <span className='font-bold text-blue-800'>waiting</span> </p> : <p className='font-bold text-xl text-gray-700'>You are first in queue</p>
-                        }
+                        } */}
                     </div>
                     <div className='w-full'>
                         <button
