@@ -72,18 +72,26 @@ class HistorySerializer(serializers.ModelSerializer):
 class ServingSerializer(serializers.ModelSerializer):
     wait_time = serializers.CharField(read_only=True)
     burst_time = serializers.CharField(read_only=True)
-
+    resource = serializers.SerializerMethodField()
     note=NoteSerializer(many=True,read_only=True) #note is related name so it is used notes would have given an error
     rank=serializers.IntegerField(read_only=True)
     class Meta:
         model=Waitlist
-        fields=['phone_number','dateofbirth','email','party_size','first_name','last_name','description','added_time','serving_started_time','wait_time','burst_time','rank','note','id']
+        fields=['phone_number','resource','dateofbirth','email','service','party_size','first_name','last_name','description','burst_time','rank','note','id']
         extra_fields=['rank','note']
-
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        service = instance.service
+        if service is not None:
+            representation['service_name'] = service.service_name
+        return representation
+    def get_resource(self,instance):
+        if instance.resource:
+            return instance.resource.name
+        return ""
 class ServiceSerializer(serializers.ModelSerializer):
     waiting=serializers.IntegerField(read_only=True)
     serving=serializers.IntegerField(read_only=True)
-
     class Meta:
         model=Services
         fields=['id','service_name','image','category_name','description','duration','price','buffer_time','waiting','serving']
