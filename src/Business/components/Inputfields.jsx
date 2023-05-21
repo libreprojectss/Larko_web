@@ -7,7 +7,6 @@ import { GetToken } from '../../context/Localstorage';
 
 const { access } = GetToken();
 const access_token = access;
-// "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjc4NzI3NTYwLCJpYXQiOjE2Nzg1NTQ3NjAsImp0aSI6ImNlMzViOTA5YTFlNDQ5ZjJhZmIzYmNiMzljNzliZjNmIiwidXNlcl9pZCI6MX0.68tdMyOLR0IvLrKng1ff5r619GO7wd0zDT4RdvBCEVU"
 function Inputfields() {
     const [inputFields, setInputFields] = useState([]);
     const [loading, setLoading] = useState(true);
