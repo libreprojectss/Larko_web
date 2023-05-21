@@ -76,6 +76,10 @@ class Business_Profile_Views(APIView):
 
 class CheckBusinessName(APIView):
     renderer_classes=[UserRenderer]
+    def get(self,request):
+        user=request.user
+        profile=user.profile_of
+        return Response({"name":profile.business_name,"email":user.email,"first_name":user.first_name,"last_name":user.last_name})
     def post(self,request):
         serializeddata=Business_name_serializer(data=request.data)
         if serializeddata.is_valid(raise_exception=True):
