@@ -154,11 +154,10 @@ function Services() {
                     seterrors(resp.data.errors)
                 }
                 else {
+                    setediton(false)
                     console.log(resp);
                     seterrors({})
-                    e.target.reset()
                     setImage('')
-                    setediton(false)
                     setchange(!change)
 
                 }

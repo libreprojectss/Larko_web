@@ -9,11 +9,9 @@ function ViewList() {
     const { id } = useParams();
     const [joinList, setJoinList] = useState({});
     const [detail, setDetail] = useState({});
-    function getJoinlist() {
-        axios.get(`http://127.0.0.1:8000/api/joinwaitlist/${id}/`).then((response) => console.log(response.data)).catch((err) => console.log(err))
-    }
+
     useEffect(() => {
-        getJoinlist();
+       
         const queue_cookie = Cookie.get('queue_cookies');
         queue_cookie ? axios.post(`http://localhost:8000/api/publiclink/checkqueuestatus/${id}/`, { validation_token: queue_cookie }).then((res) => {
             setJoinList(res.data.Queue_data);
@@ -50,7 +48,7 @@ function ViewList() {
                             
                            (joinList.length > 0 ) ?  joinList.map((person, index) => {
                                return (
-                                   <tr className="bg-white border-b border-r border-l text-sm " >
+                                   <tr className="bg-white border-b border-r border-l text-sm " key={index}>
                                        <td className="tracking-tight py-4 pl-4 font-semibold text-gray-900">
                                            {person?.rank}
                                        </td>

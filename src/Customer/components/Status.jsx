@@ -1,14 +1,24 @@
 import axios from 'axios'
+import Cookies from 'js-cookie';
 import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
-function Status({id}) {
+function Status({ id }) {
+    const navigate = useNavigate();
+    const queue_cookie = Cookies.get(`queue_cookies`)
     const [msg, setMsg] = useState({});
     function removeFromQueue() {
-        axios.delete(`http://127.0.0.1:8000/api/joinwaitlist/${id}/`).then(res => setMsg(res.message)).catch((err) => console.log(err));
+        axios.delete(`http://127.0.0.1:8000/api/joinwaitlist/${id}/`, { validation_token: queue_cookie })
+            .then(res => {
+            console.log('I left')
+            Cookies.remove('queue_cookies')
+            navigate(`/publicjoin/${id}/`);
+            setMsg(res.message);
+        }).catch((err) => console.log(err));
     }
     return (
         <>
- 
+
             <div className='mt-6'>
                 <button
                     onClick={removeFromQueue}
