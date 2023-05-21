@@ -6,9 +6,9 @@ import { StoreToken } from '../../context/Localstorage';
 import { GetTkn, StoreTkn } from '../../context/Localstg';
 
 export default function Registration_Page() {
-  const navigate=useNavigate()
+  const navigate = useNavigate()
   const [errors, seterrors] = useState({});
-  
+
   const handle_submit = (event) => {
     event.preventDefault();
     const formdata = new FormData(event.target)
@@ -36,7 +36,7 @@ export default function Registration_Page() {
     <div className='flex w-screen h-screen'>
       <div className='h-screen w-[72%] shadow-2xl'>
         <nav className="py-6 ml-[5vw]">
-          <div className="cursor-pointer flex">
+          <div className="cursor-pointer flex" onClick={() => { navigate('/') }}>
             <img src="/vite.svg" alt="Not available" />
             <span className="font-bold text-4xl ml-4">Larko</span>
           </div>
@@ -60,12 +60,12 @@ export default function Registration_Page() {
           </div>
           <div className='text-semibold text-slate-800 text-2xl'>
             <p>
-              It’s free to try!
+
             </p>
           </div>
         </div>
       </div>
-      <div className='h-screen flex flex-col justify-around items-center w-[28%]'>
+      <div className='h-screen flex flex-col justify-around items-center w-[28%] mt-8'>
         <div>
           Already have an account?<Link to="/login" className='text-[#4100FA] hover:underline'>  Sign in </Link>
         </div>
@@ -93,7 +93,7 @@ export default function Registration_Page() {
               ? errors.password_confirm : '' : ''}
               {errors ? errors.non_field_errors ? errors.non_field_errors : "" : ""}
             </div>
-            <button type="submit" className="py-3 bg-[#4100FA] rounded-3xl text-white font-bold mt-5">Create account</button>
+            <button type="submit" className="py-3 bg-[#4100FA] rounded-xl text-white font-bold mt-5">Create account</button>
           </form>
         </div>
         <div className='h-[15vh]'>

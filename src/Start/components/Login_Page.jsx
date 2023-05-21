@@ -7,9 +7,7 @@ import { StoreToken } from "../../context/Localstorage";
 export default function Login_Page() {
   const navigate = useNavigate();
   const [errors, seterrors] = useState({});
-  function company() {
-    navigate('/login')
-  }
+  
   const handle_submit = (event) => {
     event.preventDefault();
     const formdata = new FormData(event.target)
@@ -29,11 +27,12 @@ export default function Login_Page() {
         seterrors(err.response.data.errors)
       }
       )
+
   }
   return (
     <div className="w-screen h-screen">
       <nav className="flex justify-around items-center w-screen py-6">
-        <div className="flex justify-between cursor-pointer">
+        <div className="flex justify-between cursor-pointer" onClick={()=>{navigate('/')}}>
           <img src="/vite.svg" alt="Not available" />
           <span className="font-bold text-4xl ml-4" >Larko</span>
         </div>
@@ -53,7 +52,7 @@ export default function Login_Page() {
           </div>
           <input type="password" name="password" id="password" placeholder="Password" className="pl-2 py-3 focus:outline-none bg-slate-200 rounded-md my-2" />
           <div className="text-red-600 text-sm">{errors ? errors.password ? errors.password : '' : ''}</div>
-          <button type="submit" className="py-3 bg-[#4100FA] rounded-3xl text-white font-bold  mt-5">Log in</button>
+          <button type="submit" className="py-3 bg-[#4100FA] rounded-xl text-white font-bold  mt-5">Log in</button>
         </form>
       </main>
     </div>
