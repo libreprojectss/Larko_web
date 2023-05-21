@@ -38,7 +38,7 @@ def allocate_resource_thread(waitlistobj,user):
     resource=Resources.objects.filter(user=user,is_available=True,is_free=True)
     if resource.exists():
         if waitlistobj.service:
-            resources = resources.filter(service__in=[waitlistobj.service])
+            resources = resource.filter(service__in=[waitlistobj.service])
             waitlistobj.resource = resources[0]
             waitlistobj.save()
             Resources.objects.filter(id=resources[0].id).update(is_free=False,currently_serving=waitlistobj)

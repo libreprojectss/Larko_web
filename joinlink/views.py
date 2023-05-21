@@ -58,7 +58,7 @@ class Public_link_Views(APIView):
             elif not waitlist_profile.serving and not waitlist_profile.served:
 
                 user=obj.profile.user
-                ordered=Waitlist.objects.filter(user=user).order_by('added_time')
+                ordered=Waitlist.objects.filter(user=user,served=False,serving=False).order_by('added_time')
                 rank=list(ordered).index(waitlist_profile)+1
                 return Response({"joined":True,"status":"You are on the queue","waited_for":waitlist_profile.wait_time(),"rank":rank,"business_name":profile.business_name,"waitlist_count":waitlist_count})
             else:
