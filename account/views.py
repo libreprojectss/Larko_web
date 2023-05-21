@@ -60,7 +60,7 @@ class Business_Profile_Views(APIView):
         print(type(request.data))
         serializeddata=Business_Profile_Serializer(data=request.data)
         if serializeddata.is_valid(raise_exception=True):
-            serializeddata.ssave(user=request.user)
+            serializeddata.save(user=request.user)
             return Response({"msg":"Business account created successfully"},status=status.HTTP_200_OK)
         return Response({"error":"failed to serialize the given data"},status=status.HTTP_403_FAILED)
     
