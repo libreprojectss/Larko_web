@@ -5,8 +5,8 @@ import { useNavigate } from 'react-router-dom'
 
 function Status({ id }) {
     const navigate = useNavigate();
-    const queue_cookie = Cookies.get(`queue_cookies`)
     const [msg, setMsg] = useState({});
+    const queue_cookie = Cookie.get('queue_cookies');
     function removeFromQueue() {
         axios.delete(`http://127.0.0.1:8000/api/joinwaitlist/${id}/`, { validation_token: queue_cookie })
             .then(res => {

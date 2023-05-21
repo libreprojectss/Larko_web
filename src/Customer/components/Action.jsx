@@ -9,6 +9,7 @@ function Action({ id }) {
     const queue_cookie = Cookies.get(`queue_cookies`)
     const [msg, setMsg] = useState({});
     function removeFromQueue() {
+        console.log(queue_cookie)
         axios.delete(`http://127.0.0.1:8000/api/joinwaitlist/${id}/`, { validation_token: queue_cookie }).then(res => {
             console.log('I left')
             Cookies.remove('queue_cookies')
@@ -37,9 +38,9 @@ function Action({ id }) {
                             <span className='mx-2 text-md font-semibold text-gray-500'> Leave Queue</span>
                         </button>
                     </div>
-                </div> ):navigate(`/publicjoin/${id}`)
+                </div>) : navigate(`/publicjoin/${id}`)
             }
-           
+
         </>
     )
 }
