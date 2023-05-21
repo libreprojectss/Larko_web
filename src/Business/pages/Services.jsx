@@ -295,16 +295,16 @@ function Services() {
                                                                     leaveFrom="opacity-100 scale-100"
                                                                     leaveTo="opacity-0 scale-95"
                                                                 >
-                                                                    <Dialog.Panel className="w-full max-w-3xl transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                                                                    <Dialog.Panel className="w-full max-w-3xl transform overflow-hidden rounded-2xl bg-slate-100 p-6 text-left align-middle shadow-xl transition-all">
                                                                         <Dialog.Title
                                                                             as="h3"
-                                                                            className="text-xl font-medium leading-6 text-gray-900 text-center mb-2"
+                                                                            className="text-2xl font-bold leading-6 text-gray-900 text-center mb-2"
                                                                         >
-                                                                            Edite Business Services
+                                                                            Edit Business Services
                                                                         </Dialog.Title>
                                                                     <div className="mt-1 flex justify-center">
 
-                                                                            <form className='w-[78%]' onSubmit={handlesubmit}>
+                                                                            <form className='w-[95%] pt-2' onSubmit={handlesubmit}>
                                                                                 {
                                                                                     data.map((value, index) => {
                                                                                         if (value.id == id) {
@@ -370,9 +370,9 @@ function Services() {
                                                                                                     <input type="text" name="buffer_time" id="buffer_time" placeholder="Buffer Time" className="pl-2 py-3 focus:outline-none bg-slate-200 rounded-md my-2" value={fetch.buffer_time} onChange={handle_change} />
                                                                                                     <div className="text-red-600 text-sm">{errors ? errors.buffer_time ? errors.buffer_time : '' : ''}</div>
 
-                                                                                                    <div className='flex space-x-2'>
-                                                                                                        <button type="submit" className='py-3 bg-[#4100FA] rounded-3xl text-white font-bold  mt-5 w-full'>Confirm</button>
-                                                                                                        <button  className='py-3 bg-[#e3282b] rounded-3xl text-white font-bold  mt-5 w-full' onClick={()=>setForm(false)}>Cancel</button>
+                                                                                                    <div className='flex space-x-12'>
+                                                                                                        <button type="submit" className='py-3 bg-[#4100FA] rounded-xl text-white font-bold  mt-5 w-full'>Confirm</button>
+                                                                                                        <button  className='py-3 bg-[#e3282b] rounded-xl text-white font-bold  mt-5 w-full' onClick={()=>setForm(false)}>Cancel</button>
                                                                                                     </div>
                                                                                                 </div>
 
@@ -420,15 +420,15 @@ function Services() {
                                                                 leaveFrom="opacity-100 scale-100"
                                                                 leaveTo="opacity-0 scale-95"
                                                             >
-                                                                <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                                                                <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-slate-100 p-6 text-left align-middle shadow-xl transition-all">
                                                              
-                                                                    <div className="mt-1 flex justify-center">
-                                                                        <form className='w-[80%]' onSubmit={handsdown}>
-                                                                            <p className='text-center font-bold text-red-500'>Are you Sure to Delete?</p>
-                                                                            <input type="text" name="id" id="id" value={id} className="pl-2 py-3 focus:outline-none bg-slate-200 rounded-md my-2 w-full" />
-                                                                            <div className='flex space-x-2'>
-                                                                                <button type="submit" className='py-3 bg-[#4100FA] rounded-3xl text-white font-bold  mt-5 w-full'>Confirm</button>
-                                                                                <button className='py-3 bg-[#e3282b] rounded-3xl text-white font-bold  mt-5 w-full' onClick={() => setdelton(false)}>Cancel</button>
+                                                                    <div className="mt-1 flex justify-center h-[20vh]">
+                                                                        <form className='w-[95%] mt-2' onSubmit={handsdown}>
+                                                                            <p className='text-center font-bold text-red-500 text-2xl'>Are you Sure to Delete?</p>
+                                                                            <input type="text" name="id" id="id" value={id} className="pl-2 py-3 focus:outline-none bg-slate-200 rounded-md my-2 w-full hidden" />
+                                                                            <div className='flex space-x-12 mt-6'>
+                                                                                <button type="submit" className='py-3 bg-[#4100FA] rounded-xl text-white font-bold  mt-5 w-full'>Confirm</button>
+                                                                                <button className='py-3 bg-[#e3282b] rounded-xl text-white font-bold  mt-5 w-full' onClick={() => setdelton(false)}>Cancel</button>
                                                                             </div>
                                                                         </form>
                                                                     </div>
@@ -446,11 +446,7 @@ function Services() {
                             </div>
                         </div>
                     </div>
-<<<<<<< HEAD
-
-=======
                     
->>>>>>> 97f75f627f83c0cf2d81167ff784538db36c9a58
                 </section>
 
             </div>
