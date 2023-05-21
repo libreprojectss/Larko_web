@@ -13,6 +13,7 @@ function Component() {
     const [data, setdata] = useState([]);
     const [adata, setadata] = useState([]);
     const [add, setadd] = useState(true);
+    const [error, seterror] = useState({})
 
 
     useEffect(() => {
@@ -50,6 +51,8 @@ function Component() {
             )
     }, [])
 
+
+    const [success, setsuccess] = useState('')
     function handlesubmit(e) {
         e.preventDefault();
         const formdata = new FormData(e.target);
@@ -65,14 +68,17 @@ function Component() {
         })
             .then((resp) => {
                 console.log(resp.data)
+                setsuccess("Service Added Successfully")
+                e.target.reset();
+                setImage('');
             }
             )
             .catch((err) => {
-                console.log(err)
+                console.log(err.response.data.errors)
+                seterror(err.response.data.errors)
             }
             )
-        e.target.reset();
-        setImage('');
+
     }
     const [image, setImage] = useState(null);
 
@@ -92,17 +98,17 @@ function Component() {
         );
     };
 
-    function addition() {
-        setadd(true)
-        console.log('in addition')
-    }
 
     return (
         <div className='my-20  w-[70vw] absolute right-0 ml-6'>
             <div className="px-4 py-2.5 bg-whitemx-2 ">
                 <div>
-                    <div className=" my-4 py-2 px-[11%] flex ml-[21vw]">
+                    <div className=" my-4 py-2 px-[11%] ">
                         <p className='text-3xl font-bold text-gray-700 text-center'>Resources</p>
+                        <p className='text-center text-green-500'>
+                            {success ? success : ''}
+                        </p>
+
                     </div>
 
                     {
@@ -114,9 +120,11 @@ function Component() {
                                     <div className='flex flex-col w-[70%]'>
                                         <label htmlFor="name" className="font-bold mt-3 ">Name *</label>
                                         <input type="text" name="name" id="name" placeholder="Name" className="pl-2 py-3 focus:outline-none bg-slate-200 rounded-md my-2" />
+                                        <div className="text-red-600 text-sm">{error ? error.name : ''}</div>
 
-                                        <label htmlFor="description" className="font-bold mt-3">Description *</label>
+                                        <label htmlFor="description" className="font-bold mt-3">Description </label>
                                         <input type="text" name="description" id="description" placeholder="Description" className="pl-2 py-3 focus:outline-none bg-slate-200 rounded-md my-2" />
+                                        <div className="text-red-600 text-sm">{error ? error.services : ''}</div>
 
                                     </div>
                                     <div>

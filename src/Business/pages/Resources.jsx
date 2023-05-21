@@ -21,6 +21,7 @@ function Resources() {
     const [change, setchange] = useState(false);
     const [fetch, setfetch] = useState({});
     const navigate = useNavigate()
+    const [error, seterror] = useState({})
 
     console.log('Resources')
 
@@ -216,6 +217,7 @@ function Resources() {
             )
             .catch((err) => {
                 console.log(err)
+                seterror(err.response.data.errors)
             }
             )
 
@@ -257,9 +259,11 @@ function Resources() {
         setIsEmpty(true);
     };
 
-    function editController(id) {
+    function editController(e, id) {
+
         setid(id);
         setediton((pre) => !pre);
+        editwow(e);
     }
     function deleteController(id) {
         setid(id);
@@ -324,8 +328,8 @@ function Resources() {
                                                     <div className='hidden'>{value.name}</div>
                                                     <div className='hidden'>{value.description}</div>
                                                     <img src={'http://127.0.0.1:8000' + value.image} alt="No Image" className='hidden' />
-                                                    <button className='px-2 py-2 rounded-bl-xl rounded-tr-xl bg-blue-500 text-white ' onClick={() => editController(value.id)}>Edit</button>
-                                                    <button className='px-2 py-2 rounded-tl-xl rounded-br-xl bg-red-500 text-white ' onClick={() => deleteController(value.id)}>Delete</button>
+                                                    <button className='px-2 py-2 rounded-bl-xl rounded-tr-xl bg-blue-500 text-white ' onClick={(e) => { editController(e, value.id) }}>Edit</button>
+                                                    <button className='px-2 py-2 rounded-tl-xl rounded-br-xl bg-red-500 text-white ' onClick={() => { deleteController(value.id) }}>Delete</button>
                                                 </div>
                                             </div>
                                         )
@@ -381,9 +385,10 @@ function Resources() {
 
                                                                                                         <label htmlFor="name" className="font-bold mt-3 ">Name *</label>
                                                                                                         <input type="text" name="name" id="name" placeholder="Name" value={fetch.name} onChange={handle_change} className="pl-2 py-3 focus:outline-none bg-slate-200 rounded-md my-2" />
-
+                                                                                                        <div className="text-red-600 text-sm">{error ? error.name : ''}</div>
                                                                                                         <label htmlFor="description" className="font-bold mt-3">Description *</label>
                                                                                                         <input type="text" name="description" id="description" placeholder="Description" value={fetch.description} onChange={handle_change} className="pl-2 py-3 focus:outline-none bg-slate-200 rounded-md my-2" />
+                                                                                                        <div className="text-red-600 text-sm">{error ? error.services : ''}</div>
 
                                                                                                     </div>
                                                                                                     <div>
@@ -490,7 +495,7 @@ function Resources() {
                                                                 leaveTo="opacity-0 scale-95"
                                                             >
                                                                 <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-slate-100 p-6 text-left align-middle shadow-xl transition-all">
-                                                               
+
                                                                     <div className="mt-1 flex justify-center h-[20vh]">
                                                                         <form className='w-[95%]' onSubmit={handsdown}>
                                                                             <p className='text-center font-bold text-red-500 text-2xl'>Are you Sure to Delete?</p>

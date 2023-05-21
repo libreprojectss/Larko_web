@@ -131,7 +131,7 @@ function Waitlist() {
         validity()
         console.log(id)
         console.log(access_token)
-        axios.post(`http://127.0.0.1:8000/api/customer/serving/${id}/`, {
+        axios.post(`http://127.0.0.1:8000/api/customer/serving/${id}/`,1, {
             "headers": {
                 "authorization": `Bearer ${access_token}`
             }
@@ -170,7 +170,7 @@ function Waitlist() {
         validity()
         console.log(id)
         console.log(access_token)
-        axios.delete(`http://127.0.0.1:8000/api/customer/waitlist/${id}/`, {
+        axios.delete(`http://127.0.0.1:8000/api/customer/waitlist/${id}/`,{
             "headers": {
                 "authorization": `Bearer ${access_token}`
             }

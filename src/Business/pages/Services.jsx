@@ -12,7 +12,7 @@ import jwt_decode from "jwt-decode";
 
 
 function Services() {
- 
+
     const [openForm, setForm] = useState(false);
     const { access, refresh } = GetToken()
     const [data, setdata] = useState([]);
@@ -22,7 +22,7 @@ function Services() {
     const [image, setImage] = useState(null);
     const [change, setchange] = useState(false);
     const [fetch, setfetch] = useState({});
-    const navigate = useNavigate()
+    const navigate = useNavigate();
 
     console.log('Services')
 
@@ -95,19 +95,19 @@ function Services() {
             )
     }, [change])
 
-    function editwow(e) {
+    function editwow(e, buffer_time, category_name, description, duration, price, service_name) {
         setid(e.target.parentNode.id)
         // console.log(e.target.parentNode.children[0].innerText,e.target.parentNode.children[1].innerText)
-        fetch.buffer_time = e.target.parentNode.children[0].innerText
-        fetch.category_name = e.target.parentNode.children[1].innerText
-        fetch.description = e.target.parentNode.children[2].innerText
-        fetch.duration = e.target.parentNode.children[3].innerText
+        fetch.buffer_time = buffer_time
+        fetch.category_name = category_name
+        fetch.description = description
+        fetch.duration = duration
         setImage(e.target.parentNode.children[4].src)
-        fetch.price = e.target.parentNode.children[5].innerText
-        fetch.service_name = e.target.parentNode.children[6].innerText
-        // console.log(id);
-        setediton(true)
-        setdelton(false)
+        fetch.price = price
+        fetch.service_name = service_name
+        console.log(id);
+        // setediton(true)
+        // setdelton(false)
         // console.log(editon);
     }
     function delwow(e) {
@@ -134,7 +134,7 @@ function Services() {
         );
     };
     function handlesubmit(e) {
-        e.preventDefault();
+        // e.preventDefault();
         validity()
         const formdata = new FormData(e.target);
         // for (const key of formdata.keys()) {
@@ -160,6 +160,7 @@ function Services() {
                     setImage('')
                     setediton(false)
                     setchange(!change)
+
                 }
             })
             .catch((err) => {
@@ -202,8 +203,10 @@ function Services() {
     }
 
 
-    function toggleController(id) {
+    function toggleController(e, id, buffer_time, category_name, description, duration, price, service_name) {
+        editwow(e, buffer_time, category_name, description, duration, price, service_name);
         setid(id);
+        console.log(id)
         setForm((pre) => !pre);
     }
     function deleteController(id) {
@@ -217,7 +220,7 @@ function Services() {
                     <Side />
                 </div>
                 <section className='w-full flex flex-col '>
-              
+
                     <div className='w-full fixed top-0 left-50 right-0'>
                         <Nav />
                     </div>
@@ -259,8 +262,8 @@ function Services() {
                                                     <img src={'http://127.0.0.1:8000' + value.image} alt="No Image" className='hidden' />
                                                     <div className='hidden'>{value.price}</div>
                                                     <div className='hidden'>{value.service_name}</div>
-                                                    <button className='px-2 py-2 rounded-bl-xl rounded-tr-xl bg-blue-500 text-white' onClick={()=>toggleController(value.id)}>Edit</button>
-                                                    <button className='px-2 py-2 rounded-tl-xl rounded-br-xl bg-red-500 text-white mt-2' onClick={()=>deleteController(value.id)}>Delete</button>
+                                                    <button className='px-2 py-2 rounded-bl-xl rounded-tr-xl bg-blue-500 text-white' onClick={(e) => { toggleController(e, value.id, value.buffer_time, value.category_name, value.description, value.duration, value.price, value.service_name) }}>Edit</button>
+                                                    <button className='px-2 py-2 rounded-tl-xl rounded-br-xl bg-red-500 text-white mt-2' onClick={() => { deleteController(value.id) }}>Delete</button>
                                                 </div>
                                             </div>
                                         )
@@ -269,134 +272,134 @@ function Services() {
                                 <div className='w-[80vw] flex items-center pl-[15vw]'>
                                     {
                                         openForm &&
-                                            (
-                                                <Transition appear show={true} as={Fragment}>
-                                                    <Dialog as="div" className="relative z-10" onClose={toggleController}>
-                                                        <Transition.Child
-                                                            as={Fragment}
-                                                            enter="ease-out duration-300"
-                                                            enterFrom="opacity-0"
-                                                            enterTo="opacity-100"
-                                                            leave="ease-in duration-200"
-                                                            leaveFrom="opacity-100"
-                                                            leaveTo="opacity-0"
-                                                        >
-                                                            <div className="fixed inset-0 bg-black bg-opacity-25" />
-                                                        </Transition.Child>
+                                        (
+                                            <Transition appear show={true} as={Fragment}>
+                                                <Dialog as="div" className="relative z-10" onClose={toggleController}>
+                                                    <Transition.Child
+                                                        as={Fragment}
+                                                        enter="ease-out duration-300"
+                                                        enterFrom="opacity-0"
+                                                        enterTo="opacity-100"
+                                                        leave="ease-in duration-200"
+                                                        leaveFrom="opacity-100"
+                                                        leaveTo="opacity-0"
+                                                    >
+                                                        <div className="fixed inset-0 bg-black bg-opacity-25" />
+                                                    </Transition.Child>
 
-                                                        <div className="fixed inset-0 overflow-y-auto">
-                                                            <div className="flex min-h-full items-center justify-center p-4 text-center">
-                                                                <Transition.Child
-                                                                    as={Fragment}
-                                                                    enter="ease-out duration-300"
-                                                                    enterFrom="opacity-0 scale-95"
-                                                                    enterTo="opacity-100 scale-100"
-                                                                    leave="ease-in duration-200"
-                                                                    leaveFrom="opacity-100 scale-100"
-                                                                    leaveTo="opacity-0 scale-95"
-                                                                >
-                                                                    <Dialog.Panel className="w-full max-w-3xl transform overflow-hidden rounded-2xl bg-slate-100 p-6 text-left align-middle shadow-xl transition-all">
-                                                                        <Dialog.Title
-                                                                            as="h3"
-                                                                            className="text-2xl font-bold leading-6 text-gray-900 text-center mb-2"
-                                                                        >
-                                                                            Edit Business Services
-                                                                        </Dialog.Title>
+                                                    <div className="fixed inset-0 overflow-y-auto">
+                                                        <div className="flex min-h-full items-center justify-center p-4 text-center">
+                                                            <Transition.Child
+                                                                as={Fragment}
+                                                                enter="ease-out duration-300"
+                                                                enterFrom="opacity-0 scale-95"
+                                                                enterTo="opacity-100 scale-100"
+                                                                leave="ease-in duration-200"
+                                                                leaveFrom="opacity-100 scale-100"
+                                                                leaveTo="opacity-0 scale-95"
+                                                            >
+                                                                <Dialog.Panel className="w-full max-w-3xl transform overflow-hidden rounded-2xl bg-slate-100 p-6 text-left align-middle shadow-xl transition-all">
+                                                                    <Dialog.Title
+                                                                        as="h3"
+                                                                        className="text-2xl font-bold leading-6 text-gray-900 text-center mb-2"
+                                                                    >
+                                                                        Edit Business Services
+                                                                    </Dialog.Title>
                                                                     <div className="mt-1 flex justify-center">
 
-                                                                            <form className='w-[95%] pt-2' onSubmit={handlesubmit}>
-                                                                                {
-                                                                                    data.map((value, index) => {
-                                                                                        if (value.id == id) {
+                                                                        <form className='w-[95%] pt-2' onSubmit={handlesubmit}>
+                                                                            {
+                                                                                data.map((value, index) => {
+                                                                                    if (value.id == id) {
 
-                                                                                            return (
-                                                                                                <div key={index} className='flex flex-col justify-center'>
-                                                                                                    <div className='w-full flex justify-between'>
-                                                                                                        <div className='flex flex-col w-[70%]'>
-                                                                                                            <label htmlFor="service_name" className="font-bold mt-3 ">Service Name *</label>
-                                                                                                            <input type="text" name="service_name" id="service_name" placeholder="Service Name" className="pl-2 py-3 focus:outline-none bg-slate-200 rounded-md my-2" value={fetch.service_name} onChange={handle_change} />
-                                                                                                            <div className="text-red-600 text-sm">{errors ? errors.service_name ? errors.service_name : '' : ''}</div>
-                                                                                                            <label htmlFor="category_name" className="font-bold mt-3">Category *</label>
-                                                                                                            <input type="text" name="category_name" id="category_name" placeholder="Category" className="pl-2 py-3 focus:outline-none bg-slate-200 rounded-md my-2" value={fetch.category_name} onChange={handle_change} />
-                                                                                                            <div className="text-red-600 text-sm">{errors ? errors.category_name ? errors.category_name : '' : ''}</div>
-                                                                                                        </div>
-                                                                                                        <div>
-                                                                                                            {
-                                                                                                                !image ?
-                                                                                                                    <div className='h-[75%]'>
-                                                                                                                        <p className='mt-3 font-bold text-center'>
-                                                                                                                            Click to Upload Image
-                                                                                                                        </p>
-                                                                                                                        <div className='h-full border-2 border-dashed border-slate-300 rounded-xl mt-2'>
-                                                                                                                            <label htmlFor="image" className='h-full flex justify-center items-center hover:cursor-pointer'>
-                                                                                                                                {/* <p className='font-bold'>Click Here</p> */}
-                                                                                                                                <AiOutlineCamera size="6em" />
-                                                                                                                            </label>
-                                                                                                                            <input type="file" accept="image/*" name="image" id="image" onChange={handleChange} hidden />
-                                                                                                                        </div>
-                                                                                                                    </div>
-                                                                                                                    :
-                                                                                                                    <div className='h-[75%]'>
-                                                                                                                        <p className='mt-3 font-bold text-center'>
-                                                                                                                            Click to Change Image
-                                                                                                                        </p>
-                                                                                                                        <div className='h-full border-2 border-dashed border-slate-300 rounded-xl mt-2'>
-                                                                                                                            <label htmlFor="image" className='text-center h-full flex justify-center items-center hover:cursor-pointer p-5'>
-                                                                                                                                <img src={image} className='rounded-xl object-cover' height={110} width={150} alt='Image Not Uploaded Yet' />
-                                                                                                                            </label>
-                                                                                                                            <input type="file" accept="image/*" name="image" id="image" onChange={handleChange} hidden />
-                                                                                                                        </div>
-                                                                                                                    </div>
-                                                                                                            }
-                                                                                                        </div>
+                                                                                        return (
+                                                                                            <div key={index} className='flex flex-col justify-center'>
+                                                                                                <div className='w-full flex justify-between'>
+                                                                                                    <div className='flex flex-col w-[70%]'>
+                                                                                                        <label htmlFor="service_name" className="font-bold mt-3 ">Service Name *</label>
+                                                                                                        <input type="text" name="service_name" id="service_name" placeholder="Service Name" className="pl-2 py-3 focus:outline-none bg-slate-200 rounded-md my-2" value={fetch.service_name} onChange={handle_change} />
+                                                                                                        <div className="text-red-600 text-sm">{errors ? errors.service_name ? errors.service_name : '' : ''}</div>
+                                                                                                        <label htmlFor="category_name" className="font-bold mt-3">Category *</label>
+                                                                                                        <input type="text" name="category_name" id="category_name" placeholder="Category" className="pl-2 py-3 focus:outline-none bg-slate-200 rounded-md my-2" value={fetch.category_name} onChange={handle_change} />
+                                                                                                        <div className="text-red-600 text-sm">{errors ? errors.category_name ? errors.category_name : '' : ''}</div>
                                                                                                     </div>
-                                                                                                    {/* {file && <img src={file} alt="Preview" />} */}
-                                                                                                    <label htmlFor="description" className="font-bold mt-3 ">Description *</label>
-                                                                                                    <input type="text" name="description" id="description" placeholder="Description" className="pl-2 py-3 focus:outline-none bg-slate-200 rounded-md my-2" value={fetch.description} onChange={handle_change} />
-                                                                                                    <div className="text-red-600 text-sm">{errors ? errors.description ? errors.description : '' : ''}</div>
-                                                                                                    <div className='flex w-full justify-between mt-3'>
-                                                                                                        <div className='flex flex-col w-[45%]'>
-                                                                                                            <label htmlFor="duration" className="font-bold ">Duration (In Minutes)</label>
-                                                                                                            <input type="text" name="duration" id="duration" placeholder="Duration" className="pl-2 py-3 focus:outline-none bg-slate-200 rounded-md my-2" value={fetch.duration} onChange={handle_change} />
-                                                                                                            <div className="text-red-600 text-sm">{errors ? errors.duration ? errors.duration : '' : ''}</div>
-                                                                                                        </div>
-                                                                                                        <div className='flex flex-col w-[45%]'>
-                                                                                                            <label htmlFor="price" className="font-bold ">Price (In NRP)</label>
-                                                                                                            <input type="price" name="price" id="price" placeholder="Price" className="pl-2 py-3 focus:outline-none bg-slate-200 rounded-md my-2" value={fetch.price} onChange={handle_change} />
-                                                                                                            <div className="text-red-600 text-sm">{errors ? errors.price ? errors.price : '' : ''}</div>
-                                                                                                        </div>
-                                                                                                    </div>
-                                                                                                    <label htmlFor="buffer_time" className="font-bold mt-3">Buffer Time (In Minutes)</label>
-                                                                                                    <input type="text" name="buffer_time" id="buffer_time" placeholder="Buffer Time" className="pl-2 py-3 focus:outline-none bg-slate-200 rounded-md my-2" value={fetch.buffer_time} onChange={handle_change} />
-                                                                                                    <div className="text-red-600 text-sm">{errors ? errors.buffer_time ? errors.buffer_time : '' : ''}</div>
-
-                                                                                                    <div className='flex space-x-12'>
-                                                                                                        <button type="submit" className='py-3 bg-[#4100FA] rounded-xl text-white font-bold  mt-5 w-full'>Confirm</button>
-                                                                                                        <button  className='py-3 bg-[#e3282b] rounded-xl text-white font-bold  mt-5 w-full' onClick={()=>setForm(false)}>Cancel</button>
+                                                                                                    <div>
+                                                                                                        {
+                                                                                                            !image ?
+                                                                                                                <div className='h-[75%]'>
+                                                                                                                    <p className='mt-3 font-bold text-center'>
+                                                                                                                        Click to Upload Image
+                                                                                                                    </p>
+                                                                                                                    <div className='h-full border-2 border-dashed border-slate-300 rounded-xl mt-2'>
+                                                                                                                        <label htmlFor="image" className='h-full flex justify-center items-center hover:cursor-pointer'>
+                                                                                                                            {/* <p className='font-bold'>Click Here</p> */}
+                                                                                                                            <AiOutlineCamera size="6em" />
+                                                                                                                        </label>
+                                                                                                                        <input type="file" accept="image/*" name="image" id="image" onChange={handleChange} hidden />
+                                                                                                                    </div>
+                                                                                                                </div>
+                                                                                                                :
+                                                                                                                <div className='h-[75%]'>
+                                                                                                                    <p className='mt-3 font-bold text-center'>
+                                                                                                                        Click to Change Image
+                                                                                                                    </p>
+                                                                                                                    <div className='h-full border-2 border-dashed border-slate-300 rounded-xl mt-2'>
+                                                                                                                        <label htmlFor="image" className='text-center h-full flex justify-center items-center hover:cursor-pointer p-5'>
+                                                                                                                            <img src={image} className='rounded-xl object-cover' height={110} width={150} alt='Image Not Uploaded Yet' />
+                                                                                                                        </label>
+                                                                                                                        <input type="file" accept="image/*" name="image" id="image" onChange={handleChange} hidden />
+                                                                                                                    </div>
+                                                                                                                </div>
+                                                                                                        }
                                                                                                     </div>
                                                                                                 </div>
+                                                                                                {/* {file && <img src={file} alt="Preview" />} */}
+                                                                                                <label htmlFor="description" className="font-bold mt-3 ">Description *</label>
+                                                                                                <input type="text" name="description" id="description" placeholder="Description" className="pl-2 py-3 focus:outline-none bg-slate-200 rounded-md my-2" value={fetch.description} onChange={handle_change} />
+                                                                                                <div className="text-red-600 text-sm">{errors ? errors.description ? errors.description : '' : ''}</div>
+                                                                                                <div className='flex w-full justify-between mt-3'>
+                                                                                                    <div className='flex flex-col w-[45%]'>
+                                                                                                        <label htmlFor="duration" className="font-bold ">Duration (In Minutes)</label>
+                                                                                                        <input type="text" name="duration" id="duration" placeholder="Duration" className="pl-2 py-3 focus:outline-none bg-slate-200 rounded-md my-2" value={fetch.duration} onChange={handle_change} />
+                                                                                                        <div className="text-red-600 text-sm">{errors ? errors.duration ? errors.duration : '' : ''}</div>
+                                                                                                    </div>
+                                                                                                    <div className='flex flex-col w-[45%]'>
+                                                                                                        <label htmlFor="price" className="font-bold ">Price (In NRP)</label>
+                                                                                                        <input type="price" name="price" id="price" placeholder="Price" className="pl-2 py-3 focus:outline-none bg-slate-200 rounded-md my-2" value={fetch.price} onChange={handle_change} />
+                                                                                                        <div className="text-red-600 text-sm">{errors ? errors.price ? errors.price : '' : ''}</div>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                                <label htmlFor="buffer_time" className="font-bold mt-3">Buffer Time (In Minutes)</label>
+                                                                                                <input type="text" name="buffer_time" id="buffer_time" placeholder="Buffer Time" className="pl-2 py-3 focus:outline-none bg-slate-200 rounded-md my-2" value={fetch.buffer_time} onChange={handle_change} />
+                                                                                                <div className="text-red-600 text-sm">{errors ? errors.buffer_time ? errors.buffer_time : '' : ''}</div>
 
-                                                                                            )
-                                                                                        }
-                                                                                    })
-                                                                                }
-                                                                            </form>
-                                                                        </div>
+                                                                                                <div className='flex space-x-12'>
+                                                                                                    <button type="submit" className='py-3 bg-[#4100FA] rounded-xl text-white font-bold  mt-5 w-full'>Confirm</button>
+                                                                                                    <button className='py-3 bg-[#e3282b] rounded-xl text-white font-bold  mt-5 w-full' onClick={() => setForm(false)}>Cancel</button>
+                                                                                                </div>
+                                                                                            </div>
+
+                                                                                        )
+                                                                                    }
+                                                                                })
+                                                                            }
+                                                                        </form>
+                                                                    </div>
 
 
-                                                                    </Dialog.Panel>
-                                                                </Transition.Child>
-                                                            </div>
+                                                                </Dialog.Panel>
+                                                            </Transition.Child>
                                                         </div>
-                                                    </Dialog>
-                                                </Transition>
-                                            )
-                                           
+                                                    </div>
+                                                </Dialog>
+                                            </Transition>
+                                        )
+
                                     }
                                     {
                                         delton && (
                                             <Transition appear show={true} as={Fragment}>
-                                                <Dialog as="div" className="relative z-10" onClose={()=>setdelton(false)}>
+                                                <Dialog as="div" className="relative z-10" onClose={() => setdelton(false)}>
                                                     <Transition.Child
                                                         as={Fragment}
                                                         enter="ease-out duration-300"
@@ -421,7 +424,7 @@ function Services() {
                                                                 leaveTo="opacity-0 scale-95"
                                                             >
                                                                 <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-slate-100 p-6 text-left align-middle shadow-xl transition-all">
-                                                             
+
                                                                     <div className="mt-1 flex justify-center h-[20vh]">
                                                                         <form className='w-[95%] mt-2' onSubmit={handsdown}>
                                                                             <p className='text-center font-bold text-red-500 text-2xl'>Are you Sure to Delete?</p>
@@ -446,7 +449,7 @@ function Services() {
                             </div>
                         </div>
                     </div>
-                    
+
                 </section>
 
             </div>

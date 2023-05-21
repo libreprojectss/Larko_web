@@ -65,8 +65,8 @@ export default function Registration_Page() {
           </div>
         </div>
       </div>
-      <div className='h-screen flex flex-col justify-around items-center w-[28%] mt-8'>
-        <div>
+      <div className='h-screen flex flex-col justify-around items-center w-[28%] pt-8'>
+        <div className=''>
           Already have an account?<Link to="/login" className='text-[#4100FA] hover:underline'>  Sign in </Link>
         </div>
         <div className='w-full flex justify-center items-center'>
