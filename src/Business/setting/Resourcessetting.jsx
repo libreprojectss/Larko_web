@@ -12,8 +12,8 @@ function Component() {
     const { access } = GetToken();
     const [data, setdata] = useState([]);
     const [adata, setadata] = useState([]);
-    const [add, setadd] = useState(false);
-   
+    const [add, setadd] = useState(true);
+
 
     useEffect(() => {
         axios.get('http://localhost:8000/api/customer/services/', {
@@ -99,18 +99,15 @@ function Component() {
 
     return (
         <div className='my-20  w-[70vw] absolute right-0 ml-6'>
-            <div className="px-4 py-2.5 bg-white shadow-sm border-2  rounded-md  mx-2 ">
+            <div className="px-4 py-2.5 bg-whitemx-2 ">
                 <div>
-                    <div className=" my-4 border-b-2 py-2 px-[11%] flex justify-between">
-                        <p className='text-3xl font-bold text-gray-700'>Resources</p>
-                        <p className='flex justify-between w-[20%]'>
-                            <button className='bg-blue-500 text-bold text-white px-5 rounded-md' onClick={addition} >Add</button>
-                        </p>
+                    <div className=" my-4 py-2 px-[11%] flex ml-[21vw]">
+                        <p className='text-3xl font-bold text-gray-700 text-center'>Resources</p>
                     </div>
 
                     {
                         add &&
-                        <div className='flex justify-center items-center w-full'>
+                        <div className='flex justify-center items-center w-[50vw] ml-[8vw] mt-4'>
 
                             <form onSubmit={handlesubmit} className="flex flex-col justify-around w-[78%]">
                                 <div className='w-full flex justify-between'>
@@ -169,7 +166,7 @@ function Component() {
                                         }
                                     </div>
                                 </div>
-                                <button type="submit" className="py-3 bg-[#4100FA] rounded-3xl text-white font-bold  mt-5">Add</button>
+                                <button type="submit" className="py-3 bg-[#4100FA] rounded-xl text-white font-bold  mt-5">Add</button>
                             </form>
                         </div>
                     }

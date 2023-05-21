@@ -61,11 +61,11 @@ function Component() {
 
   return (
     <div className='my-20  w-[70vw] absolute right-0 ml-6'>
-      <div className="px-4 py-2.5 bg-white shadow-sm border-2  rounded-md  mx-2 ">
+      <div className="px-4 py-2.5 bg-white mx-3 ">
         <div>
-          <h1 className="text-3xl font-bold text-gray-700 text-center my-4 border-b-2 py-2">Services</h1>
+          <h1 className="text-3xl font-bold text-gray-700 text-center my-4 py-2">Services</h1>
 
-          <div className='flex justify-center items-center w-full'>
+          <div className='flex justify-center items-center w-[50vw] ml-[8.5vw]'>
             <form className="flex flex-col justify-around w-[78%]" onSubmit={handle_submit}>
               <div className='w-full flex justify-between'>
                 <div className='flex flex-col w-[70%]'>
@@ -125,7 +125,7 @@ function Component() {
               <label htmlFor="buffer_time" className="font-bold mt-3">Buffer Time (In Minutes)</label>
               <input type="text" name="buffer_time" id="buffer_time" placeholder="Buffer Time" className="pl-2 py-3 focus:outline-none bg-slate-200 rounded-md my-2" />
               <div className="text-red-600 text-sm">{errors ? errors.buffer_time ? errors.buffer_time : '' : ''}</div>
-              <button type="submit" className="py-3 bg-[#4100FA] rounded-3xl text-white font-bold  mt-5">Add</button>
+              <button type="submit" className="py-3 bg-[#4100FA] rounded-xl text-white font-bold  mt-5">Add</button>
             </form>
           </div>
 

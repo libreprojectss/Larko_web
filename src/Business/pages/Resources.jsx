@@ -210,6 +210,7 @@ function Resources() {
                 console.log(resp.data)
                 setediton(false)
                 setImage('')
+                e.target.reset()
                 setchange(!change)
             }
             )
@@ -313,7 +314,7 @@ function Resources() {
                                                 <div className={`flex flex-col pr-10`}>
                                                     <div className=' pl-3 flex justify-start items-center space-x-2 '>
                                                         {/* <div className='bg-black w-4 h-4 rounded-full'></div> */}
-                                                        <h1 className='font-semibold text-3xl text-gray-700 mb-16 '>{value.name}</h1>
+                                                        <h1 className='font-semibold text-2xl text-gray-700 mb-16 '>{value.name}</h1>
                                                     </div>
                                                     <div className='flex  space-x-2 text-gray-500'>
 
@@ -360,15 +361,15 @@ function Resources() {
                                                                 leaveFrom="opacity-100 scale-100"
                                                                 leaveTo="opacity-0 scale-95"
                                                             >
-                                                                <Dialog.Panel className="w-full max-w-3xl transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                                                                <Dialog.Panel className="w-full max-w-3xl transform overflow-hidden rounded-2xl bg-slate-100 p-6 text-left align-middle shadow-xl transition-all">
                                                                     <Dialog.Title
                                                                         as="h3"
-                                                                        className="text-xl font-medium leading-6 text-gray-900 text-center mb-2"
+                                                                        className="text-2xl font-bold leading-6 text-gray-900 text-center mb-2"
                                                                     >
-                                                                        Edite Business Services
+                                                                        Edit Business Services
                                                                     </Dialog.Title>
                                                                     <div className="mt-1 flex justify-center">
-                                                                        <form className='w-[80%]' onSubmit={handlesubmit}>
+                                                                        <form className='w-[95%] pt-2' onSubmit={handlesubmit}>
                                                                             {
                                                                                 adata.map((value, index) => {
                                                                                     if (value.id == id) {
@@ -437,9 +438,9 @@ function Resources() {
                                                                                                     <input type="checkbox" name="is_available" id="is_available" defaultChecked={value.is_available} className='scale-[150%]' />
                                                                                                     <label htmlFor='is_available' className='pl-3 font-bold'>Available</label><br></br>
                                                                                                 </div>
-                                                                                                <div className='flex space-x-2'>
-                                                                                                    <button type="submit" className='py-3 bg-[#4100FA] rounded-3xl text-white font-bold  mt-5 w-full'>Confirm</button>
-                                                                                                    <button className='py-3 bg-[#e3282b] rounded-3xl text-white font-bold  mt-5 w-full' onClick={() => setediton(false)}>Cancel</button>
+                                                                                                <div className='flex space-x-12'>
+                                                                                                    <button type="submit" className='py-3 bg-[#4100FA] rounded-xl text-white font-bold  mt-5 w-full'>Confirm</button>
+                                                                                                    <button className='py-3 bg-[#e3282b] rounded-xl text-white font-bold  mt-5 w-full' onClick={() => setediton(false)}>Cancel</button>
                                                                                                 </div>
                                                                                             </div>
 
@@ -488,15 +489,15 @@ function Resources() {
                                                                 leaveFrom="opacity-100 scale-100"
                                                                 leaveTo="opacity-0 scale-95"
                                                             >
-                                                                <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                                                                <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-slate-100 p-6 text-left align-middle shadow-xl transition-all">
                                                                
-                                                                    <div className="mt-1 flex justify-center">
-                                                                        <form className='w-[80%]' onSubmit={handsdown}>
-                                                                            <p className='text-center font-bold text-red-500'>Are you Sure to Delete?</p>
-                                                                            <input type="text" name="id" id="id" value={id} className="pl-2 py-3 focus:outline-none bg-slate-200 rounded-md my-2 w-full" />
-                                                                            <div className='flex space-x-2'>
-                                                                                <button type="submit" className='py-3 bg-[#4100FA] rounded-3xl text-white font-bold  mt-5 w-full'>Confirm</button>
-                                                                                <button className='py-3 bg-[#e3282b] rounded-3xl text-white font-bold  mt-5 w-full' onClick={() => setdelton(false)}>Cancel</button>
+                                                                    <div className="mt-1 flex justify-center h-[20vh]">
+                                                                        <form className='w-[95%]' onSubmit={handsdown}>
+                                                                            <p className='text-center font-bold text-red-500 text-2xl'>Are you Sure to Delete?</p>
+                                                                            <input type="text" name="id" id="id" value={id} className="pl-2 py-3 focus:outline-none bg-slate-200 rounded-md my-2 w-full hidden" />
+                                                                            <div className='flex space-x-12 mt-6'>
+                                                                                <button type="submit" className='py-3 bg-[#4100FA] rounded-xl text-white font-bold  mt-5 w-full'>Confirm</button>
+                                                                                <button className='py-3 bg-[#e3282b] rounded-xl text-white font-bold  mt-5 w-full' onClick={() => setdelton(false)}>Cancel</button>
                                                                             </div>
                                                                         </form>
                                                                     </div>
