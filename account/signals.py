@@ -3,6 +3,7 @@ from django.dispatch import receiver
 from joinlink.models import Public_link
 from .models import *
 from waitlistapp.models import FieldList
+from cryptography.fernet import Fernet
  
  
 @receiver(post_save,sender=Business_Profile)
@@ -24,7 +25,7 @@ def create_fieldlist(sender, instance, created, **kwargs):
 @receiver(post_save,sender=Business_Profile)
 def create_public_link(sender,instance,created, **kwargs):
     if created:
-        Public_link.objects.create(profile=instance)
+        Public_link.objects.create(profile=instance,fernet_key=Fernet.generate_key())
         OperationSchedule.objects.create(business_profile=instance,operation_time=[
             {"day":"SUNDAY","start_time":"10:00","end_time":"16:00","holiday":False},
             {"day":"MONDAY","start_time":"10:00","end_time":"16:00","holiday":False},
