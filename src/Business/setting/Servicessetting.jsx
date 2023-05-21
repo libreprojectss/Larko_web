@@ -28,6 +28,7 @@ function Component() {
 
   const [errors, seterrors] = useState({});
   const { access } = GetToken();
+  const [success, setsuccess] = useState('')
 
   const handle_submit = (event) => {
     event.preventDefault();
@@ -47,6 +48,7 @@ function Component() {
         else {
           console.log(resp);
           seterrors({})
+          setsuccess("Service Added Successfully")
           event.target.reset()
           setImage('')
         }
@@ -57,6 +59,9 @@ function Component() {
       }
       )
   }
+  function display() {
+    return success
+  }
 
 
   return (
@@ -64,6 +69,9 @@ function Component() {
       <div className="px-4 py-2.5 bg-white mx-3 ">
         <div>
           <h1 className="text-3xl font-bold text-gray-700 text-center my-4 py-2">Services</h1>
+          <p className='text-center text-green-500'>
+            {success ? success : ''}
+          </p>
 
           <div className='flex justify-center items-center w-[50vw] ml-[8.5vw]'>
             <form className="flex flex-col justify-around w-[78%]" onSubmit={handle_submit}>
