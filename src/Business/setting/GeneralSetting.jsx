@@ -14,14 +14,12 @@ const access_token = access;
 function ShowProfile() {
     const navigate = useNavigate();
     const [openForm, setStatus] = useState(false);
-    const [id, setId] = useState(0);
     const [businessProfile, setBusinessProfile] = useState();
     const [loading, setLoading] = useState(true);
-    const [stat, setStat] = useState();
     function updateBusiness() {
-       businessProfile.data.open_now ? setId(0):setId(0)
-      
-        axios.get(`http://127.0.0.1:8000/api/user/openclosebusiness/${id}`,
+       businessProfile.data.open_now ? 
+
+        axios.get(`http://127.0.0.1:8000/api/user/openclosebusiness/0`,
             {
                 headers: {
                     'Authorization': `Bearer ${access_token}`
@@ -29,9 +27,21 @@ function ShowProfile() {
 
             })
             .then((response) => {
-                setStat(response.data.status)
+
                 navigate(0);
-            }).catch(err => console.log(err));
+            }).catch(err => console.log(err))
+           :
+           axios.get(`http://127.0.0.1:8000/api/user/openclosebusiness/1`,
+               {
+                   headers: {
+                       'Authorization': `Bearer ${access_token}`
+                   }
+
+               })
+               .then((response) => {
+
+                   navigate(0);
+               }).catch(err => console.log(err))
     }
  
     function handleLink() {
@@ -57,22 +67,20 @@ function ShowProfile() {
         fetchData();
     }, []);
 
-    if (loading) return <div className=' '>Loading...</div>;
+    if (loading) return <div className='mt-8'>Loading...</div>;
    
     return (
         <>
-            {
-                console.log(businessProfile.data)
-     }
+  
             {
 
-                <div className=' mx-2 w-[30vw] bg-slate-100 rounded-xl shadow-md p-4'>
+                <div className=' mx-2 w-[50vw] bg-slate-100 rounded-xl shadow-md p-4'>
                     <div className='my-2'>
                         <label class="relative inline-flex items-center justify-center cursor-pointer">
                             <input
                                 type="checkbox"
                                 className="sr-only peer"
-                                checked={stat}
+                                checked={businessProfile.data.open_now}
                                 readOnly
                             />
 

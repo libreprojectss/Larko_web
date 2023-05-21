@@ -87,7 +87,7 @@ function Inputfields() {
 }
 
 function Toggle({ isEnable, setEnable, label, required, selected, field_name }) {
-    const reload = useNavigate();
+    const navigate = useNavigate();
     function updateToggle() {
         axios.put('http://127.0.0.1:8000/api/customer/allfields/',
             {
@@ -102,7 +102,7 @@ function Toggle({ isEnable, setEnable, label, required, selected, field_name }) 
                 }
 
             })
-            .then((response) => reload(0)).catch(err => console.log(err));
+            .then((response) => navigate(0)).catch(err => console.log(err));
     }
     function handleToggle() {
         setEnable(!isEnable);
