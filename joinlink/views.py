@@ -151,7 +151,11 @@ class RemoveFromQueue(APIView):
         key=public_link_profile.fernet_key
         if user_info:
             customerid=decrypt_user_id(user_info,key)
-            waitlist_profile=Waitlist.objects.get(id=customerid)
+            print(id)
+            try:
+                waitlist_profile=Waitlist.objects.get(id=customerid)
+            except:
+                return Response("some error occured.Waitist has been removed")
             Removed.objects.create(user=waitlist_profile.user,added_time=waitlist_profile.added_time,self_cancelled=True)
 
             waitlist_profile.delete()
