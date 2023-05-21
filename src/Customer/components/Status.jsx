@@ -1,12 +1,20 @@
 import axios from 'axios'
+import Cookies from 'js-cookie';
 import React, { useState } from 'react'
-import Cookie from 'js-cookie';
+import { useNavigate } from 'react-router-dom'
 
 function Status({ id }) {
+    const navigate = useNavigate();
     const [msg, setMsg] = useState({});
     const queue_cookie = Cookie.get('queue_cookies');
     function removeFromQueue() {
-        axios.post(`http://127.0.0.1:8000/api/publiclink/removedata/${id}/`, { validation_token: queue_cookie }).then(res => setMsg(res.message)).catch((err) => console.log(err));
+        axios.delete(`http://127.0.0.1:8000/api/joinwaitlist/${id}/`, { validation_token: queue_cookie })
+            .then(res => {
+            console.log('I left')
+            Cookies.remove('queue_cookies')
+            navigate(`/publicjoin/${id}/`);
+            setMsg(res.message);
+        }).catch((err) => console.log(err));
     }
     return (
         <>

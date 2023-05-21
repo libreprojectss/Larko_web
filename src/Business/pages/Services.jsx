@@ -154,12 +154,15 @@ function Services() {
                     seterrors(resp.data.errors)
                 }
                 else {
+                    setediton(false)
                     console.log(resp);
                     setediton(false)
                     seterrors({})
-                    e.target.reset()
                     setImage('')
+<<<<<<< HEAD
 
+=======
+>>>>>>> 907d94613aa242f7204682aa022f48d81349b1af
                     setchange(!change)
 
                 }

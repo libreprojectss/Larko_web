@@ -316,7 +316,7 @@ function Resources() {
                                                             <div className={`w-20 h-20 rounded-full bg-purple-700 mb-2`}></div> :
                                                             <img src={'http://127.0.0.1:8000' + value.image} className='w-20 h-20 rounded-full mb-2' />
                                                     }
-                                                    <p className={`${value.is_free ? "bg-green-500" : "bg-red-500"} w-10 h-10 rounded-full pl-8 ml-1`}></p>
+                                                    <p className={`${value.is_free ? "bg-green-500" : "bg-red-500"} w-5 h-5 rounded-full `}></p>
                                                 </div>
 
                                                 <div className={`flex flex-col pr-10`}>
