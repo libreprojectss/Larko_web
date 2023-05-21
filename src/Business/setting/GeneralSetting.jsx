@@ -139,9 +139,9 @@ function ShowProfile() {
                                             leaveFrom="opacity-100 scale-100"
                                             leaveTo="opacity-0 scale-95"
                                         >
-                                            <Dialog.Panel className=" max-w-xl transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                                            <Dialog.Panel className=" max-w-xl transform overflow-hidden rounded-2xl bg-slate-100 p-6 text-left align-middle shadow-xl transition-all">
                                              
-                                                <div className='flex justify-center'>
+                                                <div className='flex justify-center '>
                                                     <Editbusinessform onChangeFormStatus={(status)=>setStatus(status) } />
                                                 </div>
                                             </Dialog.Panel>

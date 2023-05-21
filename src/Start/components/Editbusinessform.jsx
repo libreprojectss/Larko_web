@@ -113,11 +113,11 @@ console.log(errorMsg)
     }
 
     return (
-        <div className='w-screen '>
+        <div className='w-screen mr-20'>
             <div className='w-full mx-auto flex flex-col items-center'>
-                <h1 className='text-blaonChangeFormStatusck font-medium text-xl text-center'>Edit Business Details</h1>
+                <h1 className='text-blaonChangeFormStatusck font-bold text-2xl text-center ml-20'>Edit Business Details</h1>
                 <form className='flex flex-col justify-around w-9/12' onSubmit={handle_submit}>
-                    <div className='flex space-x-3'>
+                    <div className='flex space-x-2'>
                         <div className="flex flex-col">
                             <label htmlFor="business_title" className="font-bold mt-3">Business Title</label>
                             <input type="text" name="business_title" id="business_title" placeholder='Business Title' value={`${fetch.business_title}`} onChange={handle_change} className='pl-2 py-3 focus:outline-none bg-slate-200 rounded-md my-2' />
@@ -128,7 +128,7 @@ console.log(errorMsg)
                             {focus ? error ? <p className='text-red-500 text-sm'>{available}</p> : <p className='text-green-500 text-sm'>{available}</p> : ''}
                         </div>
                     </div>
-                    <div className='flex space-x-8'>
+                    <div className='flex space-x-2'>
                         <div className="flex flex-col">
                             <label htmlFor="category" className="font-bold mt-3">Business Category</label>
                             <select name="category" id="category" placeholder='Select Your Business Category' className='pl-2 py-3 focus:outline-none bg-slate-200 rounded-md my-2'>
@@ -147,7 +147,7 @@ console.log(errorMsg)
                     </div>
                     <div className="flex flex-col ">
                         <label htmlFor="role" className="font-bold mt-3">Current Role</label>
-                        <select name="role" id="role" placeholder='Select Your Current Role' className='pl-2 py-3 focus:outline-none bg-slate-200 rounded-md my-2'>
+                        <select name="role" id="role" placeholder='Select Your Current Role' className='pl-2 py-3 focus:outline-none bg-slate-200 rounded-md my-2 w-[28vw]'>
                             {
                                 moveString(role, `${fetch.role}`) &&
                                 role.map((data) => {
@@ -179,9 +179,9 @@ console.log(errorMsg)
                         </div>
                     </div>
 
-                    <div className="flex justify-between ">
-                        <button type="submit" className='py-3 bg-[#4100FA] rounded-3xl text-white font-bold  mt-5 w-[12em]'>Save</button>
-                        <button className='py-3 bg-[#e23d20] rounded-3xl text-white font-bold  mt-5  w-[12em]' onClick={() => onChangeFormStatus(false)}>Exit</button>
+                    <div className="w-[28vw]">
+                        <button type="submit" className='py-3 bg-[#4100FA] rounded-xl text-white font-bold  mt-5 w-[13em] mr-2'>Save</button>
+                        <button className='py-3 bg-[#e23d20] rounded-xl text-white font-bold  mt-5  w-[13em]' onClick={() => onChangeFormStatus(false)}>Exit</button>
                     </div>
                 </form>
             </div>

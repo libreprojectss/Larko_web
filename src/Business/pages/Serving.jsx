@@ -165,6 +165,9 @@ function Serving() {
                                                 <td className=" font-semibold text-gray-900 ">
                                                     {value.burst_time}
                                                 </td>
+                                                <td className=" font-semibold text-gray-900 ">
+                                                    
+                                                </td>
                                                 <td className="py-4 font-semibold text-gray-900 ">
 
                                                     <BsFillCheckCircleFill size='20' color='green' style={{ marginRight: '12px', cursor: 'pointer' }} onClick={() => { served(value.id) }} />
