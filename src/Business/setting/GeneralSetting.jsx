@@ -131,7 +131,7 @@ function ShowProfile() {
                         <h1 className='text-lg font-semibold text-gray-900'>Public link</h1>
                         <div className='flex w-full'>
                             <input className='w-[75%] text-md font-medium text-gray-600 outline-none rounded-tl-xl rounded-bl-xl px-2 py-3 focus:outline-none' value={`${'http://localhost:5173'}${businessProfile.data.public_link_to.public_join_link}`} />
-                            <button type="button" className=" w-[25%] p-3 text-sm font-medium text-white bg-[#4100FA] rounded-r-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"><a href={`http://localhost:5173${businessProfile.data.public_link_to.public_join_link}`} target="_blank" rel="noopener noreferrer" >Open</a></button>
+                            <button type="button" className=" w-[25%] p-3 text-sm font-medium text-white bg-[#4100FA] rounded-r-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"><Link to={`http://localhost:5173${businessProfile.data.public_link_to.public_join_link}`} target="_blank" >Open</Link></button>
                         </div>
                     </div>
                     <div className='my-3'>
