@@ -131,7 +131,7 @@ class Public_link_Views(APIView):
                     thread1=threading.Thread(target=self.smsthread1,args=(serialized,user))
                     thread1.start()
                     user_identifier = encrypt_user_id(serialized.id,key)
-                    ordered=Waitlist.objects.filter(user=user).order_by('added_time')
+                    ordered=Waitlist.objects.filter(user=user,served=False,serving=False).order_by('added_time')
                     rank=list(ordered).index(serialized)+1
                     response = Response({'status': 'You have been added to the queue.','rank':rank,'validation_token':user_identifier})
                     response.set_cookie(cookie_name, user_identifier, max_age=86400) # Cookie expires in 24 hours
