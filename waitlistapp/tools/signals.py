@@ -17,16 +17,16 @@ def create_notes(sender, instance, created, **kwargs):
         Notes.objects.create(customer=instance,notes=note
         )
 
-@receiver([post_save, post_delete], sender=Waitlist)
-def on_waitlist_change(sender,instance, **kwargs):
-    profile=Business_Profile.objects.get(user=instance.user).business_name
-    channel_layer = get_channel_layer()
-    print("changed")
-    async_to_sync(channel_layer.group_send)(
-        profile, 
-        {
-            "type": "waitlist_changed"
-        }
-    )
+# @receiver([post_save, post_delete], sender=Waitlist)
+# def on_waitlist_change(sender,instance, **kwargs):
+#     profile=Business_Profile.objects.get(user=instance.user).business_name
+#     channel_layer = get_channel_layer()
+#     print("changed")
+#     async_to_sync(channel_layer.group_send)(
+#         profile, 
+#         {
+#             "type": "waitlist_changed"
+#         }
+#     )
         
 

@@ -105,15 +105,11 @@ class ResourcesSerializer(serializers.ModelSerializer):
     class Meta:
         model=Resources
         fields="__all__"
-    # def create(self, validated_data):
-    #     services_data = self.context.get('services')
-    #     resource = Resources.objects.create(**validated_data)
-    #     services = []
-    #     for service_data in services_data:
-    #         print(service_daata)
-    #         services.append(service)
-    #     resource.services.set(services)
-    #     return resource
+    def create(self, validated_data):
+        validated_data['is_available'] = True
+        validated_data['is_free'] = True
+        resource = Resources.objects.create(**validated_data)
+        return resource
     
 
         

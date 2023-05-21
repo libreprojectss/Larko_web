@@ -81,7 +81,7 @@ class WaitListView(APIView):
         def smsthread1(self,waitlistobj,user):
                     business_name=Business_Profile.objects.get(user=user).business_name
 
-                    ordered=Waitlist.objects.filter(user=user).order_by('added_time')
+                    ordered=Waitlist.objects.filter(user=user,serving=False,served=False).order_by('added_time')
                     rank=list(ordered).index(waitlistobj)+1
                     if waitlistobj.phone_number:
 
@@ -196,6 +196,7 @@ class WaitListView(APIView):
                 msg2=f"<h3 style='color:black'>Dear customer,</h3><p style='color:black'>We would like to inform that you have been removed from the waitlist of business <strong>{business_name}</strong></p><p style='color:black'>We appreciate your patience as we work to ensure that each customer receives the best possible service.</p><p style='color:black'>If you have any questions or concerns, please don't hesitate to contact us at <a href='mailto:larkoinc@gmail.com'>larkoinc@gmail.com</a>.</p><p style='color:black'>Best Regards,<br>Team Larko</p>"
                 subject=f"You have been removed from the queue"
                 thread1=threading.Thread(target=sendsms_thread,args=(waitlistobj,msg1,msg2,subject))
+                thread1.start()
                 Removed.objects.create(user=request.user,added_time=waitlistobj.added_time)
                 waitlistobj.delete()
 
@@ -616,7 +617,7 @@ class NotifyByEmailSmsViews(APIView):
             return Response({"error":"The value of pk is not valid.Cannot access the api.","status":status.HTTP_403_FORBIDDEN})
         if waitlistobj.user!=request.user:
             return Response({"error":"The value of pk is not valid.Cannot access the api.","status":status.HTTP_403_FORBIDDEN})
-        ordered=Waitlist.objects.filter(user=request.user).order_by('added_time')
+        ordered=Waitlist.objects.filter(user=request.user,serving=False,served=False).order_by('added_time')
         rank=list(ordered).index(waitlistobj)+1
         business_name=Business_Profile.objects.get(user=request.user).business_name
 
@@ -690,23 +691,5 @@ class DownloadRecordsViews(APIView):
     def get(self, request):
         waitlist = Waitlist.objects.filter(user=request.user)
         serialized_data = WaitlistSerializer(waitlist, many=True)
-        # df = prepare_excel_data(serialized_data.data)
-
-        # excel_buffer = BytesIO()
-        # with pd.ExcelWriter(excel_buffer, engine='xlsxwriter') as writer:
-        #     df.to_excel(writer, index=False, sheet_name='Queue Entries')  # Customize sheet name
-
-        # # Set up the response
-        # response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-        # response['Content-Disposition'] = 'attachment; filename="queue_entries.xlsx"'
-        # excel_buffer.seek(0)
-
-        # # Attach the file to the response
-        # response['Content-Transfer-Encoding'] = 'binary'
-        # response['Access-Control-Expose-Headers'] = 'Content-Disposition'
-        # # Adjust this to restrict the origin if needed
-        # response.write(excel_buffer.getvalue())
-        # print(response)
-        print(serialized_data.data)
         return Response(serialized_data.data)
 
