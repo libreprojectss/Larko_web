@@ -70,7 +70,6 @@ class HistorySerializer(serializers.ModelSerializer):
         extra_fields=['rank','note']
 
 class ServingSerializer(serializers.ModelSerializer):
-    wait_time = serializers.CharField(read_only=True)
     burst_time = serializers.CharField(read_only=True)
     resource = serializers.SerializerMethodField()
     note=NoteSerializer(many=True,read_only=True) #note is related name so it is used notes would have given an error
