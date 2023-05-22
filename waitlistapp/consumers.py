@@ -135,9 +135,8 @@ class WaitlistConsumer(WebsocketConsumer):
                         print(e)
                             
                     
-                    if queryset:
-                        serialized_data = WaitlistSerializer(queryset,many=True)
-                        self.send(json.dumps(serialized_data.data))
+                    serialized_data = WaitlistSerializer(queryset,many=True)
+                    self.send(json.dumps(serialized_data.data))    
                     time.sleep(2)
                    
 class ServinglistConsumer(WebsocketConsumer):
