@@ -320,7 +320,7 @@ function Resources() {
                                                 </div>
 
                                                 <div className={`flex flex-col pr-10`}>
-                                                    <div className=' pl-3 flex justify-start items-center space-x-2 '>
+                                                    <div className=' pl-3 flex flex-col justify-start items-center space-x-2 '>
                                                         {/* <div className='bg-black w-4 h-4 rounded-full'></div> */}
                                                         <h1 className='font-semibold text-2xl text-gray-700 mb-16 '>{value.name}</h1>
 
@@ -328,10 +328,9 @@ function Resources() {
                                                             adata.length > 0 ? adata.map((malu, index) => {
                                                                 if (value.name === malu.name) {
                                                                     return (
-                                                                        <div>
-                                                                            <p>{value.currently_serving.service_name}</p>
-                                                                            <p>{value.currently_serving.name}</p>
-                                                                            {/* <p>{`${value.currently_serving.serving_for.days || " "}days ${value.currently_serving.serving_for.minutes || " "}min`}</p> */}
+                                                                        <div className='text-center'>
+                                                                            <p className='text-sm font-bold text-green-500'>Service Name: {value.currently_serving.service_name}</p>
+                                                                            <p className='text-sm font-bold text-green-500'>Client Name: {value.currently_serving.name}</p>
                                                                         </div>
                                                                     )
                                                                 }
