@@ -159,10 +159,6 @@ function Services() {
                     setediton(false)
                     seterrors({})
                     setImage('')
-<<<<<<< HEAD
-
-=======
->>>>>>> 907d94613aa242f7204682aa022f48d81349b1af
                     setchange(!change)
 
                 }

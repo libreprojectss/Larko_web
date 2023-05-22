@@ -25,12 +25,12 @@ function Welcome() {
             {
             
           
-     
+                queue_cookie ? navigate(`http://127.0.0.1:8000/api/joinwaitlist/${id}/dash`):
             <div className='max-w-xs m-auto'>
                 <div className='flex flex-col justify-center items-center my-24'>
                     <div className='text-center mb-8'>
                         <h1 className='text-2xl font-bold text-gray-800 mb-2'>Welcome to {joinList?.business_name}</h1>
-                            <p className='text-xl font-semibold text-gray-700'>Join our<span className='font-bold text-blue-800'> Queue</span> </p> 
+                                <p className='text-xl font-semibold text-gray-700'>{joinList?.wait_count}<span className='font-bold text-blue-800'> Waiting</span> </p> 
                             {/* {
 
                             joinList?.waitlist_count > 0 ? <p className='text-xl font-semibold text-gray-700'>{joinList?.waitlist_count} <span className='font-bold text-blue-800'>waiting</span> </p> : <p className='font-bold text-xl text-gray-700'>You are first in queue</p>
