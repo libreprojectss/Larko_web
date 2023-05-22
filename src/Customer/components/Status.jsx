@@ -1,7 +1,6 @@
 import axios from 'axios'
 import Cookie from 'js-cookie';
 import React, { useState } from 'react'
-import Cookie from 'js-cookie'
 
 function Status({id}) {
     const [msg, setMsg] = useState({});

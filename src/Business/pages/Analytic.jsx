@@ -113,7 +113,10 @@ function Analytic() {
 
     const pattern1 = /^\d{2}:\d{2} - \d{2}:\d{2}$/;
     const pattern2 = /^\d{4}-\d{2}-\d{2}$/;
-    const input1 = `${test3[0].interval}`;
+    let input1;
+    if (test3[0] && test3[0].interval) {
+        input1 = `${test3[0].interval}`;
+    }
     const isMatch1 = pattern1.test(input1); //hour
     const isMatch2 = pattern2.test(input1); //day
 

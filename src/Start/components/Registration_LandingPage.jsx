@@ -75,7 +75,7 @@ export default function Registration_LandingPage() {
         </main>
       </div>
       <footer className="text-center">
-        <p className="font-medium">Powered by Larko</p>
+        <p className="font-bole text-xl">Powered by Larko</p>
       </footer>
     </>
   )

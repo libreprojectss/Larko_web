@@ -363,7 +363,7 @@ function Component() {
           {
             modal && (
               <Transition appear show={true} as={Fragment}>
-                <Dialog as="div" className="relative z-10" onClose={()=>setmodal(false)}>
+                <Dialog as="div" className="relative z-10" onClose={() => setmodal(false)}>
                   <Transition.Child
                     as={Fragment}
                     enter="ease-out duration-300"
@@ -390,42 +390,42 @@ function Component() {
                         <Dialog.Panel className=" max-w-2xl transform overflow-hidden rounded-2xl bg-slate-100 p-6 text-left align-middle shadow-xl transition-all">
 
                           <div className="mt-1 flex justify-center">
-                           
-                              <form onSubmit={handlechange} className=''>
+
+                            <form onSubmit={handlechange} className=''>
                               {
-                              fetch.map((value, index) => {
-                                return (
-                                  <div key={index} className='flex '>
+                                fetch.map((value, index) => {
+                                  return (
+                                    <div key={index} className='flex'>
 
-                                    <div className='w-full pt-3 '>
-                                      <input type="checkbox" name="holiday" id="holiday" className='scale-150 mr-2' defaultChecked={value.holiday} />
-                                      <input type="text" name="day" id="day" value={value.day} readonly className='focus:outline-none font-bold fill-transparent bg-slate-100' />
-                                    </div>
-                                    <div className=''>
-                                      <select name="start_time" id="start_time" className='ml-2 pl-2 py-1 focus:outline-none bg-slate-200 rounded-md my-2'>
-                                        {
-                                          moveString(from, `${value.start_time}`) &&
-                                          from.map((data, index) => {
-                                            return (<option key={index} value={`${data}`}>{data}</option>)
-                                          })
-                                        }
-                                      </select>
-                                      <select name="end_time" id="end_time" className='ml-2 pl-2 py-1 focus:outline-none bg-slate-200 rounded-md my-2'>
-                                        {
-                                          moveString(to, `${value.end_time}`) &&
-                                          to.map((data, index) => {
-                                            return (<option key={index} value={`${data}`}>{data}</option>)
-                                          })
-                                        }
-                                      </select>
-                                    </div>
+                                      <div className='w-full pt-3 '>
+                                        <input type="checkbox" name="holiday" id="holiday" className='scale-150 mr-2' defaultChecked={value.holiday} />
+                                        <input type="text" name="day" id="day" value={value.day} readonly className='focus:outline-none font-bold fill-transparent bg-slate-100' />
+                                      </div>
+                                      <div className='flex justify-between items-center'>
+                                        <select name="start_time" id="start_time" className='ml-2 pl-2 py-1 focus:outline-none bg-slate-200 rounded-md my-2'>
+                                          {
+                                            moveString(from, `${value.start_time}`) &&
+                                            from.map((data, index) => {
+                                              return (<option key={index} value={`${data}`}>{data}</option>)
+                                            })
+                                          }
+                                        </select>
+                                        <select name="end_time" id="end_time" className='ml-2 pl-2 py-1 focus:outline-none bg-slate-200 rounded-md my-2'>
+                                          {
+                                            moveString(to, `${value.end_time}`) &&
+                                            to.map((data, index) => {
+                                              return (<option key={index} value={`${data}`}>{data}</option>)
+                                            })
+                                          }
+                                        </select>
+                                      </div>
 
-                                  </div>
-                                )
-                              })
-                            }
-                            <button type="submit" className='py-3 bg-[#4100FA] rounded-xl text-white font-bold  mt-5 w-full'>Confirm</button>
-                          </form>
+                                    </div>
+                                  )
+                                })
+                              }
+                              <button type="submit" className='py-3 bg-[#4100FA] rounded-xl text-white font-bold  mt-5 w-full'>Confirm</button>
+                            </form>
                           </div>
                         </Dialog.Panel>
                       </Transition.Child>
@@ -434,7 +434,7 @@ function Component() {
                 </Dialog>
               </Transition>
             )
-            
+
           }
 
         </div>
