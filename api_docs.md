@@ -11,14 +11,17 @@ The base url for the api in this app is `http://Your domain here/api/customer`
 
 - URL: `/getrequiredfields/`
 - Method: GET
-- Description: Retrieves the required fields information.
+- Description: Retrieves the fields information  which includes required or selected fields.
+               Required fields are the fields which are required to be input and selected are those which are selected to be input including required and optional fields.
 - Returns: JSON response containing the required fields data.
 
 ### 2. Get All Fields
 
 - URL: `/allfields/`
-- Method: GET
-- Description: Retrieves all fields information.
+- Method: GET,POST
+- Description: 
+      - Get: Retrieves all fields information.Post method to it saves the fields values
+      - POST: Modifies the fields values
 - Returns: JSON response containing the all fields data.
 
 ### 3. Waitlist
@@ -32,11 +35,12 @@ The base url for the api in this app is `http://Your domain here/api/customer`
   - GET: JSON response containing the waitlist data.
   - POST: JSON response confirming the successful creation of the waitlist entry.
 
-### 4. Waitlist Detail
+### 4. Waitlist Modify
 
 - URL: `/waitlist/<str:pk>/`
-- Method: GET
-- Description: Retrieves detailed information about a specific waitlist entry.
+- Method: PUT,DELETE,GET
+- Description: Retrieves detailed information about a specific waitlist entry.Also edit and 
+               modify waitlist
 - Returns: JSON response containing the waitlist entry data.
 
 ### 5. Notes
@@ -330,7 +334,7 @@ The base url for the api in this app is `http://Your domain here/api/customer`
 
 - URL: `/publiclink/checkqueuestatus/<uuid:pk>/`
 - Method: GET
-- Description: Checks the queue status for the public link with
+- Description: Checks the queue status for the public link alon with details about other in the queue
 
  a specific UUID.
 - Returns: JSON response containing the queue status data.
