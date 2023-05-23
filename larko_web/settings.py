@@ -12,6 +12,10 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 import os
 from pathlib import Path
 from datetime import timedelta
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -20,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-skhjd#c%$yllia)5e#uk_#wpj6r7o9v80s)&lkbj$4*k7pm0m5'
+SECRET_KEY =os.getenv(SECRET_KEY)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -118,17 +122,7 @@ DATABASES = {
         
     }  
 }
-# DATABASES = {  
-#     'default': {  
-#         'ENGINE': 'django.db.backends.postgresql',  
-#         'NAME': 'vnenvygl',  
-#         'USER': 'vnenvygl',  
-#         'PASSWORD': 'jc_E0DUW5y7SCXJ9GjMnemYJg23Mitfx',  
-#         'HOST': 'satao.db.elephantsql.com',  
-#         'PORT': '5432',  
-        
-#     }  
-# }
+
 
 
 # Password validation
@@ -223,9 +217,9 @@ CORS_ALLOW_ALL_ORIGINS=True
 MEDIA_ROOT=BASE_DIR /"media"
 MEDIA_URL="/media/"
 #For sms
-TWILIO_ACCOUNT_SID = 'ACc408f5c3cbbf654840087568215c40f9'
-TWILIO_AUTH_TOKEN = '4507c1f88aa8c65c0579ad5ab5189c0d'
-TWILO_PHONE_NUMBER='+12706123299'
+TWILIO_ACCOUNT_SID = os.getenv(TWILIO_ACCOUNT_SID)
+TWILIO_AUTH_TOKEN = os.getenv(TWILIO_AUTH_TOKEN)
+TWILO_PHONE_NUMBER=os.getenv(TWILO_PHONE_NUMBER)
 
 #For email
 # Email settings
@@ -233,6 +227,6 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'larkoinc@gmail.com'
-EMAIL_HOST_PASSWORD = 'nrfuitytppbxmyny' 
+EMAIL_HOST_USER = os.getenv(EMAIL_HOST_USER)
+EMAIL_HOST_PASSWORD = os.getenv(EMAIL_HOST_PASSWORD)
 
