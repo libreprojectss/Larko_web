@@ -15,7 +15,7 @@ import random,base64,json
 import threading
 
 
-
+#For getting tokens for specific user
 def get_tokens_for_user(user):
     refresh = RefreshToken.for_user(user)
 
@@ -23,6 +23,8 @@ def get_tokens_for_user(user):
         'refresh': str(refresh),
         'access': str(refresh.access_token),
     }
+
+#For signup 
 class SignUpViews(APIView):
     renderer_classes=[UserRenderer]
     def post(self,request):
@@ -35,7 +37,7 @@ class SignUpViews(APIView):
         
         return Response({"msg":"data is invalid"},status=status.HTTP_400_BAD_REQUEST)
 
-
+#For login with token based authentication
 class LoginViews(APIView):
     renderer_classes=[UserRenderer]
     def post(self,request):
@@ -48,6 +50,7 @@ class LoginViews(APIView):
             else:
                 return Response({"errors":{"password":["Password is incorrect"]}},status=status.HTTP_400_BAD_REQUEST)
 
+#For getting and modifying data of business profile
 class Business_Profile_Views(APIView):
     renderer_classes=[UserRenderer]
     permission_classes=[IsAuthenticated]
@@ -73,7 +76,7 @@ class Business_Profile_Views(APIView):
         return Response({"error":"failed to serialize the given data"},status=status.HTTP_403_FAILED)
 
 
-
+#For checking business name for realtime check if it is valid or not
 class CheckBusinessName(APIView):
     renderer_classes=[UserRenderer]
     def get(self,request):
@@ -88,7 +91,7 @@ class CheckBusinessName(APIView):
         
 
 
-
+#Changing password views
 class ChangePasswordViews(APIView):
     renderer_classes=[UserRenderer]
         
@@ -97,6 +100,8 @@ class ChangePasswordViews(APIView):
         if serializeddata.is_valid(raise_exception=True):
                 return Response({"msg":"Password changed successfully"},status=status.HTTP_200_OK)
 
+
+#Views for sending password reset email to the specified email
 class SendPasswordResetEmailViews(APIView):
     renderer_classes=[UserRenderer]
     def post(self,request):
@@ -105,6 +110,7 @@ class SendPasswordResetEmailViews(APIView):
         
         return Response({"msg":"Please check your email for password reset."},status=status.HTTP_200_OK)
 
+#Views for closing and opening business and getting the status of current business
 class OpenCloseBusiness(APIView):
     renderer_classes=[UserRenderer]
     permission_classes=[IsAuthenticated]
@@ -125,7 +131,8 @@ class OpenCloseBusiness(APIView):
 
 
         return Response({"status":profile.open_now})
-    
+
+#Open or close public link
 class OpenClosePublicLink(APIView):
     renderer_classes=[UserRenderer]
     permission_classes=[IsAuthenticated]
@@ -148,6 +155,7 @@ class OpenClosePublicLink(APIView):
 
         return Response({"status":public_profile.public_access})
 
+#Views for changing schedules values when the business will operate and all
 class OperationScheduleView(APIView):
     renderer_classes=[UserRenderer]
     permission_classes = [IsAuthenticated]
@@ -215,6 +223,7 @@ class OpenCloseValidation(APIView):
 
         return Response({"status":profile.enable_validation})
 
+#Views for changing values of attributes that cause automation in the system including maximum_serve_per-day value and autoremove time 
 class AutoAttributesViews(APIView):
     renderer_classes=[UserRenderer]
     permission_classes=[IsAuthenticated]

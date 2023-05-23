@@ -14,6 +14,8 @@ from account.models import Business_Profile
 from .serializers import *
 import threading
 # Create your views here.
+
+#
 class Public_link_Views(APIView):
     renderer_classes=[UserRenderer]
 
@@ -141,6 +143,7 @@ class Public_link_Views(APIView):
 
 class RemoveFromQueue(APIView):
     renderer_classes=[UserRenderer]
+    #For self remove from the waitlist.The post request has the value of validation token so as to check the value
     def post(self,request,pk):
         cookie_name = 'queue_cookie'
         try:
@@ -167,7 +170,7 @@ class RemoveFromQueue(APIView):
             return Response({"error":"Some error occured.Token is not available."},status=status.HTTP_400_BAD_REQUEST)
 
 
-
+#Required fields for the public link
 class RequiredFieldsViews(APIView):
     renderer_classes=[UserRenderer]
     def get(self,request,pk):
@@ -185,6 +188,7 @@ class RequiredFieldsViews(APIView):
 
 class QueueStatus(APIView):
     renderer_classes=[UserRenderer]
+    #Check current queue status
     def post(self,request,pk):
         cookie_name = 'validation_token'
 

@@ -24,7 +24,7 @@ from django.db.models.functions import Rank
 import threading
 
 
-def sendsms_thread(waitlistobj,msg1,msg2,subject="Larko reminder"):
+def sendsms_thread(waitlistobj,msg1,msg2,subject="Larko reminder"): #For sending sms msg1=msg for sms and msg2-message for mails
 
                     if waitlistobj.phone_number:
                         try:
@@ -34,38 +34,44 @@ def sendsms_thread(waitlistobj,msg1,msg2,subject="Larko reminder"):
                     if waitlistobj.email:
                         send_email(message=msg2,to_email=waitlistobj.email,subject=subject)
 
-def allocate_resource_thread(waitlistobj,user):
-    resource=Resources.objects.filter(user=user,is_available=True,is_free=True)
+def allocate_resource_thread(waitlistobj,user): #Auto allocation of resources to a particular waitlist
+    resource=Resources.objects.filter(user=user,is_available=True,is_free=True) #get all resources that are free at the moment
     if resource.exists():
         if waitlistobj.service:
+            #get all resources which service array have the waitlistobj.service
             resources = resource.filter(service__in=[waitlistobj.service])
             waitlistobj.resource = resources[0]
             waitlistobj.save()
+            #allocate the resource
             Resources.objects.filter(id=resources[0].id).update(is_free=False,currently_serving=waitlistobj)
             print("resource alloted")
 
         else:
+            #if there is no service allocated to the waitlist because the system have not specified any particular service
             waitlistobj.resource=resource[0]
+            #here the resource which is free and first on the list has been selected automatically
             waitlistobj.save()
             Resources.objects.filter(id=resource[0].id).update(is_free=False,currently_serving=waitlistobj)
             print("resource alloted")
 
             
-        
+#Get all services for the user       
 class Getservices(APIView):
+    
     renderer_classes=[WaitlistRenderer]
     permission_classes=[IsAuthenticated]
     def get(self,request):
         servicesobj=Services.objects.filter(user=request.user)
         serialized_data=ServicesNameSerializer(servicesobj,many=True)
         return Response(serialized_data.data)
-class RequiredFieldsViews(APIView):
+
+#Get required fields which are to be filled in the waitlist manual section
+class RequiredFieldsViews(APIView): 
     renderer_classes=[WaitlistRenderer]
     permission_classes=[IsAuthenticated]
     def get(self,request):
         user_fields=FieldList.objects.get(user=request.user)
         fields=user_fields.fieldlist
-        print(user_fields.fieldlist)
         field_list=[i for i in user_fields.fields if i['field_name'] in fields]
         services=Services.objects.filter(user=request.user)
         service_list=[{"name":i.service_name,"duration":i.duration,"id":i.id} for i in services]
@@ -75,10 +81,10 @@ class RequiredFieldsViews(APIView):
 
 
 
-class WaitListView(APIView):
+class WaitListView(APIView): #View that controls crud operations in the waitlist
         renderer_classes=[WaitlistRenderer]
         permission_classes=[IsAuthenticated]
-        def smsthread1(self,waitlistobj,user):
+        def smsthread1(self,waitlistobj,user): #Seperate thread for waitlist to send sms and mails
                     business_name=Business_Profile.objects.get(user=user).business_name
 
                     ordered=Waitlist.objects.filter(user=user,serving=False,served=False).order_by('added_time')
@@ -97,6 +103,7 @@ class WaitListView(APIView):
 
 
         def get(self, request, pk=None):
+            #get all the waitlist who are currently free and allocate them rank accordingly
                         queryset = Waitlist.objects.filter(user=request.user, serving=False, served=False).annotate(
                             rank=Window(
                                 expression=Rank(),
@@ -113,30 +120,41 @@ class WaitListView(APIView):
 
 
         def post(self,request,pk=None):
-            print(request.data)
+            #seperate notes from the received data to save it seperately as it has its own model
             if request.data.get("notes",None):
                 notes=request.data["notes"]
             else:
                 notes=None
             user_fields=FieldList.objects.filter(user=request.user).values("fieldlist","fields")[0]
+            
+            #Request.data is not mutable so had to make  a copy to make the changes
             updated_data=request.data.copy()
+            
+            #Should have given user in the serializers.save but works fine like this too so kept it
             updated_data.update({"user":request.user.id})
             required_fields=[i["field_name"] for i in  user_fields["fields"] if i["required"]==True]
             error_dict=dict()
+            
+            #For manual validation as the fields are dynamic and can change their values for the sake of customization.The model has it all not required 
+            #but for maintaining the settings that has been set had to do manual authentication
             for i in user_fields["fieldlist"]:
                 if not request.data.get(i,False):
                     if i in required_fields:
                         error_dict.update({i:"This field cannot be blank "})
+
+            #if any errors get encountered than it is caught here and sent as a bad request
             if error_dict:
                 output={"errors":error_dict}
                 return Response(output,status=status.HTTP_400_BAD_REQUEST)
+            
+            #passed notes as context as it is extracted and saved seperately in the serializers
             serializeddata=WaitlistSerializer(data=updated_data,context={"notes":notes})
             if serializeddata.is_valid(raise_exception=True):
                     waitlistobj=serializeddata.save(user=request.user)
                     ValidationToken.objects.create(waitlist=waitlistobj,token=generate_token(waitlistobj.id))
                     thread1=threading.Thread(target=self.smsthread1,args=(waitlistobj,request.user))
                     thread1.start()
-                    
+            #send the waitlist with rank as in the get method.This is sent as response so that the frontend systems can built the components without waiting for the response of get request   
             serializeddata=WaitlistSerializer(Waitlist.objects.filter(user=request.user,serving=False,served=False).annotate(
              rank=Window(
             expression=Rank(),
@@ -145,17 +163,17 @@ class WaitListView(APIView):
             ),many=True)
             return Response(serializeddata.data)
         
-        def put(self,request,pk=None):
+        def put(self,request,pk=None): #For editing a particular waitlist entry
             try:                        
 
                 customer=Waitlist.objects.get(id=int(pk))
             except:
-
                 return Response({"AccessError":"The given url is not valid"},status=status.HTTP_400_BAD_REQUEST)        
             if request.user==customer.user:
                 user_fields=FieldList.objects.filter(user=request.user).values("fieldlist","fields")[0]
                 required_fields=[i["field_name"] for i in  user_fields["fields"] if i["required"]==True]
                 error_dict=dict()
+                #Manual authentication according to user customized settings
                 for i in user_fields["fieldlist"]:
                     if not request.data.get(i,False):
                         if i in required_fields:
@@ -183,7 +201,7 @@ class WaitListView(APIView):
 
             return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
 
-            
+        #Deleting the waitlist entry
         def delete(self,request,pk=None):
             try:
 
@@ -233,8 +251,7 @@ class WaitListView(APIView):
 
 
                 
-
-
+#Views for serving list
 class Servinglist(APIView):
     renderer_classes=[WaitlistRenderer]           
     permission_classes=[IsAuthenticated]
@@ -262,6 +279,7 @@ class Servinglist(APIView):
         serveobj.serving=True
         serveobj.serving_started_time=timezone.now()
         serveobj.save()
+        #allocate the resouces automatically when the entry is sent for serving
         if serveobj.resource:
             serveobj.resource.update(is_free=False)
         else:
@@ -275,10 +293,13 @@ class Servinglist(APIView):
         smsg2=f"Reminder: You are second in line at {business_name}. Please be ready to be served soon. Thank you!"
         ssubject=f"You are second in line at {business_name}"
         ordered=Waitlist.objects.filter(user=request.user,served=False,serving=False).order_by('added_time')
+        #Auto message to the 2nd and 3rd on the waitllist that the 1st one is sent for service and its their turn.For auto reminder
+        #if length !=0 then the waitlist is not empty so the first rank will be notified 
         if len(ordered)!=0:
             waitlistobj=ordered[0]
             smsthread=threading.Thread(target=sendsms_thread,args=(waitlistobj,fmsg2,fmsg1,fsubject))
             smsthread.start()
+        #For notifying the second one
         if len(ordered)>1:
             waitlistobj=ordered[1]
             smsthread=threading.Thread(target=sendsms_thread,args=(waitlistobj,smsg2,smsg1,ssubject))
@@ -289,9 +310,11 @@ class Servinglist(APIView):
 
         return Response({"success":"successfully sent for serving"},status=status.HTTP_200_OK)
 
+#Views for served list
 class Servedlist(APIView):
     renderer_classes=[WaitlistRenderer]
     permission_classes=[IsAuthenticated]
+    #Get all the served users
     def get(self,request,pk=None):
         user_objects=Waitlist.objects.filter(user=request.user,serving=False,served=True).annotate(
              rank=Window(
@@ -328,6 +351,7 @@ class Servedlist(APIView):
         smsthread.start()
         return Response({"success":"successfully served"},status=status.HTTP_200_OK)
 
+#Field for getting and modifying the manual fields and their customizations
 class AllFieldsView(APIView):
     renderer_classes=[WaitlistRenderer]
     permission_classes=[IsAuthenticated]
@@ -426,7 +450,7 @@ class NotesView(APIView):
                 return  Response("notes updated")
         return Response({"AccessError":"The given url is not valid because the given id don't exists"},status=status.HTTP_502_BAD_GATEWAY)
 
-class ServicesViews(APIView):
+class ServicesViews(APIView): #add and modify services
     renderer_classes=[WaitlistRenderer]
     permission_classes=[IsAuthenticated]
     def get(self,request,pk=None):
@@ -470,6 +494,7 @@ class ServicesViews(APIView):
         serializer=ServiceSerializer(objectlist,many=True)
         return Response(serializer.data)
 
+#CRUD for resources
 class ResourcesViews(APIView):
     renderer_classes=[WaitlistRenderer]
     permission_classes=[IsAuthenticated]
@@ -479,7 +504,6 @@ class ResourcesViews(APIView):
         serializer=ResourcesSerializer(objectlist,many=True)
         return Response(serializer.data)
     def post(self,request,pk=None):
-        
         
         serializer=ResourcesSerializer(data=request.data)
         servicelist = request.data.get("services", [])
@@ -516,7 +540,7 @@ class ResourcesViews(APIView):
         serializer=ResourcesSerializer(objectlist,many=True)
         return Response(serializer.data)
 
-
+#Views for analytics
 class AnalyticsViews(APIView):
     renderer_classes=[WaitlistRenderer]
     permission_classes=[IsAuthenticated]
@@ -542,35 +566,43 @@ class AnalyticsViews(APIView):
     #     return(time_difference_in_hours)
     
     def calculate_values(self,user,start_time,end_time):
-       
+       #Total served between the start and end time
         total_served = Waitlist.objects.filter(user=user,served_time__range=(start_time, end_time)).count()
+        #Total entries between the start and end time which includes those in waitlist,in serving state and those served
+
         total_entries = Waitlist.objects.filter(user=user,added_time__range=(start_time, end_time)).count() #total entities
+        #calculate serve rate
         if total_entries!=0:
             serve_rate = (total_served / total_entries) * 100
         else:
             serve_rate=0
         average_working_hours=(end_time-start_time).total_seconds() / 3600 #calculated average working hours
+        #Total cancellations made including autoremoved and self exits(exit from queue itself from the public link status)
         cancelled=Removed.objects.filter(user=user,added_time__range=(start_time, end_time)).count()
         total_waitlist_entries=total_entries+cancelled
+
+        #Calculate arrival rate using little law
         arrival_rate=total_entries/average_working_hours
-        waitlists= Waitlist.objects.exclude(serving_started_time=None).filter(user=user,serving_started_time__range=(start_time, end_time))
-        total_wait_time = sum([waitlist.serving_started_time - waitlist.added_time for waitlist in waitlists], timedelta())
-        average_wait_time = total_wait_time / len(waitlists) if len(waitlists) > 0 else None
+        
+        servinglist= Waitlist.objects.exclude(serving_started_time=None).filter(user=user,serving_started_time__range=(start_time, end_time))
+        total_wait_time = sum([waitlist.serving_started_time - waitlist.added_time for waitlist in servinglist], timedelta())
+        average_wait_time = total_wait_time / len(servinglist) if len(servinglist) > 0 else None
         waitlists_served = Waitlist.objects.exclude(served_time=None).filter(user=user,served_time__range=(start_time, end_time))
         total_serve_time = sum([waitlist.served_time - waitlist.added_time for waitlist in waitlists_served], timedelta())
         average_serve_time = total_serve_time / len(waitlists_served) if len(waitlists_served) > 0 else None
         auto_cancelled=Removed.objects.filter(user=user,added_time__range=(start_time, end_time),auto_removed=True).count()
         
-        return({"total_served":total_served,"total_entries":total_waitlist_entries,"serve_rate":serve_rate,"avg_arrival_rate":arrival_rate,"avg_wait_time":str(average_wait_time),"avg_serve_time":str(average_serve_time),"total_cancelled":cancelled,"auto_removed":auto_cancelled})
+        return({"total_served":total_served,"total_entries":total_waitlist_entries,"serve_rate":round(serve_rate,2),"avg_arrival_rate":round(arrival_rate,2),"avg_wait_time":str(average_wait_time),"avg_serve_time":str(average_serve_time),"total_cancelled":cancelled,"auto_removed":auto_cancelled})
 
     
     
-    
+    #Data that has values whether the entries are self checked or manulally added
     def self_checked(self,user,start_time,end_time):
         self_checked=Waitlist.objects.filter(user=user,added_time__range=(start_time, end_time),self_checkin=True).count()
         total_entries = Waitlist.objects.filter(user=user,added_time__range=(start_time, end_time)).count()
         return({"self_checked":self_checked,"manually_added":total_entries-self_checked})
     
+    #Data about individual resources 
     def resources_data(self,user, start_time, end_time):
         resources_objs = Resources.objects.all()
         resources_dict = {}
@@ -580,6 +612,7 @@ class AnalyticsViews(APIView):
             resources_dict[resource_obj.name] = waitlist_count
         return resources_dict
     
+    #Data about individual services
     def services_data(self,user, start_time, end_time):
         services_objs = Services.objects.all()
         services_dict = {}
@@ -597,11 +630,12 @@ class AnalyticsViews(APIView):
 
 
     def get(self,request,pk):
+
         today = timezone.now()
         user=request.user
         if pk=="today":
             
-
+#get day range inported from timefunc
             start_time,end_time=get_day_range(today)
         elif pk=="week":
             start_time,end_time=get_week_range(today)
@@ -620,10 +654,11 @@ class AnalyticsViews(APIView):
         })
 
 
-
+#send mail manually
 class NotifyByEmailSmsViews(APIView):
     permission_classes=[IsAuthenticated]
     renderer_classes=[WaitlistRenderer]
+
     def get(self,request,pk):
         try:
             waitlistobj=Waitlist.objects.get(id=int(pk))
@@ -667,7 +702,7 @@ class NotifyByEmailSmsViews(APIView):
 class Validate_customer(APIView):
     renderer_classes=[WaitlistRenderer]
     permission_classes=[IsAuthenticated]
-
+    #get data of the person to be validated before validating them
     def get(self,request,pk):
         try:
             validobj=ValidationToken.objects.get(token=pk)
@@ -676,6 +711,7 @@ class Validate_customer(APIView):
         waitistobj=validobj.waitlist
         serialized=WaitlistSerializer(waitistobj)
         return Response(serialized.data)
+    #Do actual validation 
     def post(self,request):
         if request.data.get('queue_token',None):
             try:
@@ -695,13 +731,10 @@ class Validate_customer(APIView):
                 return Response({"error":"The provided token is not valid"},status=status.HTTP_400_BAD_REQUEST)
         return Response({"error":"The provided token is not valid"},status=status.HTTP_400_BAD_REQUEST)
 
-
+#Download records which include all the entries data
 class DownloadRecordsViews(APIView):
     renderer_classes=[WaitlistRenderer]
     permission_classes=[IsAuthenticated]     
-
-  
-
     def get(self, request):
         waitlist = Waitlist.objects.filter(user=request.user)
         serialized_data = WaitlistSerializer(waitlist, many=True)
