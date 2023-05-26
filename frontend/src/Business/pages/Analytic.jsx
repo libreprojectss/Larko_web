@@ -14,7 +14,6 @@ import { Cell, } from 'recharts';
 import { BarChart, Bar, ResponsiveContainer } from 'recharts';
 import { PieChart, Pie, } from 'recharts';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, } from 'recharts';
-import { exportToExcel } from "react-json-to-excel";
 
 
 
@@ -89,16 +88,6 @@ function Analytic() {
                 console.log(err)
             }
             )
-    }, [])
-
-    // console.log(data.statistics)
-    // console.log(data.pie_chart)
-
-    const test1 = data.statistics;
-    const test2 = data.pie_chart;
-    const test3 = data.chart
-    const test4 = data.services
-    const test5 = data.resources
 
     console.log(data)
 
@@ -238,7 +227,7 @@ function Analytic() {
                 // console.log(response.data)
                 let ht = response.data
                 console.log(ht)
-                exportToExcel(ht, 'data')
+                
             })
             .catch((error) => {
                 console.log(error)
