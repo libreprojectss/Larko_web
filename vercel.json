@@ -7,9 +7,9 @@
         "config": { "buildCommand": "npm run build --force", "outputDirectory": "frontend/build" }
       },
       {
-        "src": "larko_web/wsgi.py",
+        "src": "larko_web/asgi.py",
         "use": "@vercel/python",
-        "config": { "maxLambdaSize": "250mb" }
+        "config": { "maxLambdaSize": "500mb" }
       }
     ],
     "routes": [
