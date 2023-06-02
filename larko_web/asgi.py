@@ -23,8 +23,6 @@ application = get_asgi_application()
  
 websocket_urlpatterns = [
     path('ws/waitlist/', consumers.WaitlistConsumer.as_asgi()),
-    path('ws/servinglist/', consumers.ServinglistConsumer.as_asgi()),
-    path('ws/analytics/',consumers.AnalyticsConsumer.as_asgi())
 
 ]
 application = ProtocolTypeRouter({
